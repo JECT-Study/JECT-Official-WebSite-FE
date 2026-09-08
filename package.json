@@ -1,0 +1,31 @@
+{
+  "name": "ject-frontend",
+  "private": true,
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "typecheck": "turbo run typecheck",
+    "e2e": "turbo run e2e",
+    "e2e:install": "pnpm --filter=@ject/www e2e:install",
+    "gen:api": "pnpm --filter=@ject/api-types gen",
+    "gen:api:fetch": "pnpm --filter=@ject/api-types fetch-spec",
+    "gen:errors": "pnpm --filter=@ject/api-types gen:errors",
+    "gen:theme": "pnpm --filter=@ject/styles gen",
+    "clean": "turbo run clean",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "lefthook": "^2.1.10",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "turbo": "^2.8.21"
+  }
+}

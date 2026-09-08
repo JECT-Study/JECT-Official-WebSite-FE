@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm 11은 의존성의 install 스크립트를 기본 차단하므로, 빌드가 필요한 패키지만 여기에 허용한다.
+allowBuilds:
+  lefthook: true
+  turbo: true
+  unrs-resolver: true
+  "@tailwindcss/oxide": true
+  sharp: true

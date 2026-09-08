@@ -1,0 +1,5 @@
+/* JDS는 레이어 없이 배포되어 그대로 두면 Tailwind 유틸리티보다 우선한다. */
+@layer theme, base, jds, components, utilities;
+
+@import "tailwindcss";
+@import "@ject/styles";

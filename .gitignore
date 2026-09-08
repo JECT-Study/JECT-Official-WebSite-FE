@@ -1,0 +1,61 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# turbo
+.turbo
+
+# next
+.next
+out
+next-env.d.ts
+
+# build
+dist
+*.local
+
+# logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# env
+.env
+.env.*
+!.env.example
+
+# playwright
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+# deploy
+.vercel
+
+# misc
+coverage
+.tsbuildinfo
+*.tsbuildinfo
+
+# claude local settings
+CLAUDE.local.md
+.claude/settings.local.json
+
+# git worktrees
+.worktrees

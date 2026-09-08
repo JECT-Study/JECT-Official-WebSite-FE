@@ -1,0 +1,22 @@
+{
+  "name": "@ject/api-types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./core": "./src/core.ts",
+    "./admin": "./src/admin.ts",
+    "./errors": "./src/errors.ts"
+  },
+  "scripts": {
+    "gen": "openapi-typescript specs/core.json -o src/core.ts && openapi-typescript specs/admin.json -o src/admin.ts",
+    "gen:errors": "node scripts/gen-error-codes.mjs",
+    "fetch-spec": "node scripts/fetch-spec.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@ject/config": "workspace:*",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "^6.0.3"
+  }
+}

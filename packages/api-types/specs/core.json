@@ -1,0 +1,1822 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "JECT Makers API Document",
+    "description": "JECT 메이커스 팀 API 명세서입니다.",
+    "version": "v0.0.1"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Jectalk",
+      "description": "젝톡 API"
+    },
+    {
+      "name": "Recruit",
+      "description": "모집 공고 API"
+    },
+    {
+      "name": "Project",
+      "description": "프로젝트 API"
+    },
+    {
+      "name": "Applicant",
+      "description": "지원자 API"
+    },
+    {
+      "name": "Question",
+      "description": "지원서 문항 API"
+    },
+    {
+      "name": "Semester",
+      "description": "기수 API"
+    },
+    {
+      "name": "Apply",
+      "description": "지원 API"
+    },
+    {
+      "name": "MiniStudy",
+      "description": "미니스터디 API"
+    },
+    {
+      "name": "Email",
+      "description": "이메일 API"
+    },
+    {
+      "name": "File",
+      "description": "파일 API"
+    },
+    {
+      "name": "Auth",
+      "description": "인증 API"
+    }
+  ],
+  "paths": {
+    "/applicants/profile/initial": {
+      "put": {
+        "tags": ["Applicant"],
+        "summary": "지원자의 최초 정보 등록",
+        "description": "지원자(ROLE_APPLY)가 이름과 전화번호를 처음 등록할 때 사용합니다.",
+        "operationId": "registerInitialProfile",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitialProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/applicants/pin": {
+      "put": {
+        "tags": ["Applicant"],
+        "summary": "PIN 번호 재설정",
+        "description": "PIN 번호를 재설정합니다.",
+        "operationId": "resetPin",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/upload/portfolios": {
+      "post": {
+        "tags": ["File"],
+        "summary": "포트폴리오 업로드",
+        "description": "지원자의 포트폴리오를 업로드합니다.",
+        "operationId": "uploadPortfolios",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UploadFileRequest"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UploadFileResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload/contents": {
+      "post": {
+        "tags": ["File"],
+        "summary": "콘텐츠 업로드",
+        "description": "프로젝트 썸네일, 소개서 등 콘텐츠를 업로드합니다.",
+        "operationId": "uploadContents",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UploadFileRequest"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UploadFileResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/email/send/auth": {
+      "post": {
+        "tags": ["Email"],
+        "summary": "인증 번호 발송",
+        "description": "지정된 이메일로 인증 번호를 발송합니다.",
+        "operationId": "sendAuthEmail",
+        "parameters": [
+          {
+            "name": "sendGroupCode",
+            "in": "query",
+            "description": "이메일 템플릿",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["AUTH_CODE", "PIN_RESET"]
+            },
+            "examples": {
+              "AUTH_CODE": {
+                "summary": "이메일 인증 코드 안내",
+                "description": "AUTH_CODE",
+                "value": "AUTH_CODE"
+              },
+              "PIN_RESET": {
+                "summary": "PIN 재설정 인증 코드 안내",
+                "description": "PIN_RESET",
+                "value": "PIN_RESET"
+              }
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "리프레시 토큰을 이용한 액세스 토큰 재발급",
+        "description": "리프레시 토큰이 유효한 경우 새로운 액세스 토큰을 발급합니다.",
+        "operationId": "refreshToken",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/code": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "인증번호 검증",
+        "description": "인증번호 검증만 수행하고 임시 토큰을 발급합니다.",
+        "operationId": "verifyAuthCode",
+        "parameters": [
+          {
+            "name": "template",
+            "in": "query",
+            "description": "이메일 템플릿",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["AUTH_CODE", "PIN_RESET"]
+            },
+            "examples": {
+              "AUTH_CODE": {
+                "summary": "이메일 인증 코드 안내",
+                "description": "AUTH_CODE",
+                "value": "AUTH_CODE"
+              },
+              "PIN_RESET": {
+                "summary": "PIN 재설정 인증 코드 안내",
+                "description": "PIN_RESET",
+                "value": "PIN_RESET"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyAuthCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "headers": {
+              "verificationToken": {
+                "description": "검증 토큰",
+                "style": "simple"
+              },
+              "accessToken": {
+                "description": "액세스 토큰",
+                "style": "simple"
+              },
+              "refreshToken": {
+                "description": "프레시레시 토큰",
+                "style": "simple"
+              }
+            },
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apply/temp": {
+      "get": {
+        "tags": ["Apply"],
+        "summary": "지원서 임시 저장 조회",
+        "description": "지원자의 특정 공고에 대한 임시 저장 지원서를 조회합니다.",
+        "operationId": "findTempApplicationForm",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TempApplicationFormResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Apply"],
+        "summary": "지원서 임시 저장",
+        "description": "지원자의 특정 공고에 대한 지원서를 임시 저장합니다.",
+        "operationId": "saveApplicationTemporarily",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyTemporaryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Apply"],
+        "summary": "지원서 초기화",
+        "description": "지원자의 특정 공고에 대한 프로필과 임시 지원서를 제거합니다.",
+        "operationId": "deleteProfileAndTempApplicationForm",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/apply/submit": {
+      "post": {
+        "tags": ["Apply"],
+        "summary": "지원서 제출",
+        "description": "지원자의 특정 공고에 대해 작성이 완료된 지원서를 제출합니다.",
+        "operationId": "submitApplication",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitApplicationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/apply/profile": {
+      "post": {
+        "tags": ["Apply"],
+        "summary": "프로필 작성(저장)",
+        "description": "지원자의 특정 공고에 대한 프로필을 작성(저장)합니다.",
+        "operationId": "saveProfile",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/applicants/apply": {
+      "post": {
+        "tags": ["Applicant"],
+        "summary": "지원자 등록",
+        "description": "PIN 번호를 암호화하여 지원자를 생성합니다. 인증번호 검증 후 발급받은 토큰을 통해 인증된 사용자만 접근 가능합니다.",
+        "operationId": "registerTempApplicant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/access-token": {
+      "post": {
+        "tags": ["dev-auth-controller"],
+        "summary": "access token 발급",
+        "description": "개발 편의를 위한 access token 발급 API",
+        "operationId": "getToken",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/semesters": {
+      "get": {
+        "tags": ["Semester"],
+        "summary": "전체 기수 목록 조회",
+        "description": "모든 기수 목록을 조회합니다.",
+        "operationId": "getAllSemesters",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemesterResponses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recruits/active": {
+      "get": {
+        "tags": ["Recruit"],
+        "summary": "활성 모집 공고 목록 조회",
+        "description": "현재 지원 가능한 모집 공고 목록을 조회합니다.",
+        "operationId": "findActiveRecruitments",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActiveRecruitmentResponses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "tags": ["Project"],
+        "summary": "프로젝트 목록 조회",
+        "description": "카테고리 통해 프로젝트 목록을 조회합니다.",
+        "operationId": "findProjects",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProjectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectId}": {
+      "get": {
+        "tags": ["Project"],
+        "summary": "프로젝트 상세 조회",
+        "description": "전달한 ID에 해당하는 프로젝트의 상세 내용을 조회합니다.",
+        "operationId": "findProjectDetails",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/summary": {
+      "get": {
+        "tags": ["Project"],
+        "summary": "프로젝트 현황 조회",
+        "description": "전체 프로젝트의 요약된 현황을 조회합니다.",
+        "operationId": "findProjectSummary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ministudies": {
+      "get": {
+        "tags": ["MiniStudy"],
+        "summary": "미니스터디 목록 조회",
+        "description": "미니스터디 목록을 조회합니다.",
+        "operationId": "findMiniStudies",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageMiniStudyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jectalks": {
+      "get": {
+        "tags": ["Jectalk"],
+        "summary": "젝톡 목록 조회",
+        "description": "젝톡 목록을 조회합니다.",
+        "operationId": "findJectalks",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "기수 (SEMESTER_1, SEMESTER_2, SEMESTER_3, SEMESTER_4)",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Category"
+            },
+            "example": "SEMESTER_1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageJectalkResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login/exist": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "이메일 가입 여부 확인",
+        "description": "입력한 이메일이 이미 가입된 사용자인지 여부를 확인합니다.",
+        "operationId": "isExistMember",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apply/status": {
+      "get": {
+        "tags": ["Apply"],
+        "summary": "지원 상태 확인",
+        "description": "지원자의 특정 공고에 대한 지원서 제출 여부를 확인합니다.\n- JOINED: 프로필을 저장한 경우\n- TEMP_SAVED: 작성 중인 지원서가 있는 경우\n- SUBMITTED: 이미 지원서를 제출한 경우\n",
+        "operationId": "checkApplyStatus",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apply/questions": {
+      "get": {
+        "tags": ["Question"],
+        "summary": "지원서 문항 목록 조회",
+        "description": "현재 모집 중인 지원서에 한해, 전달된 모집 공고에 해당하는 문항을 모두 조회합니다.",
+        "operationId": "findQuestions",
+        "parameters": [
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionResponses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/applicants/profile/initial/status": {
+      "get": {
+        "tags": ["Applicant"],
+        "summary": "프로필 정보 최초 등록 여부 확인",
+        "description": "지원자의 최초 프로필 정보(이름, 전화번호) 등록 여부를 확인합니다.",
+        "operationId": "isInitialApplicant",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/applicants/me": {
+      "get": {
+        "tags": ["Applicant"],
+        "summary": "현재 로그인한 지원자 프로필 조회",
+        "description": "현재 로그인한 지원자의 프로필를 조회합니다.",
+        "operationId": "getCurrentApplicant",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicantProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "InitialProfileRequest": {
+        "required": ["name", "phoneNumber"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "pattern": "^[가-힣]{1,5}$",
+            "type": "string"
+          },
+          "phoneNumber": {
+            "pattern": "^010\\d{8}$",
+            "type": "string"
+          }
+        }
+      },
+      "UpdatePinRequest": {
+        "required": ["pin"],
+        "type": "object",
+        "properties": {
+          "pin": {
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          }
+        }
+      },
+      "UploadFileRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "contentLength": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "UploadFileResponse": {
+        "type": "object",
+        "properties": {
+          "cdnUrl": {
+            "type": "string"
+          },
+          "presignedUrl": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "VerifyAuthCodeRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "authCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplyPortfolioDto": {
+        "type": "object",
+        "properties": {
+          "fileUrl": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "string"
+          }
+        }
+      },
+      "ApplyTemporaryRequest": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "portfolios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyPortfolioDto"
+            }
+          }
+        }
+      },
+      "SubmitApplicationRequest": {
+        "type": "object",
+        "properties": {
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "portfolios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyPortfolioDto"
+            }
+          }
+        }
+      },
+      "ApplyProfileRequest": {
+        "required": [
+          "careerDetails",
+          "experiencePeriod",
+          "interestedDomains",
+          "jobFamily",
+          "name",
+          "phoneNumber",
+          "region"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "pattern": "^[^\\s]+$",
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "interestedDomains": {
+            "maxItems": 3,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CareerDetails": {
+        "type": "string",
+        "enum": ["STUDENT", "EXPECTED_GRADUATE", "JOB_SEEKER", "BETWEEN_JOBS", "EMPLOYEE"]
+      },
+      "ExperiencePeriod": {
+        "type": "string",
+        "enum": ["NONE", "ONE_TO_TWO", "THREE_TO_FOUR", "FIVE_PLUS"]
+      },
+      "JobFamily": {
+        "type": "string",
+        "enum": ["PM", "PD", "FE", "BE", "APP", "SUPPORTER", "OPS", "INFRA", "BX", "ER"]
+      },
+      "Region": {
+        "type": "string",
+        "enum": [
+          "SEOUL",
+          "GYEONGGI",
+          "INCHEON",
+          "BUSAN",
+          "DAEGU",
+          "DAEJEON",
+          "GWANGJU",
+          "ULSAN",
+          "SEJONG",
+          "GANGWON",
+          "CHUNGBUK",
+          "CHUNGNAM",
+          "JEONBUK",
+          "JEONNAM",
+          "GYEONGBUK",
+          "GYEONGNAM",
+          "JEJU",
+          "OVERSEAS"
+        ]
+      },
+      "RegisterRequest": {
+        "required": ["pin"],
+        "type": "object",
+        "properties": {
+          "pin": {
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          }
+        }
+      },
+      "EmailRequest": {
+        "required": ["email"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "회원 이메일",
+            "example": "admin@ject.kr"
+          }
+        }
+      },
+      "SemesterResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "SemesterResponses": {
+        "type": "object",
+        "properties": {
+          "semesterResponses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SemesterResponse"
+            }
+          }
+        }
+      },
+      "ActiveRecruitmentResponse": {
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterName": {
+            "type": "string"
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "recruitTypeDescription": {
+            "type": "string"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "recruitTypeDetailDescription": {
+            "type": "string"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "jobFamilyDescription": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ActiveRecruitmentResponses": {
+        "type": "object",
+        "properties": {
+          "recruitments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActiveRecruitmentResponse"
+            }
+          }
+        }
+      },
+      "RecruitType": {
+        "type": "string",
+        "enum": [
+          "SEMESTER",
+          "MAKERS",
+          "SUPPORTERS",
+          "REGULAR",
+          "REGULAR_WAITLIST",
+          "BACKFILL",
+          "MANUAL"
+        ]
+      },
+      "RecruitTypeDetail": {
+        "type": "string",
+        "enum": ["REGULAR", "NEW", "REFILL"]
+      },
+      "Category": {
+        "type": "string",
+        "enum": ["SEMESTER_1", "SEMESTER_2", "SEMESTER_3", "SEMESTER_4"]
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PageProjectResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProjectResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "serviceType": {
+            "type": "string"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProjectDetailResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "teamMemberNames": {
+            "$ref": "#/components/schemas/TeamMemberNames"
+          },
+          "techStack": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "badges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "serviceUrl": {
+            "type": "string"
+          },
+          "githubUrl": {
+            "type": "string"
+          },
+          "bannerImageUrl": {
+            "$ref": "#/components/schemas/ProjectIntroResponse"
+          },
+          "sampleImageUrls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectIntroResponse"
+            }
+          },
+          "descriptionImageUrls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectIntroResponse"
+            }
+          }
+        }
+      },
+      "ProjectIntroResponse": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TeamMemberNames": {
+        "type": "object",
+        "properties": {
+          "productManagers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "productDesigners": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "frontendDevelopers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "backendDevelopers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CategorySummary": {
+        "type": "object",
+        "properties": {
+          "categoryName": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ProjectSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "categorySummaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategorySummary"
+            }
+          }
+        }
+      },
+      "MiniStudyResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "linkUrl": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
+      "PageMiniStudyResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MiniStudyResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ContentType": {
+        "type": "string",
+        "enum": ["YOUTUBE"]
+      },
+      "JectalkResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "contentUrl": {
+            "type": "string"
+          },
+          "contentType": {
+            "$ref": "#/components/schemas/ContentType"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      },
+      "PageJectalkResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JectalkResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TempApplicationFormResponse": {
+        "type": "object",
+        "properties": {
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "portfolios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyPortfolioDto"
+            }
+          }
+        }
+      },
+      "ApplyStatus": {
+        "type": "string",
+        "enum": ["JOINED", "TEMP_SAVED", "SUBMITTED", "REJECTED"]
+      },
+      "ApplyStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ApplyStatus"
+          }
+        }
+      },
+      "InputType": {
+        "type": "string",
+        "enum": ["SELECT", "TEXT", "URL", "FILE"]
+      },
+      "QuestionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "inputType": {
+            "$ref": "#/components/schemas/InputType"
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "selectOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inputHint": {
+            "type": "string"
+          },
+          "maxTextLength": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxFileSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "QuestionResponses": {
+        "type": "object",
+        "properties": {
+          "questionResponses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionResponse"
+            }
+          }
+        }
+      },
+      "ApplicantProfileResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "interestedDomains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "JWT 토큰을 입력하세요 (Bearer prefix 제외)",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

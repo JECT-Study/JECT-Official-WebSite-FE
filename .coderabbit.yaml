@@ -1,0 +1,21 @@
+language: ko-KR
+
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+  high_level_summary: false
+  poem: false
+  review_status: true
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/.next/**"
+    - "!**/out/**"
+    - "!**/playwright-report/**"
+    - "!**/test-results/**"
+    - "!**/*.ico"
+    - "!**/*.woff2"
+    - "!pnpm-lock.yaml"
+    # 생성 파일이라 리뷰 대상이 아니다. 생성 스크립트를 본다.
+    - "!packages/api-types/specs/**"
+    - "!packages/api-types/src/**"
+    - "!packages/styles/theme.css"

@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/require-draft-pr.sh\"",
+            "statusMessage": "PR 초안 여부 확인 중..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // empty' | { read -r f; d=\"${CLAUDE_PROJECT_DIR:-$PWD}\"; case \"$f\" in \"$d\"/*) cd \"$d\" && mise exec -- pnpm exec prettier --ignore-unknown --write \"$f\";; esac; } 2>/dev/null || true",
+            "statusMessage": "Prettier 포맷 적용 중..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/verify.sh\"",
+            "statusMessage": "format/lint/typecheck 검사 중...",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,105 @@
+name: CI
+
+# base 브랜치를 제한하지 않는다. dev로 향하는 PR만 검사하면 Stacked PR의 중간 PR이
+# 검증에서 빠진다.
+on: pull_request
+
+# 같은 PR에서 새 커밋이 push되면 이전 실행을 취소한다.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, Format, Typecheck, Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        id: install
+        run: pnpm install --frozen-lockfile
+
+      # 빠른 검사부터 느린 build 순서로 실행한다. 하나가 실패해도 나머지를 실행해 문제를
+      # 한 번에 보여준다. 설치가 실패했다면 건너뛴다. 실행해도 같은 원인으로 실패한다.
+      - name: Lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm lint
+
+      - name: Format check
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm format:check
+
+      - name: Typecheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm typecheck
+
+      - name: Build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm build
+
+      # 커밋된 API 타입이 스펙 스냅샷과 일치하는지 확인한다.
+      - name: API types up to date
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          pnpm gen:api
+          git diff --exit-code -- packages/api-types/src
+
+      # 커밋된 테마 매핑이 설치된 JDS 버전과 일치하는지 확인한다.
+      - name: Theme up to date
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: |
+          pnpm gen:theme
+          git diff --exit-code -- packages/styles/theme.css
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      # playwright.config.ts의 webServer가 build + start를 직접 수행한다.
+      - name: Run E2E
+        run: pnpm e2e --filter=@ject/www
+
+      # 실패 원인 분석은 이 아티팩트의 trace로 한다 (apps/www/docs/e2e-testing.md 참고).
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/www/playwright-report/
+          retention-days: 14

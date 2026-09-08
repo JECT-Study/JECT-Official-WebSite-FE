@@ -1,0 +1,45 @@
+# eslint와 typescript는 각 앱에만 설치되어 있다. lint는 root로 작업 디렉토리를 옮겨
+# 해당 앱의 바이너리와 eslint.config.mjs를 쓰게 한다. prettier는 루트에 있어 그대로 둔다.
+pre-commit:
+  parallel: true
+  commands:
+    lint-www:
+      root: "apps/www/"
+      glob: "*.{ts,tsx,js,jsx,mjs}"
+      run: pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+    lint-admin:
+      root: "apps/admin/"
+      glob: "*.{ts,tsx,js,jsx,mjs}"
+      run: pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+    format:
+      glob: "*.{ts,tsx,js,jsx,mjs,json,css,html,md,yml,yaml}"
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+pre-push:
+  commands:
+    typecheck:
+      run: pnpm typecheck
+
+# 브랜치 이동, 머지, 리베이스로 pnpm-lock.yaml이 바뀌면 의존성을 자동으로 동기화한다.
+# lockfile이 실제로 변경된 경우에만 install이 실행되도록 git diff로 가드한다.
+post-checkout:
+  follow: true
+  commands:
+    install:
+      # {1}=이전 HEAD, {2}=새 HEAD (git이 post-checkout에 넘기는 인자)
+      run: git diff --quiet {1} {2} -- pnpm-lock.yaml 2>/dev/null || pnpm install
+
+post-merge:
+  follow: true
+  commands:
+    install:
+      run: git diff --quiet ORIG_HEAD HEAD -- pnpm-lock.yaml 2>/dev/null || pnpm install
+
+post-rewrite:
+  follow: true
+  commands:
+    install:
+      run: git diff --quiet ORIG_HEAD HEAD -- pnpm-lock.yaml 2>/dev/null || pnpm install

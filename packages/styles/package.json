@@ -1,0 +1,16 @@
+{
+  "name": "@ject/styles",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.css",
+    "./theme.css": "./theme.css"
+  },
+  "scripts": {
+    "gen": "node scripts/gen-theme.mjs"
+  },
+  "dependencies": {
+    "@jects/jds": "^0.5.0"
+  }
+}

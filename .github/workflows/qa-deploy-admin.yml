@@ -1,0 +1,55 @@
+name: QA Deploy (admin)
+
+# dev에 머지되면 백오피스를 Vercel QA에 배포한다. 공유 패키지와 루트 설정은
+# 두 앱 모두에 영향을 주므로 양쪽 워크플로의 paths에 함께 적는다.
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "apps/admin/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - "turbo.json"
+      - ".github/workflows/qa-deploy-admin.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # 프로젝트 설정과 환경변수를 내려받는다. 환경변수는 Vercel 프로젝트에 등록한 값을 쓴다.
+      - name: Pull Vercel settings
+        run: npx vercel@59 pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build
+        run: npx vercel@59 build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy
+        run: npx vercel@59 deploy --prebuilt --prod --token="$VERCEL_TOKEN"

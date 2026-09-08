@@ -1,0 +1,4 @@
+@layer theme, base, jds, components, utilities;
+
+@import "tailwindcss";
+@import "@ject/styles";
