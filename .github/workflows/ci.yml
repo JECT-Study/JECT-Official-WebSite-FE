@@ -71,34 +71,71 @@ jobs:
     name: E2E
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
+      # E2E는 apps/www에만 있다. 필수 체크로 지정하면 job이 실행되지 않을 때 상태가
+      # 보고되지 않아 병합이 막히므로, job은 항상 실행하고 관련 변경이 없으면 아래
+      # 단계를 건너뛴다.
+      - name: Detect relevant changes
+        id: changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            const prefixes = ["apps/www/", "packages/"];
+            const roots = [
+              "pnpm-lock.yaml",
+              "pnpm-workspace.yaml",
+              "package.json",
+              "turbo.json",
+              ".github/workflows/ci.yml",
+            ];
+            const relevant = files.some(
+              (f) => prefixes.some((p) => f.filename.startsWith(p)) || roots.includes(f.filename),
+            );
+            core.setOutput("relevant", relevant ? "true" : "false");
+            core.info(relevant ? "apps/www 관련 변경 있음" : "apps/www 관련 변경 없음, 건너뛴다");
+
       - uses: actions/checkout@v4
+        if: steps.changes.outputs.relevant == 'true'
         with:
           persist-credentials: false
 
       - name: Setup pnpm
+        if: steps.changes.outputs.relevant == 'true'
         uses: pnpm/action-setup@v4
 
       - name: Setup Node
+        if: steps.changes.outputs.relevant == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.changes.outputs.relevant == 'true'
         run: pnpm install --frozen-lockfile
 
       # playwright는 apps/www에만 설치되어 있어 루트에서 실행되지 않는다.
       - name: Install Playwright browsers
+        if: steps.changes.outputs.relevant == 'true'
         run: pnpm --filter=@ject/www exec playwright install --with-deps chromium
 
       # playwright.config.ts의 webServer가 build + start를 직접 수행한다.
       - name: Run E2E
+        if: steps.changes.outputs.relevant == 'true'
         run: pnpm e2e --filter=@ject/www
 
       # 실패 원인 분석은 이 아티팩트의 trace로 한다 (apps/www/docs/e2e-testing.md 참고).
       - name: Upload report
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.changes.outputs.relevant == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
