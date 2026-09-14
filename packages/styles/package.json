@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./index.css",
-    "./theme.css": "./theme.css"
+    "./theme.css": "./theme.css",
+    "./tw-merge.json": "./tw-merge.json"
   },
   "scripts": {
     "gen": "node scripts/gen-theme.mjs"

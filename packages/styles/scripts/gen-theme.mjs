@@ -119,3 +119,29 @@ await writeFile(resolve(here, "../theme.css"), output);
 
 const count = output.match(/^\s{2}--/gm).length;
 process.stdout.write(`theme.css 갱신 (${count}개)\n`);
+
+function names(node) {
+  return flatten(node).map(([path]) => path);
+}
+
+// tailwind-merge는 Tailwind 기본 이름으로 충돌을 판단하므로 JDS 토큰 이름을 알려준다.
+// 색과 duration, 숫자 간격은 기본 판단으로 처리되어 넣지 않는다.
+const twMergeConfig = {
+  extend: {
+    theme: {
+      text: names(vars.typo.primitive.fontSize),
+      font: names(vars.typo.primitive.typeface),
+      "font-weight": names(vars.typo.primitive.fontWeight),
+      radius: names(vars.scheme.semantic.radius),
+      spacing: names(vars.scheme.semantic.margin).map((name) => `margin-${name}`),
+      shadow: names(vars.environment.semantic.shadow),
+      ease: names(vars.environment.semantic.motion),
+    },
+    classGroups: {
+      z: [{ z: names(vars.environment.semantic.zIndex) }],
+    },
+  },
+};
+
+await writeFile(resolve(here, "../tw-merge.json"), `${JSON.stringify(twMergeConfig, null, 2)}\n`);
+process.stdout.write("tw-merge.json 갱신\n");
