@@ -120,28 +120,56 @@ await writeFile(resolve(here, "../theme.css"), output);
 const count = output.match(/^\s{2}--/gm).length;
 process.stdout.write(`theme.css 갱신 (${count}개)\n`);
 
-function names(node) {
-  return flatten(node).map(([path]) => path);
+// tailwind-merge는 JDS 토큰 이름을 모르므로 theme.css에 실제로 들어간 이름을 알려준다.
+// 앞 항목부터 접두사를 비교하므로 font-weight를 font보다 먼저 둔다.
+const TW_MERGE_NAMESPACES = [
+  { prefix: "font-weight", theme: "font-weight" },
+  { prefix: "font", theme: "font" },
+  { prefix: "text", theme: "text" },
+  { prefix: "radius", theme: "radius" },
+  { prefix: "spacing", theme: "spacing" },
+  { prefix: "shadow", theme: "shadow" },
+  { prefix: "ease", theme: "ease" },
+  { prefix: "breakpoint", theme: "breakpoint" },
+  // tailwind-merge에 z-index 테마 키가 없어 z 클래스 그룹에 직접 추가한다.
+  { prefix: "z-index", classGroup: "z" },
+  // tailwind-merge가 color는 모든 값을, duration은 숫자를 기본으로 인식해 비워 둔다.
+  // 지우면 twMergeConfigFrom이 에러를 던진다.
+  { prefix: "color" },
+  { prefix: "duration" },
+];
+
+function twMergeConfigFrom(css) {
+  const theme = {};
+  const classGroups = {};
+
+  for (const [, name, value] of css.matchAll(/^\s*--([^:\s]+)\s*:\s*(.*?);?\s*$/gm)) {
+    // `--spacing: initial` 같은 초기화 줄과 `--text-title-1--line-height` 같은 보조 변수는 클래스 이름이 아니다.
+    if (value === "initial" || name.includes("--")) continue;
+
+    const namespace = TW_MERGE_NAMESPACES.find(({ prefix }) => name.startsWith(`${prefix}-`));
+
+    if (!namespace) {
+      throw new Error(`tailwind-merge 설정에 대응하지 않는 네임스페이스입니다: --${name}`);
+    }
+
+    const token = name.slice(namespace.prefix.length + 1);
+
+    if (namespace.theme) (theme[namespace.theme] ??= []).push(token);
+    if (namespace.classGroup) (classGroups[namespace.classGroup] ??= []).push(token);
+  }
+
+  return {
+    extend: {
+      theme,
+      classGroups: Object.fromEntries(
+        Object.entries(classGroups).map(([group, tokens]) => [group, [{ [group]: tokens }]])
+      ),
+    },
+  };
 }
 
-// tailwind-merge는 Tailwind 기본 이름으로 충돌을 판단하므로 JDS 토큰 이름을 알려준다.
-// 색과 duration, 숫자 간격은 기본 판단으로 처리되어 넣지 않는다.
-const twMergeConfig = {
-  extend: {
-    theme: {
-      text: names(vars.typo.primitive.fontSize),
-      font: names(vars.typo.primitive.typeface),
-      "font-weight": names(vars.typo.primitive.fontWeight),
-      radius: names(vars.scheme.semantic.radius),
-      spacing: names(vars.scheme.semantic.margin).map((name) => `margin-${name}`),
-      shadow: names(vars.environment.semantic.shadow),
-      ease: names(vars.environment.semantic.motion),
-    },
-    classGroups: {
-      z: [{ z: names(vars.environment.semantic.zIndex) }],
-    },
-  },
-};
+const twMergeConfig = twMergeConfigFrom(output);
 
 await writeFile(resolve(here, "../tw-merge.json"), `${JSON.stringify(twMergeConfig, null, 2)}\n`);
 process.stdout.write("tw-merge.json 갱신\n");
