@@ -13,5 +13,8 @@
   },
   "dependencies": {
     "@jects/jds": "^0.5.0"
+  },
+  "devDependencies": {
+    "tailwind-merge": "^3.6.0"
   }
 }

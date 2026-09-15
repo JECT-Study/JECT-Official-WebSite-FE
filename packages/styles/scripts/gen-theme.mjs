@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { vars } from "@jects/jds/tokens";
+import { getDefaultConfig, validators } from "tailwind-merge";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -121,23 +122,19 @@ const count = output.match(/^\s{2}--/gm).length;
 process.stdout.write(`theme.css 갱신 (${count}개)\n`);
 
 // tailwind-merge는 JDS 토큰 이름을 모르므로 theme.css에 실제로 들어간 이름을 알려준다.
-// 앞 항목부터 접두사를 비교하므로 font-weight를 font보다 먼저 둔다.
-const TW_MERGE_NAMESPACES = [
-  { prefix: "font-weight", theme: "font-weight" },
-  { prefix: "font", theme: "font" },
-  { prefix: "text", theme: "text" },
-  { prefix: "radius", theme: "radius" },
-  { prefix: "spacing", theme: "spacing" },
-  { prefix: "shadow", theme: "shadow" },
-  { prefix: "ease", theme: "ease" },
-  { prefix: "breakpoint", theme: "breakpoint" },
-  // tailwind-merge에 z-index 테마 키가 없어 z 클래스 그룹에 직접 추가한다.
-  { prefix: "z-index", classGroup: "z" },
-  // tailwind-merge가 color는 모든 값을, duration은 숫자를 기본으로 인식해 비워 둔다.
-  // 지우면 twMergeConfigFrom이 에러를 던진다.
-  { prefix: "color" },
-  { prefix: "duration" },
-];
+const twMergeDefaults = getDefaultConfig();
+
+// 긴 키부터 비교해 font-weight가 font로 분류되지 않게 한다.
+const themeKeys = Object.keys(twMergeDefaults.theme).sort((a, b) => b.length - a.length);
+
+// tailwind-merge에 테마 키가 없는 네임스페이스는 이름을 추가할 클래스 그룹을 지정한다.
+const CLASS_GROUP_BY_NAMESPACE = { "z-index": "z" };
+
+for (const group of Object.values(CLASS_GROUP_BY_NAMESPACE)) {
+  if (!(group in twMergeDefaults.classGroups)) {
+    throw new Error(`tailwind-merge에 없는 클래스 그룹입니다: ${group}`);
+  }
+}
 
 function twMergeConfigFrom(css) {
   const theme = {};
@@ -147,16 +144,32 @@ function twMergeConfigFrom(css) {
     // `--spacing: initial` 같은 초기화 줄과 `--text-title-1--line-height` 같은 보조 변수는 클래스 이름이 아니다.
     if (value === "initial" || name.includes("--")) continue;
 
-    const namespace = TW_MERGE_NAMESPACES.find(({ prefix }) => name.startsWith(`${prefix}-`));
+    const themeKey = themeKeys.find((key) => name.startsWith(`${key}-`));
 
-    if (!namespace) {
-      throw new Error(`tailwind-merge 설정에 대응하지 않는 네임스페이스입니다: --${name}`);
+    if (themeKey) {
+      // color처럼 기본 설정이 모든 값을 받는 테마는 이름을 알려주지 않아도 된다.
+      if (!twMergeDefaults.theme[themeKey].includes(validators.isAny)) {
+        (theme[themeKey] ??= []).push(name.slice(themeKey.length + 1));
+      }
+      continue;
     }
 
-    const token = name.slice(namespace.prefix.length + 1);
+    const namespace = Object.keys(CLASS_GROUP_BY_NAMESPACE).find((key) =>
+      name.startsWith(`${key}-`)
+    );
 
-    if (namespace.theme) (theme[namespace.theme] ??= []).push(token);
-    if (namespace.classGroup) (classGroups[namespace.classGroup] ??= []).push(token);
+    if (namespace) {
+      const group = CLASS_GROUP_BY_NAMESPACE[namespace];
+      (classGroups[group] ??= []).push(name.slice(namespace.length + 1));
+      continue;
+    }
+
+    // duration처럼 테마 키가 없어도 숫자 이름은 기본 설정의 isNumber가 인식한다.
+    if (validators.isNumber(name.slice(name.lastIndexOf("-") + 1))) continue;
+
+    throw new Error(
+      `tailwind-merge 테마 키가 없는 네임스페이스입니다. CLASS_GROUP_BY_NAMESPACE에 클래스 그룹을 지정하세요: --${name}`
+    );
   }
 
   return {
