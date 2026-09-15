@@ -14,6 +14,10 @@ env:
   SYNC_BRANCH: chore/api-spec-sync
   BASE_BRANCH: dev
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   sync:
     name: Fetch spec and open PR
