@@ -521,6 +521,8 @@ export interface components {
         VerifyAuthCodeRequest: {
             email?: string;
             authCode?: string;
+            /** Format: int64 */
+            recruitId: number;
         };
         ApplyPortfolioDto: {
             fileUrl?: string;
@@ -559,6 +561,8 @@ export interface components {
         Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
         RegisterRequest: {
             pin: string;
+            /** Format: int64 */
+            recruitId: number;
         };
         EmailRequest: {
             /**
@@ -1296,6 +1300,7 @@ export interface operations {
         parameters: {
             query: {
                 email: string;
+                recruitId: number;
             };
             header?: never;
             path?: never;

@@ -29,6 +29,14 @@
       "description": "일반 구성원 API"
     },
     {
+      "name": "AdminMailRecruit",
+      "description": "메일 발송용 모집 공고 조회 API (어드민 전용)"
+    },
+    {
+      "name": "AdminMailTarget",
+      "description": "메일 발송 대상자 조회 API (어드민 전용)"
+    },
+    {
       "name": "AdminSemesterEvent",
       "description": "기수별 행사 관리 API"
     },
@@ -72,7 +80,9 @@
   "paths": {
     "/admin/recruits/{recruitId}": {
       "put": {
-        "tags": ["Admin Recruit"],
+        "tags": [
+          "Admin Recruit"
+        ],
         "summary": "모집 수정",
         "description": "모집 정보를 수정합니다.",
         "operationId": "updateRecruit",
@@ -104,7 +114,9 @@
         }
       },
       "delete": {
-        "tags": ["Admin Recruit"],
+        "tags": [
+          "Admin Recruit"
+        ],
         "summary": "모집 취소",
         "description": "모집 정보를 제거합니다.",
         "operationId": "cancelRecruit",
@@ -128,7 +140,9 @@
     },
     "/admin/recruits/{recruitId}/force-update": {
       "put": {
-        "tags": ["Dev Recruit"],
+        "tags": [
+          "Dev Recruit"
+        ],
         "summary": "모집 정보 강제 수정",
         "description": "마감 여부와 관계없이 모집 정보를 강제로 수정합니다.",
         "operationId": "updateRecruit_1",
@@ -162,7 +176,9 @@
     },
     "/admin/mails/scenarios/{scenarioId}": {
       "put": {
-        "tags": ["AdminMailScenario"],
+        "tags": [
+          "AdminMailScenario"
+        ],
         "summary": "시나리오 수정",
         "description": "기존 메일 발송 시나리오를 수정합니다.",
         "operationId": "updateScenario",
@@ -201,7 +217,9 @@
         }
       },
       "delete": {
-        "tags": ["AdminMailScenario"],
+        "tags": [
+          "AdminMailScenario"
+        ],
         "summary": "시나리오 삭제",
         "description": "메일 발송 시나리오를 삭제합니다.",
         "operationId": "deleteScenario",
@@ -225,7 +243,9 @@
     },
     "/admin/applies/{applyId}": {
       "get": {
-        "tags": ["Admin Apply"],
+        "tags": [
+          "Admin Apply"
+        ],
         "summary": "지원서 상세 조회",
         "description": "전달한 ID에 해당하는 지원서의 상세 정보를 조회합니다.",
         "operationId": "findApply",
@@ -262,9 +282,11 @@
         }
       },
       "put": {
-        "tags": ["Admin Apply"],
+        "tags": [
+          "Admin Apply"
+        ],
         "summary": "제출된 지원서 수정",
-        "description": "전달한 ID에 해당하는 제출된 지원서의 정보를 수정 합니다.",
+        "description": "전달한 ID에 해당하는 제출된 지원서의 정보를 수정합니다.",
         "operationId": "editSubmittedApply",
         "parameters": [
           {
@@ -294,7 +316,9 @@
         }
       },
       "delete": {
-        "tags": ["Admin Apply"],
+        "tags": [
+          "Admin Apply"
+        ],
         "summary": "지원서 삭제",
         "description": "전달한 ID에 해당하는 지원서를 삭제합니다.",
         "operationId": "deleteApply",
@@ -318,7 +342,9 @@
     },
     "/admin/semesters": {
       "post": {
-        "tags": ["Semester"],
+        "tags": [
+          "Semester"
+        ],
         "summary": "기수 등록",
         "description": "새로운 기수를 등록합니다.",
         "operationId": "register",
@@ -341,7 +367,9 @@
     },
     "/admin/semesters/{semesterId}/events": {
       "get": {
-        "tags": ["AdminSemesterEvent"],
+        "tags": [
+          "AdminSemesterEvent"
+        ],
         "summary": "기수별 행사 목록 조회",
         "description": "선택한 기수와 행사 타입의 행사 목록을 조회합니다.",
         "operationId": "getEvents",
@@ -378,7 +406,9 @@
         }
       },
       "post": {
-        "tags": ["AdminSemesterEvent"],
+        "tags": [
+          "AdminSemesterEvent"
+        ],
         "summary": "기수별 행사 일괄 편집",
         "description": "선택한 기수의 행사 추가와 이름 수정을 원자적으로 처리합니다.",
         "operationId": "editEvents",
@@ -412,7 +442,9 @@
     },
     "/admin/recruits": {
       "post": {
-        "tags": ["Admin Recruit"],
+        "tags": [
+          "Admin Recruit"
+        ],
         "summary": "모집 등록",
         "description": "모집 정보를 등록합니다.",
         "operationId": "registerRecruit",
@@ -438,7 +470,9 @@
     },
     "/admin/members/supporters": {
       "get": {
-        "tags": ["AdminMemberSupporters"],
+        "tags": [
+          "AdminMemberSupporters"
+        ],
         "summary": "운영 서포터즈 구성원 목록 조회",
         "description": "운영 서포터즈 구성원 목록을 조회합니다.",
         "operationId": "getAdminMemberSupportersList",
@@ -478,7 +512,9 @@
         }
       },
       "post": {
-        "tags": ["AdminMemberSupporters"],
+        "tags": [
+          "AdminMemberSupporters"
+        ],
         "summary": "운영 서포터즈 구성원 추가",
         "description": "운영 서포터즈 구성원을 추가합니다.",
         "operationId": "createAdminMemberSupporters",
@@ -497,11 +533,36 @@
             "description": "OK"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberSupporters"
+        ],
+        "summary": "운영 서포터즈 구성원 일괄 삭제",
+        "description": "선택한 운영 서포터즈 구성원을 일괄 삭제합니다. 유효하지 않은 ID가 있으면 전체 요청이 실패합니다.",
+        "operationId": "deleteAdminMemberSupportersList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/admin/members/semester": {
       "get": {
-        "tags": ["AdminMemberSemester"],
+        "tags": [
+          "AdminMemberSemester"
+        ],
         "summary": "일반 구성원 리스트 조회",
         "description": "일반 구성원 목록을 커서기반 페이징과 필터를 적용해 조회합니다.",
         "operationId": "searchAdminMemberSemesterList",
@@ -591,7 +652,9 @@
         }
       },
       "post": {
-        "tags": ["AdminMemberSemester"],
+        "tags": [
+          "AdminMemberSemester"
+        ],
         "summary": "일반 구성원 추가",
         "description": "일반 구성원을 추가합니다.",
         "operationId": "createAdminMemberSemester",
@@ -610,11 +673,36 @@
             "description": "OK"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberSemester"
+        ],
+        "summary": "일반 구성원 일괄 삭제",
+        "description": "선택한 일반 구성원을 일괄 삭제합니다.",
+        "operationId": "deleteAdminMemberSemesterList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/admin/members/makers": {
       "get": {
-        "tags": ["AdminMemberMakers"],
+        "tags": [
+          "AdminMemberMakers"
+        ],
         "summary": "메이커스팀 구성원 목록 조회",
         "description": "메이커스팀 구성원 목록을 조회합니다.",
         "operationId": "getAdminMemberMakersList",
@@ -654,7 +742,9 @@
         }
       },
       "post": {
-        "tags": ["AdminMemberMakers"],
+        "tags": [
+          "AdminMemberMakers"
+        ],
         "summary": "메이커스팀 구성원 추가",
         "description": "메이커스팀 구성원을 추가합니다.",
         "operationId": "createAdminMemberMakers",
@@ -673,24 +763,72 @@
             "description": "OK"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberMakers"
+        ],
+        "summary": "메이커스팀 구성원 일괄 삭제",
+        "description": "선택한 메이커스팀 구성원을 일괄 삭제합니다. 유효하지 않은 ID가 있으면 전체 요청이 실패합니다.",
+        "operationId": "deleteAdminMemberMakersList",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteMembersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/admin/mails/scenarios": {
       "get": {
-        "tags": ["AdminMailScenario"],
-        "summary": "시나리오 목록 조회",
-        "description": "등록된 모든 메일 발송 시나리오를 조회합니다.",
-        "operationId": "getScenarios",
+        "tags": [
+          "AdminMailScenario"
+        ],
+        "summary": "메일 템플릿 목록 조회",
+        "description": "메일 템플릿을 구분과 타입으로 필터링하여 최신순으로 조회합니다.",
+        "operationId": "searchScenarios",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MailScenarioCategory"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MailScenarioType"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MailScenarioResponse"
-                  }
+                  "$ref": "#/components/schemas/PageMailScenarioResponse"
                 }
               }
             }
@@ -698,7 +836,9 @@
         }
       },
       "post": {
-        "tags": ["AdminMailScenario"],
+        "tags": [
+          "AdminMailScenario"
+        ],
         "summary": "시나리오 생성",
         "description": "새로운 메일 발송 시나리오를 생성합니다.",
         "operationId": "createScenario",
@@ -726,9 +866,43 @@
         }
       }
     },
+    "/admin/mails/scenarios/preview": {
+      "post": {
+        "tags": [
+          "AdminMailScenario"
+        ],
+        "summary": "메일 미리보기",
+        "description": "지원자와 입력 변수 기준으로 메일 제목과 본문을 미리 확인합니다.",
+        "operationId": "preview",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewMailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailPreviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/emails/send/manual": {
       "post": {
-        "tags": ["Email"],
+        "tags": [
+          "Email"
+        ],
         "summary": "템플릿 이메일 단건 발송",
         "description": "선택된 템플릿으로 단건 이메일을 발송합니다.",
         "operationId": "sendManualTemplatedEmail",
@@ -751,7 +925,9 @@
     },
     "/admin/emails/send/manual/bulk": {
       "post": {
-        "tags": ["Email"],
+        "tags": [
+          "Email"
+        ],
         "summary": "템플릿 이메일 일괄 발송",
         "description": "선택된 템플릿으로 여러 이메일을 발송합니다.",
         "operationId": "sendManualBulkTemplatedEmail",
@@ -774,7 +950,9 @@
     },
     "/admin/apply/pass": {
       "post": {
-        "tags": ["Apply Pass"],
+        "tags": [
+          "Apply Pass"
+        ],
         "summary": "지원자 합격",
         "description": "지원자를 합격 처리하여 구성원으로 승인합니다.",
         "operationId": "passApply",
@@ -805,7 +983,9 @@
     },
     "/admin/accounts": {
       "get": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 목록 조회",
         "description": "관리자 계정 목록을 조회합니다. 계정 유형과 상태를 복수 필터로 선택할 수 있습니다.",
         "operationId": "findAccounts",
@@ -855,7 +1035,9 @@
         }
       },
       "post": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 생성",
         "description": "관리자 계정 유형의 계정을 생성합니다.",
         "operationId": "createAccount",
@@ -878,7 +1060,9 @@
     },
     "/admin-auth/logout": {
       "post": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "관리자 로그아웃",
         "description": "관리자가 로그아웃합니다.",
         "operationId": "logoutAdmin",
@@ -891,7 +1075,9 @@
     },
     "/admin-auth/login": {
       "post": {
-        "tags": ["Admin"],
+        "tags": [
+          "Admin"
+        ],
         "summary": "관리자 로그인",
         "description": "관리자 로그인을 시도합니다.",
         "operationId": "loginAdmin",
@@ -919,9 +1105,353 @@
         }
       }
     },
+    "/admin/members/supporters/{memberActivityId}": {
+      "get": {
+        "tags": [
+          "AdminMemberSupporters"
+        ],
+        "summary": "운영 서포터즈 구성원 상세 조회",
+        "description": "운영 서포터즈 구성원을 상세 조회합니다.",
+        "operationId": "getAdminMemberSupportersDetail",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberSupportersDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberSupporters"
+        ],
+        "summary": "운영 서포터즈 구성원 삭제",
+        "description": "전달한 활동 ID에 해당하는 운영 서포터즈 구성원을 삭제합니다.",
+        "operationId": "deleteAdminMemberSupporters",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AdminMemberSupporters"
+        ],
+        "summary": "운영 서포터즈 구성원 수정",
+        "description": "전달한 활동 ID에 해당하는 운영 서포터즈 구성원의 입력된 정보만 수정합니다.",
+        "operationId": "editAdminMemberSupporters",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberSupportersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/members/semester/{memberActivityId}": {
+      "get": {
+        "tags": [
+          "AdminMemberSemester"
+        ],
+        "summary": "일반 구성원 단건 조회",
+        "description": "일반 구성원 정보와 기수별 행사 참여 상태를 조회합니다.",
+        "operationId": "getMemberSemester",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberSemesterResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberSemester"
+        ],
+        "summary": "일반 구성원 삭제",
+        "description": "일반 구성원을 삭제합니다.",
+        "operationId": "deleteAdminMemberSemester",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AdminMemberSemester"
+        ],
+        "summary": "일반 구성원 수정",
+        "description": "일반 구성원의 기본정보와 활동정보를 수정합니다.",
+        "operationId": "editAdminMemberSemester",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditMemberSemesterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/members/semester/{memberActivityId}/event-participation": {
+      "patch": {
+        "tags": [
+          "AdminMemberSemester"
+        ],
+        "summary": "일반 구성원 행사 참여 상태 수정",
+        "description": "일반 구성원의 기수별 행사 참여 상태를 수정합니다. 참여 상태가 null이면 미지정 처리합니다.",
+        "operationId": "editEventParticipation",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditEventParticipationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/members/makers/{memberActivityId}": {
+      "get": {
+        "tags": [
+          "AdminMemberMakers"
+        ],
+        "summary": "메이커스팀 구성원 상세 조회",
+        "description": "메이커스팀 구성원을 상세 조회합니다.",
+        "operationId": "getAdminMemberMakersDetail",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberMakersDetailResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AdminMemberMakers"
+        ],
+        "summary": "메이커스팀 구성원 삭제",
+        "description": "전달한 활동 ID에 해당하는 메이커스팀 구성원을 삭제합니다.",
+        "operationId": "deleteAdminMemberMakers",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AdminMemberMakers"
+        ],
+        "summary": "메이커스팀 구성원 수정",
+        "description": "전달한 활동 ID에 해당하는 메이커스팀 구성원의 입력된 정보만 수정합니다.",
+        "operationId": "editAdminMemberMakers",
+        "parameters": [
+          {
+            "name": "memberActivityId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberMakersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/applies/selection-results": {
+      "patch": {
+        "tags": [
+          "Admin Apply"
+        ],
+        "summary": "지원자 선정 결과 일괄 변경",
+        "description": "제출 완료된 지원자들의 선정 결과와 예비 번호를 일괄 변경합니다.",
+        "operationId": "updateSelectionResults",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectionResultUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/accounts/{memberId}": {
       "patch": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 정보 수정",
         "description": "관리자 계정의 이메일, 이름, 권한, 활성화 상태를 수정합니다.",
         "operationId": "updateAccount",
@@ -955,7 +1485,9 @@
     },
     "/admin/accounts/{memberId}/role": {
       "patch": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 권한 수정",
         "description": "관리자 계정의 권한을 수정합니다.",
         "operationId": "updateRole",
@@ -989,7 +1521,9 @@
     },
     "/admin/accounts/{memberId}/active": {
       "patch": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 활성화 상태 수정",
         "description": "관리자 계정을 활성화하거나 비활성화합니다.",
         "operationId": "updateActive",
@@ -1023,7 +1557,9 @@
     },
     "/admin/accounts/members/active": {
       "patch": {
-        "tags": ["Admin Account"],
+        "tags": [
+          "Admin Account"
+        ],
         "summary": "관리자 계정 일괄 비활성화",
         "description": "요청한 관리자 계정을 일괄 비활성화합니다. 활성화는 단건 API를 사용합니다.",
         "operationId": "deactivateAccounts",
@@ -1047,21 +1583,37 @@
         }
       }
     },
-    "/admin/members/supporters/{memberActivityId}": {
+    "/admin/mails/targets": {
       "get": {
-        "tags": ["AdminMemberSupporters"],
-        "summary": "운영 서포터즈 구성원 상세 조회",
-        "description": "운영 서포터즈 구성원을 상세 조회합니다.",
-        "operationId": "getAdminMemberSupportersDetail",
+        "tags": [
+          "AdminMailTarget"
+        ],
+        "summary": "메일 발송 대상자 조회",
+        "description": "모집 공고와 선정 결과로 메일 발송 대상자를 조회합니다.",
+        "operationId": "searchTargets",
         "parameters": [
           {
-            "name": "memberActivityId",
-            "in": "path",
+            "name": "recruitId",
+            "in": "query",
+            "description": "모집 공고 ID",
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64"
-            }
+              "description": "모집 공고 ID",
+              "format": "int64",
+              "example": 1
+            },
+            "example": 1
+          },
+          {
+            "name": "selectionResult",
+            "in": "query",
+            "description": "선정 결과 필터",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MailTargetSelectionResult"
+            },
+            "example": "PASSED"
           }
         ],
         "responses": {
@@ -1070,38 +1622,10 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/MemberSupportersDetailResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/members/makers/{memberActivityId}": {
-      "get": {
-        "tags": ["AdminMemberMakers"],
-        "summary": "메이커스팀 구성원 상세 조회",
-        "description": "메이커스팀 구성원을 상세 조회합니다.",
-        "operationId": "getAdminMemberMakersDetail",
-        "parameters": [
-          {
-            "name": "memberActivityId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/MemberMakersDetailResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MailTargetResponse"
+                  }
                 }
               }
             }
@@ -1111,7 +1635,9 @@
     },
     "/admin/mails/scenarios/{scenarioId}/variables": {
       "get": {
-        "tags": ["AdminMailScenario"],
+        "tags": [
+          "AdminMailScenario"
+        ],
         "summary": "시나리오 변수 목록 조회",
         "description": "시나리오 ID로 템플릿 변수 목록(공통/개인)을 조회합니다.",
         "operationId": "getVariablesByScenario",
@@ -1140,9 +1666,36 @@
         }
       }
     },
+    "/admin/mails/recruits": {
+      "get": {
+        "tags": [
+          "AdminMailRecruit"
+        ],
+        "summary": "메일 발송용 모집 공고 목록 조회",
+        "description": "메일 발송 기준으로 사용할 모집 공고를 등록일 최신순으로 조회합니다.",
+        "operationId": "getRecruits",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MailRecruitResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/applies": {
       "get": {
-        "tags": ["Admin Apply"],
+        "tags": [
+          "Admin Apply"
+        ],
         "summary": "지원서 목록 조회",
         "description": "지원서들의 목록을 조회합니다. 모집 공고, 모집 유형, 모집 사유, 기수, 직군, 지원 상태로 필터링할 수 있습니다.",
         "operationId": "findApplies",
@@ -1220,7 +1773,9 @@
         }
       },
       "delete": {
-        "tags": ["Admin Apply"],
+        "tags": [
+          "Admin Apply"
+        ],
         "summary": "지원서 다수 삭제",
         "description": "선택한 다수의 지원서들을 삭제합니다. 삭제한 수를 반환합니다.",
         "operationId": "deleteSubmittedApplies",
@@ -1254,10 +1809,25 @@
     "schemas": {
       "JobFamily": {
         "type": "string",
-        "enum": ["PM", "PD", "FE", "BE", "APP", "SUPPORTER", "OPS", "INFRA", "BX", "ER"]
+        "enum": [
+          "PM",
+          "PD",
+          "FE",
+          "BE",
+          "APP",
+          "SUPPORTER",
+          "OPS",
+          "INFRA",
+          "BX",
+          "ER"
+        ]
       },
       "RecruitUpdateRequest": {
-        "required": ["endDate", "jobFamily", "startDate"],
+        "required": [
+          "endDate",
+          "jobFamily",
+          "startDate"
+        ],
         "type": "object",
         "properties": {
           "jobFamily": {
@@ -1274,7 +1844,11 @@
         }
       },
       "CustomVariableRequest": {
-        "required": ["inputType", "key", "label"],
+        "required": [
+          "inputType",
+          "key",
+          "label"
+        ],
         "type": "object",
         "properties": {
           "key": {
@@ -1296,7 +1870,12 @@
       },
       "MailScenarioCategory": {
         "type": "string",
-        "enum": ["GENERAL", "CLUB_MEMBER", "MAKERS", "SUPPORTERS"]
+        "enum": [
+          "GENERAL",
+          "CLUB_MEMBER",
+          "MAKERS",
+          "SUPPORTERS"
+        ]
       },
       "MailScenarioRequest": {
         "required": [
@@ -1343,11 +1922,23 @@
       },
       "MailScenarioType": {
         "type": "string",
-        "enum": ["FIRST_PASS", "FINAL_PASS", "STANDBY_PASS", "REJECT", "ETC"]
+        "enum": [
+          "FIRST_PASS",
+          "FINAL_PASS",
+          "STANDBY_PASS",
+          "REJECT",
+          "ETC"
+        ]
       },
       "VariableInputType": {
         "type": "string",
-        "enum": ["TEXT", "URL", "EMAIL", "PHONE"]
+        "enum": [
+          "TEXT",
+          "URL",
+          "EMAIL",
+          "PHONE",
+          "DATE_TIME"
+        ]
       },
       "CustomVariableResponse": {
         "type": "object",
@@ -1427,7 +2018,13 @@
         }
       },
       "SubmittedApplyEditRequest": {
-        "required": ["answers", "email", "jobFamily", "name", "phoneNumber"],
+        "required": [
+          "answers",
+          "email",
+          "jobFamily",
+          "name",
+          "phoneNumber"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -1459,7 +2056,11 @@
         }
       },
       "RecruitRegisterRequest": {
-        "required": ["endDate", "jobFamily", "startDate"],
+        "required": [
+          "endDate",
+          "jobFamily",
+          "startDate"
+        ],
         "type": "object",
         "properties": {
           "jobFamily": {
@@ -1490,7 +2091,9 @@
         }
       },
       "CreateSemesterEventRequest": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -1501,7 +2104,9 @@
         }
       },
       "EditSemesterEventsRequest": {
-        "required": ["type"],
+        "required": [
+          "type"
+        ],
         "type": "object",
         "properties": {
           "type": {
@@ -1527,10 +2132,16 @@
       },
       "SemesterEventType": {
         "type": "string",
-        "enum": ["SURVEY", "EVENT"]
+        "enum": [
+          "SURVEY",
+          "EVENT"
+        ]
       },
       "UpdateSemesterEventRequest": {
-        "required": ["id", "name"],
+        "required": [
+          "id",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1546,7 +2157,13 @@
       },
       "ActivityStatus": {
         "type": "string",
-        "enum": ["ACTIVE", "COMPLETED", "WITHDRAWN", "ENDED", "DROPOUT"]
+        "enum": [
+          "ACTIVE",
+          "COMPLETED",
+          "WITHDRAWN",
+          "ENDED",
+          "DROPOUT"
+        ]
       },
       "CreateMemberSupportersRequest": {
         "required": [
@@ -1609,15 +2226,29 @@
       },
       "MemberType": {
         "type": "string",
-        "enum": ["SEMESTER", "MAKERS", "SUPPORTERS"]
+        "enum": [
+          "SEMESTER",
+          "MAKERS",
+          "SUPPORTERS"
+        ]
       },
       "RecruitTypeDetail": {
         "type": "string",
-        "enum": ["REGULAR", "NEW", "REFILL"]
+        "enum": [
+          "REGULAR",
+          "NEW",
+          "REFILL"
+        ]
       },
       "CareerDetails": {
         "type": "string",
-        "enum": ["STUDENT", "EXPECTED_GRADUATE", "JOB_SEEKER", "BETWEEN_JOBS", "EMPLOYEE"]
+        "enum": [
+          "STUDENT",
+          "EXPECTED_GRADUATE",
+          "JOB_SEEKER",
+          "BETWEEN_JOBS",
+          "EMPLOYEE"
+        ]
       },
       "CreateMemberSemesterRequest": {
         "required": [
@@ -1690,7 +2321,12 @@
       },
       "ExperiencePeriod": {
         "type": "string",
-        "enum": ["NONE", "ONE_TO_TWO", "THREE_TO_FOUR", "FIVE_PLUS"]
+        "enum": [
+          "NONE",
+          "ONE_TO_TWO",
+          "THREE_TO_FOUR",
+          "FIVE_PLUS"
+        ]
       },
       "Region": {
         "type": "string",
@@ -1717,11 +2353,21 @@
       },
       "Availability": {
         "type": "string",
-        "enum": ["UNAVAILABLE", "CONSIDER_LATER", "AVAILABLE_BY_TOPIC", "HIGHLY_AVAILABLE"]
+        "enum": [
+          "UNAVAILABLE",
+          "CONSIDER_LATER",
+          "AVAILABLE_BY_TOPIC",
+          "HIGHLY_AVAILABLE"
+        ]
       },
       "CareerLevel": {
         "type": "string",
-        "enum": ["UNDER_1_YEAR", "JUNIOR", "MIDDLE", "SENIOR"]
+        "enum": [
+          "UNDER_1_YEAR",
+          "JUNIOR",
+          "MIDDLE",
+          "SENIOR"
+        ]
       },
       "CreateMemberMakersRequest": {
         "required": [
@@ -1821,11 +2467,64 @@
       },
       "MakersTeam": {
         "type": "string",
-        "enum": ["TEAM_1", "TEAM_2"]
+        "enum": [
+          "TEAM_1",
+          "TEAM_2"
+        ]
+      },
+      "PreviewMailRequest": {
+        "required": [
+          "applyId",
+          "inputVariables",
+          "scenarioId"
+        ],
+        "type": "object",
+        "properties": {
+          "scenarioId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inputVariables": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MailPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "scenarioId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "receiverEmail": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
       },
       "EmailTemplate": {
         "type": "string",
-        "enum": ["AUTH_CODE", "PIN_RESET", "REMIND_APPLY"]
+        "enum": [
+          "AUTH_CODE",
+          "PIN_RESET",
+          "REMIND_APPLY"
+        ]
       },
       "SendManualTemplatedEmailRequest": {
         "type": "object",
@@ -1877,7 +2576,11 @@
         }
       },
       "AdminAccountCreateRequest": {
-        "required": ["email", "password", "role"],
+        "required": [
+          "email",
+          "password",
+          "role"
+        ],
         "type": "object",
         "properties": {
           "email": {
@@ -1925,7 +2628,10 @@
         ]
       },
       "AdminLoginRequest": {
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "email": {
@@ -1938,8 +2644,401 @@
           }
         }
       },
+      "UpdateMemberSupportersRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "pattern": "^[^\\s]+$",
+            "type": "string",
+            "description": "이름",
+            "nullable": true,
+            "example": "김젝트"
+          },
+          "phoneNumber": {
+            "pattern": "^010\\d{8}$",
+            "type": "string",
+            "description": "전화번호",
+            "nullable": true,
+            "example": "01012345678"
+          },
+          "email": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "이메일",
+            "nullable": true,
+            "example": "supporter@ject.kr"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "activityStatus": {
+            "$ref": "#/components/schemas/ActivityStatus"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "활동 시작일",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-01-01"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "활동 종료일",
+            "format": "date",
+            "nullable": true,
+            "example": "2026-12-31"
+          },
+          "activityCertNumber": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "활동 증명서 번호",
+            "nullable": true,
+            "example": "JECT-SUPPORTERS-001"
+          },
+          "memo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "비고",
+            "nullable": true,
+            "example": "차기 활동 참여 희망"
+          }
+        },
+        "description": "운영 서포터즈 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지"
+      },
+      "EditMemberSemesterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "pattern": "^[^\\s]+$",
+            "type": "string",
+            "description": "이름",
+            "nullable": true,
+            "example": "김젝트"
+          },
+          "email": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "이메일",
+            "nullable": true,
+            "example": "member@ject.kr"
+          },
+          "phoneNumber": {
+            "pattern": "^010\\d{8}$",
+            "type": "string",
+            "description": "전화번호",
+            "nullable": true,
+            "example": "01012345678"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "activityStatus": {
+            "$ref": "#/components/schemas/ActivityStatus"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "semesterId": {
+            "type": "integer",
+            "description": "기수 ID. 전달하면 팀 소속도 함께 편집",
+            "format": "int64",
+            "nullable": true,
+            "example": 2
+          },
+          "teamId": {
+            "type": "integer",
+            "description": "팀 ID. 단독 전달 시 현재 기수의 팀으로 편집",
+            "format": "int64",
+            "nullable": true,
+            "example": 5
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "memo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "비고",
+            "nullable": true,
+            "example": "일반 구성원 비고"
+          },
+          "interestedDomains": {
+            "maxItems": 3,
+            "minItems": 1,
+            "type": "array",
+            "description": "관심 도메인 목록(1~3개)",
+            "nullable": true,
+            "example": [
+              "커머스",
+              "핀테크"
+            ],
+            "items": {
+              "type": "string",
+              "description": "관심 도메인 목록(1~3개)",
+              "nullable": true,
+              "example": "[\"커머스\",\"핀테크\"]"
+            }
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "certNumber": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "활동 증명서 번호",
+            "nullable": true,
+            "example": "JECT-SEMESTER-001"
+          },
+          "firstReview": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "description": "1차 활동 리뷰",
+            "nullable": true,
+            "example": "https://example.com/review/1"
+          },
+          "secondReview": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "description": "2차 활동 리뷰",
+            "nullable": true,
+            "example": "https://example.com/review/2"
+          }
+        },
+        "description": "일반 구성원 편집 요청. 전달하지 않은 항목은 기존 값 유지"
+      },
+      "EditEventParticipationRequest": {
+        "required": [
+          "semesterEventId"
+        ],
+        "type": "object",
+        "properties": {
+          "semesterEventId": {
+            "type": "integer",
+            "description": "기수별 행사 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "participationStatus": {
+            "$ref": "#/components/schemas/ParticipationStatus"
+          }
+        },
+        "description": "일반 구성원 행사 참여 상태 수정 요청"
+      },
+      "ParticipationStatus": {
+        "type": "string",
+        "description": "행사 참여 상태. null이면 미지정 처리",
+        "nullable": true,
+        "example": "ATTENDED",
+        "enum": [
+          "ATTENDED",
+          "ABSENT",
+          "ATTENDED",
+          "ABSENT"
+        ]
+      },
+      "UpdateMemberMakersRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 20,
+            "minLength": 0,
+            "pattern": "^[^\\s]+$",
+            "type": "string",
+            "description": "이름",
+            "nullable": true,
+            "example": "김젝트"
+          },
+          "email": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "이메일",
+            "nullable": true,
+            "example": "member@ject.kr"
+          },
+          "phoneNumber": {
+            "pattern": "^010\\d{8}$",
+            "type": "string",
+            "description": "전화번호",
+            "nullable": true,
+            "example": "01012345678"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "makersTeam": {
+            "$ref": "#/components/schemas/MakersTeam"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "activityStatus": {
+            "$ref": "#/components/schemas/ActivityStatus"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "interestedDomains": {
+            "maxItems": 3,
+            "minItems": 1,
+            "type": "array",
+            "description": "관심 도메인 목록(1~3개)",
+            "nullable": true,
+            "example": [
+              "커머스",
+              "핀테크"
+            ],
+            "items": {
+              "type": "string",
+              "description": "관심 도메인 목록(1~3개)",
+              "nullable": true,
+              "example": "[\"커머스\",\"핀테크\"]"
+            }
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "mentoringAvailability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "projectSupplementAvailability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "speakerAvailability": {
+            "$ref": "#/components/schemas/Availability"
+          },
+          "careerLevel": {
+            "$ref": "#/components/schemas/CareerLevel"
+          },
+          "skills": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string",
+            "description": "보유 기술",
+            "nullable": true,
+            "example": "Java, Spring"
+          },
+          "company": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "회사",
+            "nullable": true,
+            "example": "젝트"
+          },
+          "expertTopics": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "공유 가능한 전문 주제",
+            "nullable": true,
+            "example": "Spring 성능 최적화"
+          },
+          "activityCertNumber": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "활동 증명서 번호",
+            "nullable": true,
+            "example": "JECT-MAKERS-001"
+          },
+          "memo": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "비고",
+            "nullable": true,
+            "example": "차기 프로젝트 참여 희망"
+          }
+        },
+        "description": "메이커스팀 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지"
+      },
+      "SelectionResult": {
+        "type": "string",
+        "description": "선정 결과",
+        "example": "PASSED",
+        "enum": [
+          "UNDECIDED",
+          "PASSED",
+          "WAITLISTED",
+          "FAILED"
+        ]
+      },
+      "SelectionResultItem": {
+        "required": [
+          "applyId",
+          "selectionResult"
+        ],
+        "type": "object",
+        "properties": {
+          "applyId": {
+            "type": "integer",
+            "description": "지원서 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          },
+          "waitlistNumber": {
+            "type": "integer",
+            "description": "예비 번호. 예비 합격일 때만 입력",
+            "format": "int32",
+            "nullable": true,
+            "example": 1
+          }
+        },
+        "description": "지원서별 선정 결과"
+      },
+      "SelectionResultUpdateRequest": {
+        "required": [
+          "recruitId",
+          "selectionResults"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "description": "모집 공고 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "selectionResults": {
+            "type": "array",
+            "description": "지원서별 선정 결과",
+            "items": {
+              "$ref": "#/components/schemas/SelectionResultItem"
+            }
+          }
+        },
+        "description": "지원서 선정 결과 일괄 변경 요청"
+      },
       "AdminAccountUpdateRequest": {
-        "required": ["active", "role"],
+        "required": [
+          "active",
+          "role"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -1962,7 +3061,9 @@
         "description": "관리자 계정 정보 수정 요청"
       },
       "AdminAccountRoleUpdateRequest": {
-        "required": ["role"],
+        "required": [
+          "role"
+        ],
         "type": "object",
         "properties": {
           "role": {
@@ -1972,7 +3073,9 @@
         "description": "관리자 계정 권한 수정 요청"
       },
       "AdminAccountActiveUpdateRequest": {
-        "required": ["active"],
+        "required": [
+          "active"
+        ],
         "type": "object",
         "properties": {
           "active": {
@@ -1984,7 +3087,9 @@
         "description": "관리자 계정 활성화 상태 수정 요청"
       },
       "AdminAccountBulkDeactivateRequest": {
-        "required": ["memberId"],
+        "required": [
+          "memberId"
+        ],
         "type": "object",
         "properties": {
           "memberId": {
@@ -2172,6 +3277,117 @@
           }
         }
       },
+      "EventParticipationResponse": {
+        "type": "object",
+        "properties": {
+          "semesterEventId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "participationStatus": {
+            "$ref": "#/components/schemas/ParticipationStatus"
+          }
+        }
+      },
+      "MemberSemesterResponse": {
+        "type": "object",
+        "properties": {
+          "memberActivityId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "interestedDomains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "activityStatus": {
+            "$ref": "#/components/schemas/ActivityStatus"
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "memo": {
+            "type": "string"
+          },
+          "semester": {
+            "$ref": "#/components/schemas/Semester"
+          },
+          "team": {
+            "$ref": "#/components/schemas/Team"
+          },
+          "certNumber": {
+            "type": "string"
+          },
+          "firstReview": {
+            "type": "string"
+          },
+          "secondReview": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventParticipationResponse"
+            }
+          },
+          "surveys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventParticipationResponse"
+            }
+          }
+        }
+      },
+      "Semester": {
+        "type": "object",
+        "properties": {
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterName": {
+            "type": "string"
+          }
+        }
+      },
+      "Team": {
+        "type": "object",
+        "properties": {
+          "teamId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "teamName": {
+            "type": "string"
+          }
+        }
+      },
       "CursorPageResponseMemberMakersListResponse": {
         "type": "object",
         "properties": {
@@ -2303,6 +3519,149 @@
           }
         }
       },
+      "MailTargetSelectionResult": {
+        "type": "string",
+        "description": "선정 결과 필터",
+        "nullable": true,
+        "example": "PASSED",
+        "enum": [
+          "PASSED",
+          "WAITLISTED",
+          "FAILED"
+        ]
+      },
+      "MailTargetResponse": {
+        "type": "object",
+        "properties": {
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          },
+          "waitlistNumber": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PageMailScenarioResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MailScenarioResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
       "MailScenarioVariableResponse": {
         "type": "object",
         "properties": {
@@ -2327,12 +3686,71 @@
           }
         }
       },
-      "ApplyStatus": {
-        "type": "string",
-        "enum": ["JOINED", "TEMP_SAVED", "SUBMITTED", "REJECTED"]
+      "MailRecruitResponse": {
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "description": "모집 공고 ID",
+            "format": "int64",
+            "example": 1
+          },
+          "semesterId": {
+            "type": "integer",
+            "description": "기수 ID",
+            "format": "int64",
+            "example": 2
+          },
+          "semesterName": {
+            "type": "string",
+            "description": "기수명",
+            "example": "10기"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "jobFamilyDescription": {
+            "type": "string",
+            "description": "직군 표시명",
+            "example": "백엔드 개발자(BE)"
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "recruitTypeDescription": {
+            "type": "string",
+            "description": "모집 유형 표시명",
+            "example": "정규 기수 모집"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "recruitTypeDetailDescription": {
+            "type": "string",
+            "description": "모집 세부 유형 표시명",
+            "example": "정규 모집"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "모집 시작일",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "모집 종료일",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "등록일",
+            "format": "date-time"
+          }
+        }
       },
       "RecruitType": {
         "type": "string",
+        "description": "모집 유형",
+        "example": "SEMESTER",
         "enum": [
           "SEMESTER",
           "MAKERS",
@@ -2343,26 +3761,14 @@
           "MANUAL"
         ]
       },
-      "Pageable": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "minimum": 0,
-            "type": "integer",
-            "format": "int32"
-          },
-          "size": {
-            "minimum": 1,
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
+      "ApplyStatus": {
+        "type": "string",
+        "enum": [
+          "JOINED",
+          "TEMP_SAVED",
+          "SUBMITTED",
+          "REJECTED"
+        ]
       },
       "AdminApplyResponse": {
         "type": "object",
@@ -2440,46 +3846,6 @@
           }
         }
       },
-      "PageableObject": {
-        "type": "object",
-        "properties": {
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
-          },
-          "paged": {
-            "type": "boolean"
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
-          }
-        }
-      },
-      "SortObject": {
-        "type": "object",
-        "properties": {
-          "empty": {
-            "type": "boolean"
-          },
-          "sorted": {
-            "type": "boolean"
-          },
-          "unsorted": {
-            "type": "boolean"
-          }
-        }
-      },
       "AdminApplyDetailResponse": {
         "type": "object",
         "properties": {
@@ -2519,12 +3885,27 @@
             "items": {
               "type": "string"
             }
+          },
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "portfolios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyPortfolioDto"
+            }
           }
         }
       },
       "MemberStatus": {
         "type": "string",
-        "enum": ["ACTIVE", "LOCKED"]
+        "enum": [
+          "ACTIVE",
+          "LOCKED"
+        ]
       },
       "AdminAccountResponse": {
         "type": "object",
@@ -2593,14 +3974,44 @@
           }
         }
       },
+      "DeleteMembersRequest": {
+        "required": [
+          "memberActivityIds"
+        ],
+        "type": "object",
+        "properties": {
+          "memberActivityIds": {
+            "uniqueItems": true,
+            "type": "array",
+            "description": "삭제할 구성원 활동 ID 목록",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "items": {
+              "type": "integer",
+              "description": "삭제할 구성원 활동 ID 목록",
+              "format": "int64"
+            }
+          }
+        },
+        "description": "구성원 일괄 삭제 요청"
+      },
       "SubmittedApplyBulkDeleteRequest": {
-        "required": ["applyIds"],
+        "required": [
+          "applyIds"
+        ],
         "type": "object",
         "properties": {
           "applyIds": {
             "type": "array",
             "description": "삭제할 지원서 ID 목록",
-            "example": [1, 2, 3],
+            "example": [
+              1,
+              2,
+              3
+            ],
             "items": {
               "type": "integer",
               "description": "삭제할 지원서 ID 목록",
