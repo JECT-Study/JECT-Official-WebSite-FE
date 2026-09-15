@@ -35,18 +35,16 @@ pnpm gen:errors      # 서버 저장소에서 에러 코드를 읽어 src/errors
 
 `src/`의 생성 결과물은 저장소에 커밋합니다. 빌드는 네트워크 없이 커밋된 파일만 읽습니다.
 
+주기적으로 실행되는 워크플로가 이 과정을 대신해 초안 PR을 엽니다. 변경이 없으면 아무것도
+하지 않으며, lint와 typecheck, build 결과는 PR 코멘트로 남습니다.
+
 스펙 서버는 `https://dev.api.ject.kr`이며 `SPEC_BASE_URL`로 바꿀 수 있습니다. 에러 코드는
 `JECT-Study/JECT-Official-WebSite-Server`의 `dev` 브랜치에서 읽으며 `SERVER_REPO`와
 `SERVER_REF`로 바꿀 수 있습니다. `GITHUB_TOKEN`이 있으면 인증 요청으로 보냅니다.
 
 ## 검증
 
-CI는 세 가지를 확인합니다.
-
-- PR마다 `pnpm gen:api` 결과가 커밋된 `src/`와 일치하는지 검사합니다.
-- 별도 워크플로가 주기적으로 서버 스펙을 받아 `specs/`와 차이가 있는지 확인합니다.
-  차이가 있으면 백엔드 변경이 아직 반영되지 않은 것입니다.
-- 같은 워크플로가 에러 코드도 다시 생성해 `src/errors.ts`와 비교합니다.
+PR마다 `pnpm gen:api` 결과가 커밋된 `src/`와 일치하는지 CI가 검사합니다.
 
 `gen:errors`는 저장소 트리 전체에서 `ErrorCode.java`로 끝나는 파일을 찾으므로 패키지
 경로에는 의존하지 않습니다. 파일명 규칙과 `NAME(HttpStatus, "코드", "메시지")` 형식에
