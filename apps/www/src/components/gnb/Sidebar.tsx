@@ -42,6 +42,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         style={{ opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? "auto" : "none" }}
       />
       <div
+        inert={!isOpen}
         className={cn(
           "fixed top-0 right-0 z-overlay h-dvh w-[240px] bg-surface-standard shadow-overlay transition-transform duration-300",
           easeClass
