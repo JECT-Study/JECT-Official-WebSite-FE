@@ -65,7 +65,7 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: |
           pnpm gen:theme
-          git diff --exit-code -- packages/styles/theme.css
+          git diff --exit-code -- packages/styles/theme.css packages/styles/tw-merge.json
 
   e2e:
     name: E2E

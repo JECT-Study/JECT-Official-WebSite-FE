@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { vars } from "@jects/jds/tokens";
+import { getDefaultConfig, validators } from "tailwind-merge";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -119,3 +120,69 @@ await writeFile(resolve(here, "../theme.css"), output);
 
 const count = output.match(/^\s{2}--/gm).length;
 process.stdout.write(`theme.css 갱신 (${count}개)\n`);
+
+// tailwind-merge는 JDS 토큰 이름을 모르므로 theme.css에 실제로 들어간 이름을 알려준다.
+const twMergeDefaults = getDefaultConfig();
+
+// 긴 키부터 비교해 font-weight가 font로 분류되지 않게 한다.
+const themeKeys = Object.keys(twMergeDefaults.theme).sort((a, b) => b.length - a.length);
+
+// tailwind-merge에 테마 키가 없는 네임스페이스는 이름을 추가할 클래스 그룹을 지정한다.
+const CLASS_GROUP_BY_NAMESPACE = { "z-index": "z" };
+
+for (const group of Object.values(CLASS_GROUP_BY_NAMESPACE)) {
+  if (!(group in twMergeDefaults.classGroups)) {
+    throw new Error(`tailwind-merge에 없는 클래스 그룹입니다: ${group}`);
+  }
+}
+
+function twMergeConfigFrom(css) {
+  const theme = {};
+  const classGroups = {};
+
+  for (const [, name, value] of css.matchAll(/^\s*--([^:\s]+)\s*:\s*(.*?);?\s*$/gm)) {
+    // `--spacing: initial` 같은 초기화 줄과 `--text-title-1--line-height` 같은 보조 변수는 클래스 이름이 아니다.
+    if (value === "initial" || name.includes("--")) continue;
+
+    const themeKey = themeKeys.find((key) => name.startsWith(`${key}-`));
+
+    if (themeKey) {
+      // color처럼 기본 설정이 모든 값을 받는 테마는 이름을 알려주지 않아도 된다.
+      if (!twMergeDefaults.theme[themeKey].includes(validators.isAny)) {
+        (theme[themeKey] ??= []).push(name.slice(themeKey.length + 1));
+      }
+      continue;
+    }
+
+    const namespace = Object.keys(CLASS_GROUP_BY_NAMESPACE).find((key) =>
+      name.startsWith(`${key}-`)
+    );
+
+    if (namespace) {
+      const group = CLASS_GROUP_BY_NAMESPACE[namespace];
+      (classGroups[group] ??= []).push(name.slice(namespace.length + 1));
+      continue;
+    }
+
+    // duration처럼 테마 키가 없어도 숫자 이름은 기본 설정의 isNumber가 인식한다.
+    if (validators.isNumber(name.slice(name.lastIndexOf("-") + 1))) continue;
+
+    throw new Error(
+      `tailwind-merge 테마 키가 없는 네임스페이스입니다. CLASS_GROUP_BY_NAMESPACE에 클래스 그룹을 지정하세요: --${name}`
+    );
+  }
+
+  return {
+    extend: {
+      theme,
+      classGroups: Object.fromEntries(
+        Object.entries(classGroups).map(([group, tokens]) => [group, [{ [group]: tokens }]])
+      ),
+    },
+  };
+}
+
+const twMergeConfig = twMergeConfigFrom(output);
+
+await writeFile(resolve(here, "../tw-merge.json"), `${JSON.stringify(twMergeConfig, null, 2)}\n`);
+process.stdout.write("tw-merge.json 갱신\n");

@@ -5,12 +5,16 @@
   "type": "module",
   "exports": {
     ".": "./index.css",
-    "./theme.css": "./theme.css"
+    "./theme.css": "./theme.css",
+    "./tw-merge.json": "./tw-merge.json"
   },
   "scripts": {
     "gen": "node scripts/gen-theme.mjs"
   },
   "dependencies": {
     "@jects/jds": "^0.5.0"
+  },
+  "devDependencies": {
+    "tailwind-merge": "^3.6.0"
   }
 }
