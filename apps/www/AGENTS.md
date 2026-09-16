@@ -52,6 +52,13 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
   `@/apis/httpClient/client`를 가져옵니다. 헤더 병합과 응답 처리는 같은 디렉토리의
   `request.ts`, `response.ts`를 양쪽이 공유합니다.
   `server.ts`는 `import "server-only"`로 클라이언트 번들 유입을 빌드 단계에서 막습니다.
+- **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
+  `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로
+  여기서 정합니다. 페이지마다 `max-w-[922px]` 등을 다시 작성하지 않습니다.
+- **JDS와 서버 컴포넌트**: `@jects/jds`는 모듈 평가 단계에서 `createContext`를 호출하므로 서버
+  컴포넌트에서 직접 가져오면 빌드가 실패합니다. 서버 컴포넌트는 `@/components/jds`를 거쳐
+  가져오고(이 파일이 클라이언트 경계입니다), 클라이언트 컴포넌트는 `@jects/jds`에서 바로
+  가져옵니다. 새로 쓰는 컴포넌트는 `@/components/jds`에 re-export를 추가합니다.
 - **SVG**: `import Icon from "@/assets/icon.svg"` 형태로 가져오면 React 컴포넌트입니다
   (`next.config.ts`의 turbopack svgr 규칙). 기존 앱의 `?react` 접미사는 사용하지 않으므로
   이전할 때 import 경로에서 제거합니다.
@@ -108,3 +115,13 @@ Playwright로 작성합니다. 테스트 범위, 셀렉터, 모킹, 독립성 �
   무시하므로 QA 배포에는 영향이 없습니다.
 
 서버 런타임이므로 SSR, route handler, 미들웨어를 사용할 수 있습니다.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
