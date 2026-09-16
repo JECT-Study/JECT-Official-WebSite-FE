@@ -1,0 +1,173 @@
+name: API Spec Sync
+
+# 백엔드 스펙 변경을 받아 초안 PR로 올린다.
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 매주 월요일 09:00 KST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  SYNC_BRANCH: chore/api-spec-sync
+  BASE_BRANCH: dev
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Fetch spec and open PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 저장소의 Automatically delete head branches 설정이 켜져 있어야 한다.
+      # 머지된 브랜치가 남아 있으면 이미 머지된 변경이 다음 PR에 다시 올라올 수 있다.
+      - name: Prepare sync branch
+        run: |
+          if git ls-remote --exit-code --heads origin "$SYNC_BRANCH" >/dev/null; then
+            git fetch origin "$SYNC_BRANCH"
+            git switch "$SYNC_BRANCH"
+          else
+            git switch -c "$SYNC_BRANCH"
+          fi
+
+      - name: Generate spec and types
+        run: |
+          pnpm gen:api:fetch
+          pnpm gen:api
+
+      - name: Generate error codes
+        run: pnpm gen:errors
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "스펙과 에러 코드가 모두 최신입니다."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat
+          fi
+
+      # GITHUB_TOKEN으로 생성한 PR은 ci.yml을 트리거하지 않아 검사를 여기서 실행한다.
+      # 이후 직접 올린 커밋부터는 ci.yml이 실행된다.
+      - name: Lint
+        id: lint
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        run: pnpm lint
+
+      - name: Typecheck
+        id: typecheck
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        continue-on-error: true
+        run: pnpm typecheck
+
+      - name: Build
+        id: build
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        continue-on-error: true
+        run: pnpm build
+
+      - name: Write pull request body
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        run: |
+          {
+            echo "## 개요"
+            echo
+            echo "백엔드 스펙과 에러 코드를 받아 생성 결과를 반영합니다."
+            echo "워크플로가 자동으로 생성한 초안 PR입니다."
+            echo
+            echo "## 변경 사항"
+            echo
+            echo "직접 수정한 내용이 있으면 여기에 덧붙여 주세요."
+            echo
+            echo "## 리뷰어에게"
+            echo
+            echo "\`specs\`의 JSON은 재생성에 쓰는 스냅샷이므로 확인하지 않아도 됩니다."
+            echo
+            echo "검사가 모두 통과했으면 Ready for review로 전환한 뒤 머지하면 됩니다."
+            echo "실패한 항목이 있으면 이 브랜치에 수정 커밋을 올린 다음 전환해 주세요."
+          } > "$RUNNER_TEMP/pr-body.md"
+
+      - name: Commit and push
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/api-types
+          git commit -m "chore: 백엔드 API 스펙 동기화 ($(TZ=Asia/Seoul date +%F))"
+          git push origin "$SYNC_BRANCH"
+
+      - name: Open or update draft pull request
+        id: pr
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          opened=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+
+          # 본문은 처음 PR을 열 때만 쓴다. 갱신하면 변경 사항에 직접 적어둔 내용이 지워진다.
+          if [ -n "$opened" ]; then
+            number="$opened"
+          else
+            gh pr create \
+              --draft \
+              --base "$BASE_BRANCH" \
+              --head "$SYNC_BRANCH" \
+              --title "chore: 백엔드 API 스펙 동기화" \
+              --body-file "$RUNNER_TEMP/pr-body.md" \
+              --label "🔩chore" \
+              --label "📦packages"
+            number=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+          fi
+
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - name: Comment check result
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          LINT: ${{ steps.lint.outcome }}
+          TYPECHECK: ${{ steps.typecheck.outcome }}
+          BUILD: ${{ steps.build.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          mark() { if [ "$1" = "success" ]; then echo "통과"; else echo "실패"; fi; }
+
+          {
+            echo "동기화 커밋 기준 검사 결과입니다. ([워크플로 실행]($RUN_URL))"
+            echo
+            echo "- lint $(mark "$LINT")"
+            echo "- typecheck $(mark "$TYPECHECK")"
+            echo "- build $(mark "$BUILD")"
+            echo
+            echo "이후 커밋의 결과는 아래 Checks에서 확인해 주세요."
+          } > "$RUNNER_TEMP/pr-comment.md"
+
+          gh pr comment "$PR_NUMBER" --body-file "$RUNNER_TEMP/pr-comment.md"
