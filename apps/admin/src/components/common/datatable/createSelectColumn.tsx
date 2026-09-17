@@ -7,6 +7,7 @@ import type {
   RowData,
 } from "@tanstack/react-table";
 import {
+  row_getCanSelect,
   row_getIsSelected,
   row_toggleSelected,
   table_getIsAllRowsSelected,
@@ -51,6 +52,7 @@ export function createSelectColumn<
         size="lg"
         aria-label={`${getRowName(row.original)} 선택`}
         checked={row_getIsSelected(row)}
+        disabled={!row_getCanSelect(row)}
         onCheckedChange={(next) => row_toggleSelected(row, next === true)}
       />
     ),
