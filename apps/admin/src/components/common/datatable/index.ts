@@ -9,8 +9,11 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTable";
+import { DataTableView } from "./DataTableView";
 
-export const DataTable = {
+export type { DataTableColumnMeta } from "./types";
+
+export const DataTable = Object.assign(DataTableView, {
   Root: DataTableRoot,
   Header: DataTableHeader,
   HeaderItem: DataTableHeaderItem,
@@ -20,4 +23,4 @@ export const DataTable = {
   TitleCell: DataTableTitleCell,
   Cell: DataTableCell,
   CheckboxCell: DataTableCheckboxCell,
-};
+});
