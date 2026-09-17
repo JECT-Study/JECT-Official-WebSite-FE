@@ -1,3 +1,4 @@
+import { DataTableBase } from "./DataTable";
 import {
   DataTableBody,
   DataTableCell,
@@ -8,8 +9,7 @@ import {
   DataTableRoot,
   DataTableRow,
   DataTableTitleCell,
-} from "./DataTable";
-import { DataTableView } from "./DataTableView";
+} from "./DataTablePrimitives";
 
 export {
   createDataTableColumnHelper,
@@ -18,7 +18,7 @@ export {
 } from "./features";
 export { useDataTable } from "./useDataTable";
 
-export const DataTable = Object.assign(DataTableView, {
+export const DataTable = Object.assign(DataTableBase, {
   Root: DataTableRoot,
   Header: DataTableHeader,
   HeaderItem: DataTableHeaderItem,
