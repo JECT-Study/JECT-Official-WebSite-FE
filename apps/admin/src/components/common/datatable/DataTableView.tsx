@@ -5,7 +5,11 @@ import {
   type ReactTable,
   type RowData,
 } from "@tanstack/react-table";
-import { row_getIsSelected, row_getVisibleCells } from "@tanstack/react-table/static-functions";
+import {
+  row_getCanSelect,
+  row_getIsSelected,
+  row_getVisibleCells,
+} from "@tanstack/react-table/static-functions";
 
 import {
   DataTableBody,
@@ -99,7 +103,11 @@ export function DataTableView<TFeatures extends DataTableFeatures<TData>, TData 
       </DataTableHeader>
       <DataTableBody>
         {table.getRowModel().rows.map((row) => (
-          <DataTableRow key={row.id} selected={row_getIsSelected(row)}>
+          <DataTableRow
+            key={row.id}
+            selected={row_getIsSelected(row)}
+            disabled={!row_getCanSelect(row)}
+          >
             {row_getVisibleCells(row).map((cell) => (
               <BodyCell key={cell.id} cell={cell} />
             ))}

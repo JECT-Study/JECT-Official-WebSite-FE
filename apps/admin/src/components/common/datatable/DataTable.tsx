@@ -6,7 +6,8 @@ import { cn } from "@/utils/cn";
 const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
-  "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-hover:bg-fill-bold/5 group-active:bg-fill-bold/8";
+  "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[disabled=false]:group-hover:bg-fill-bold/5 group-data-[disabled=false]:group-active:bg-fill-bold/8";
+const DISABLED_TEXT = "group-data-[disabled=true]:text-object-subtle";
 // 체크박스 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CHECKBOX_CELL = "w-[44px]";
 
@@ -67,13 +68,23 @@ export function DataTableBody(props: ComponentProps<"tbody">) {
 
 interface DataTableRowProps extends ComponentProps<"tr"> {
   selected?: boolean;
+  disabled?: boolean;
 }
 
-export function DataTableRow({ selected = false, className, ...props }: DataTableRowProps) {
+export function DataTableRow({
+  selected = false,
+  disabled = false,
+  className,
+  ...props
+}: DataTableRowProps) {
   return (
     <tr
       data-selected={selected}
-      className={cn("group data-[selected=true]:bg-accent-alpha-subtlest", className)}
+      data-disabled={disabled}
+      className={cn(
+        "group data-[disabled=true]:bg-fill-subtlest/54 data-[selected=true]:bg-accent-alpha-subtlest data-[selected=true]:data-[disabled=true]:bg-accent-alpha-subtlest/54",
+        className
+      )}
       {...props}
     />
   );
@@ -86,6 +97,7 @@ export function DataTableCell({ className, children, ...props }: ComponentProps<
         CELL,
         BODY_CELL,
         "text-label-md font-label-normal text-object-normal",
+        DISABLED_TEXT,
         className
       )}
       {...props}
@@ -109,10 +121,20 @@ export function DataTableTitleCell({
 }: DataTableTitleCellProps) {
   return (
     <th scope="row" className={cn(CELL, BODY_CELL, className)} {...props}>
-      <span className="block truncate text-label-lg font-label-normal text-object-bolder">
+      <span
+        className={cn(
+          "block truncate text-label-lg font-label-normal text-object-bolder",
+          DISABLED_TEXT
+        )}
+      >
         {children}
       </span>
-      <span className="mt-2 block truncate text-label-md font-label-subtle text-object-alternative">
+      <span
+        className={cn(
+          "mt-2 block truncate text-label-md font-label-subtle text-object-alternative",
+          DISABLED_TEXT
+        )}
+      >
         {description}
       </span>
     </th>
