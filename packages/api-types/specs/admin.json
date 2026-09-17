@@ -1803,6 +1803,41 @@
           }
         }
       }
+    },
+    "/admin/semesters/{semesterId}/events/{semesterEventId}": {
+      "delete": {
+        "tags": [
+          "AdminSemesterEvent"
+        ],
+        "summary": "기수별 행사 삭제",
+        "description": "선택한 기수의 행사를 삭제합니다.",
+        "operationId": "deleteEvent",
+        "parameters": [
+          {
+            "name": "semesterId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "semesterEventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1822,6 +1857,36 @@
           "ER"
         ]
       },
+      "RecruitFaq": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "RecruitFaqRequest": {
+        "required": [
+          "content",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "content": {
+            "maxLength": 100000,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
       "RecruitUpdateRequest": {
         "required": [
           "endDate",
@@ -1840,6 +1905,33 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "summary": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "recruitInformation": {
+            "maxLength": 100000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "notice": {
+            "maxLength": 100000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "faqs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecruitFaqRequest"
+            }
+          },
+          "faqsOrNull": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecruitFaq"
+            }
           }
         }
       },
@@ -2073,6 +2165,27 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "summary": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "recruitInformation": {
+            "maxLength": 100000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "notice": {
+            "maxLength": 100000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "faqs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecruitFaqRequest"
+            }
           }
         }
       },
