@@ -5,7 +5,8 @@ import { cn } from "@/utils/cn";
 // Figma의 셀 사이 간격 16을 셀 좌우 여백 8로 나눠 적용하고, 양 끝 셀만 16을 준다.
 const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
-const BODY_CELL = "border-b border-stroke-alpha-subtle align-top group-last:border-b-0";
+const BODY_CELL =
+  "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-hover:bg-fill-bold/5 group-active:bg-fill-bold/8";
 // 체크박스 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CHECKBOX_CELL = "w-[44px]";
 
@@ -64,9 +65,17 @@ export function DataTableBody(props: ComponentProps<"tbody">) {
   return <tbody {...props} />;
 }
 
-export function DataTableRow({ className, ...props }: ComponentProps<"tr">) {
+interface DataTableRowProps extends ComponentProps<"tr"> {
+  selected?: boolean;
+}
+
+export function DataTableRow({ selected = false, className, ...props }: DataTableRowProps) {
   return (
-    <tr className={cn("group hover:bg-fill-bold/5 active:bg-fill-bold/8", className)} {...props} />
+    <tr
+      data-selected={selected}
+      className={cn("group data-[selected=true]:bg-accent-alpha-subtlest", className)}
+      {...props}
+    />
   );
 }
 
