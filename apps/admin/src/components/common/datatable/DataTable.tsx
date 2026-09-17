@@ -4,7 +4,10 @@ import { cn } from "@/utils/cn";
 
 // Figma의 셀 사이 간격 16을 셀 좌우 여백 8로 나눠 적용하고, 양 끝 셀만 16을 준다.
 const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
+const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL = "border-b border-stroke-alpha-subtle align-top group-last:border-b-0";
+// 체크박스 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
+const CHECKBOX_CELL = "w-[44px]";
 
 export function DataTableRoot({ className, ...props }: ComponentProps<"table">) {
   return (
@@ -32,7 +35,8 @@ export function DataTableHeaderItem({ className, children, ...props }: Component
       scope="col"
       className={cn(
         CELL,
-        "border-b border-stroke-subtle align-middle text-label-sm font-label-normal text-object-alternative",
+        HEADER_CELL,
+        "text-label-sm font-label-normal text-object-alternative",
         className
       )}
       {...props}
@@ -40,6 +44,18 @@ export function DataTableHeaderItem({ className, children, ...props }: Component
       <div className="flex h-20 items-center">
         <div className="min-w-0 flex-1 truncate">{children}</div>
       </div>
+    </th>
+  );
+}
+
+export function DataTableCheckboxHeaderItem({
+  className,
+  children,
+  ...props
+}: ComponentProps<"th">) {
+  return (
+    <th scope="col" className={cn(CELL, HEADER_CELL, CHECKBOX_CELL, className)} {...props}>
+      <div className="flex h-20 items-center">{children}</div>
     </th>
   );
 }
@@ -91,5 +107,13 @@ export function DataTableTitleCell({
         {description}
       </span>
     </th>
+  );
+}
+
+export function DataTableCheckboxCell({ className, children, ...props }: ComponentProps<"td">) {
+  return (
+    <td className={cn(CELL, BODY_CELL, CHECKBOX_CELL, className)} {...props}>
+      <div className="flex h-[22px] items-center">{children}</div>
+    </td>
   );
 }
