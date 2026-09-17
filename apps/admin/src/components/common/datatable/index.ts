@@ -16,6 +16,7 @@ export {
   type DataTableColumnDef,
   type DataTableColumnHelper,
 } from "./features";
+export { useDataTable } from "./useDataTable";
 
 export const DataTable = Object.assign(DataTableView, {
   Root: DataTableRoot,
