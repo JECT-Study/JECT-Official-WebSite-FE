@@ -12,7 +12,7 @@
     "gen": "node scripts/gen-theme.mjs"
   },
   "dependencies": {
-    "@jects/jds": "^0.5.0"
+    "@jects/jds": "^0.6.0"
   },
   "devDependencies": {
     "tailwind-merge": "^3.6.0"

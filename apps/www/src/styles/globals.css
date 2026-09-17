@@ -2,3 +2,8 @@
 
 @import "tailwindcss";
 @import "@ject/styles";
+
+@theme {
+  --container-content: 922px;
+  --container-narrow: 656px;
+}

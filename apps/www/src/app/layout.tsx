@@ -3,7 +3,27 @@ import "@/styles/globals.css";
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 
+import { Footer } from "@/components/footer";
+import { GlobalNavigationBar } from "@/components/gnb";
+import { THEME_STORAGE_KEY } from "@/constants/theme";
+
 import { Providers } from "./providers";
+
+// 하이드레이션 전에 테마를 적용해 첫 페인트 이후 색상이 바뀌는 것을 방지한다.
+const THEME_SCRIPT = `
+try {
+  const stored = localStorage.getItem("${THEME_STORAGE_KEY}");
+  const theme =
+    stored === "light" || stored === "dark"
+      ? stored
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+} catch {
+  document.documentElement.setAttribute("data-theme", "light");
+}
+`;
 
 const SITE_NAME = "젝트";
 const SITE_DESCRIPTION =
@@ -44,9 +64,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <GlobalNavigationBar />
+          <main className="min-h-dvh bg-surface-standard">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
