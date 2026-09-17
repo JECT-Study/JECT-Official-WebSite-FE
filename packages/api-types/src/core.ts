@@ -272,6 +272,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recruits/{recruitId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 모집공고 단건 조회
+         * @description 모집공고의 상세정보와 안내사항 및 FAQ를 조회합니다.
+         */
+        get: operations["getRecruit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/recruits/active": {
         parameters: {
             query?: never;
@@ -579,6 +599,34 @@ export interface components {
         SemesterResponses: {
             semesterResponses?: components["schemas"]["SemesterResponse"][];
         };
+        RecruitFaqResponse: {
+            title?: string;
+            content?: string;
+        };
+        RecruitResponse: {
+            /** Format: int64 */
+            recruitId?: number;
+            /** Format: int64 */
+            semesterId?: number;
+            semesterName?: string;
+            recruitType?: components["schemas"]["RecruitType"];
+            recruitTypeDescription?: string;
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            recruitTypeDetailDescription?: string;
+            jobFamily?: components["schemas"]["JobFamily"];
+            jobFamilyDescription?: string;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqResponse"][];
+        };
+        /** @enum {string} */
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
+        /** @enum {string} */
+        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         ActiveRecruitmentResponse: {
             /** Format: int64 */
             recruitId?: number;
@@ -595,14 +643,11 @@ export interface components {
             startDate?: string;
             /** Format: date-time */
             endDate?: string;
+            summary?: string;
         };
         ActiveRecruitmentResponses: {
             recruitments?: components["schemas"]["ActiveRecruitmentResponse"][];
         };
-        /** @enum {string} */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
-        /** @enum {string} */
-        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         /** @enum {string} */
         Category: "SEMESTER_1" | "SEMESTER_2" | "SEMESTER_3" | "SEMESTER_4";
         Pageable: {
@@ -1158,6 +1203,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["SemesterResponses"];
+                };
+            };
+        };
+    };
+    getRecruit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recruitId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RecruitResponse"];
                 };
             };
         };
