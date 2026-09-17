@@ -31,6 +31,6 @@ export function createSelectColumn<TData extends RowData>(
         onCheckedChange={(next) => row.toggleSelected(next === true)}
       />
     ),
-    meta: { cellType: "checkbox" },
+    meta: { cellType: "control" },
   });
 }

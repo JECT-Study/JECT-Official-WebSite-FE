@@ -2,8 +2,8 @@ import { DataTableBase } from "./DataTable";
 import {
   DataTableBody,
   DataTableCell,
-  DataTableCheckboxCell,
-  DataTableCheckboxHeaderItem,
+  DataTableControlCell,
+  DataTableControlHeaderItem,
   DataTableHeader,
   DataTableHeaderItem,
   DataTableRoot,
@@ -22,10 +22,10 @@ export const DataTable = Object.assign(DataTableBase, {
   Root: DataTableRoot,
   Header: DataTableHeader,
   HeaderItem: DataTableHeaderItem,
-  CheckboxHeaderItem: DataTableCheckboxHeaderItem,
+  ControlHeaderItem: DataTableControlHeaderItem,
   Body: DataTableBody,
   Row: DataTableRow,
   TitleCell: DataTableTitleCell,
   Cell: DataTableCell,
-  CheckboxCell: DataTableCheckboxCell,
+  ControlCell: DataTableControlCell,
 });

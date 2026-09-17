@@ -9,8 +9,8 @@ import {
 import {
   DataTableBody,
   DataTableCell,
-  DataTableCheckboxCell,
-  DataTableCheckboxHeaderItem,
+  DataTableControlCell,
+  DataTableControlHeaderItem,
   DataTableHeader,
   DataTableHeaderItem,
   DataTableRoot,
@@ -24,11 +24,11 @@ interface HeaderCellProps<TData extends RowData> {
 }
 
 function HeaderCell<TData extends RowData>({ header }: HeaderCellProps<TData>) {
-  if (header.column.columnDef.meta?.cellType === "checkbox") {
+  if (header.column.columnDef.meta?.cellType === "control") {
     return (
-      <DataTableCheckboxHeaderItem>
+      <DataTableControlHeaderItem>
         <FlexRender header={header} />
-      </DataTableCheckboxHeaderItem>
+      </DataTableControlHeaderItem>
     );
   }
 
@@ -46,11 +46,11 @@ interface BodyCellProps<TData extends RowData> {
 function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   const meta = cell.column.columnDef.meta;
 
-  if (meta?.cellType === "checkbox") {
+  if (meta?.cellType === "control") {
     return (
-      <DataTableCheckboxCell>
+      <DataTableControlCell>
         <FlexRender cell={cell} />
-      </DataTableCheckboxCell>
+      </DataTableControlCell>
     );
   }
 
@@ -85,7 +85,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
       <DataTableBody>
         {table.getRowModel().rows.map((row) => (
           <DataTableRow key={row.id} selected={row.getIsSelected()} disabled={!row.getCanSelect()}>
-            {/* 열 숨기기 기능을 등록하지 않아 모든 셀이 보이는 셀이다. 등록하면 getVisibleCells로 바꾼다. */}
+            {/* 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다. */}
             {row.getAllCells().map((cell) => (
               <BodyCell key={cell.id} cell={cell} />
             ))}

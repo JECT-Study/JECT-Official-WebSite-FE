@@ -19,7 +19,7 @@ interface DataTableSelectionOptions<TData> {
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
   /** 체크박스의 aria-label에 쓸 이름. "{이름} 선택"으로 읽힌다. */
   getRowName: (row: TData) => string;
-  /** 지정하지 않으면 모든 행을 선택할 수 있다. 선택할 수 없는 행은 disabled로 그린다. */
+  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 disabled로 그린다. */
   canSelect?: (row: TData) => boolean;
 }
 

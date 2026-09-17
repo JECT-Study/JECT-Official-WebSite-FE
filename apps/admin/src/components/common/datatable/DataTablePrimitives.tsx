@@ -8,8 +8,8 @@ const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
   "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[disabled=false]:group-hover:bg-fill-bold/5 group-data-[disabled=false]:group-active:bg-fill-bold/8";
 const DISABLED_TEXT = "group-data-[disabled=true]:text-object-subtle";
-// 체크박스 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
-const CHECKBOX_CELL = "w-[44px]";
+// 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
+const CONTROL_CELL = "w-[44px]";
 
 export function DataTableRoot({ className, ...props }: ComponentProps<"table">) {
   return (
@@ -50,13 +50,13 @@ export function DataTableHeaderItem({ className, children, ...props }: Component
   );
 }
 
-export function DataTableCheckboxHeaderItem({
+export function DataTableControlHeaderItem({
   className,
   children,
   ...props
 }: ComponentProps<"th">) {
   return (
-    <th scope="col" className={cn(CELL, HEADER_CELL, CHECKBOX_CELL, className)} {...props}>
+    <th scope="col" className={cn(CELL, HEADER_CELL, CONTROL_CELL, className)} {...props}>
       <div className="flex h-20 items-center">{children}</div>
     </th>
   );
@@ -141,9 +141,9 @@ export function DataTableTitleCell({
   );
 }
 
-export function DataTableCheckboxCell({ className, children, ...props }: ComponentProps<"td">) {
+export function DataTableControlCell({ className, children, ...props }: ComponentProps<"td">) {
   return (
-    <td className={cn(CELL, BODY_CELL, CHECKBOX_CELL, className)} {...props}>
+    <td className={cn(CELL, BODY_CELL, CONTROL_CELL, className)} {...props}>
       <div className="flex h-[22px] items-center">{children}</div>
     </td>
   );
