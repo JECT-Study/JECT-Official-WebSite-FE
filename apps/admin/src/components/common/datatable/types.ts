@@ -9,3 +9,7 @@ export type DataTableColumnMeta<TData> =
 export type DataTableFeatures<TData extends RowData> = TableFeatures & {
   columnMeta: DataTableColumnMeta<TData>;
 };
+
+export type DataTableSelectionFeatures<TData extends RowData> = DataTableFeatures<TData> & {
+  rowSelectionFeature: NonNullable<TableFeatures["rowSelectionFeature"]>;
+};
