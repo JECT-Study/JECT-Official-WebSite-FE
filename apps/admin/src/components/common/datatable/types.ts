@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 
-export interface DataTableColumnMeta<TData> {
-  /** 지정하면 이 열을 행 제목 칸(TitleCell)으로 그리고, 반환값을 설명 줄에 쓴다. */
-  titleDescription?: (row: TData) => ReactNode;
-  /** 체크박스 열이면 고정 너비의 체크박스 칸으로 그린다. */
-  isCheckbox?: boolean;
-}
+import type { RowData, TableFeatures } from "@tanstack/react-table";
+
+/** 열을 일반 칸이 아닌 칸 종류로 그릴 때 지정한다. 지정하지 않으면 일반 칸이다. */
+export type DataTableColumnMeta<TData> =
+  { cellType: "checkbox" } | { cellType: "title"; getDescription: (row: TData) => ReactNode };
+
+export type DataTableFeatures<TData extends RowData> = TableFeatures & {
+  columnMeta: DataTableColumnMeta<TData>;
+};

@@ -4,7 +4,6 @@ import {
   type Header,
   type ReactTable,
   type RowData,
-  type TableFeatures,
 } from "@tanstack/react-table";
 
 import {
@@ -18,16 +17,12 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTable";
-import type { DataTableColumnMeta } from "./types";
+import type { DataTableColumnMeta, DataTableFeatures } from "./types";
 
 // 제네릭 안에서는 columnMeta 슬롯의 조건부 타입이 풀리지 않는다. 타입 매개변수 제약으로 등록을 보장하고 여기서만 좁힌다.
 function readMeta<TData>(meta: object | undefined) {
   return meta as DataTableColumnMeta<TData> | undefined;
 }
-
-type DataTableFeatures<TData extends RowData> = TableFeatures & {
-  columnMeta: DataTableColumnMeta<TData>;
-};
 
 interface HeaderCellProps<TFeatures extends DataTableFeatures<TData>, TData extends RowData> {
   header: Header<TFeatures, TData>;
@@ -36,9 +31,9 @@ interface HeaderCellProps<TFeatures extends DataTableFeatures<TData>, TData exte
 function HeaderCell<TFeatures extends DataTableFeatures<TData>, TData extends RowData>({
   header,
 }: HeaderCellProps<TFeatures, TData>) {
-  const { isCheckbox } = readMeta<TData>(header.column.columnDef.meta) ?? {};
+  const meta = readMeta<TData>(header.column.columnDef.meta);
 
-  if (isCheckbox) {
+  if (meta?.cellType === "checkbox") {
     return (
       <DataTableCheckboxHeaderItem>
         <FlexRender header={header} />
@@ -60,9 +55,9 @@ interface BodyCellProps<TFeatures extends DataTableFeatures<TData>, TData extend
 function BodyCell<TFeatures extends DataTableFeatures<TData>, TData extends RowData>({
   cell,
 }: BodyCellProps<TFeatures, TData>) {
-  const { titleDescription, isCheckbox } = readMeta<TData>(cell.column.columnDef.meta) ?? {};
+  const meta = readMeta<TData>(cell.column.columnDef.meta);
 
-  if (isCheckbox) {
+  if (meta?.cellType === "checkbox") {
     return (
       <DataTableCheckboxCell>
         <FlexRender cell={cell} />
@@ -70,9 +65,9 @@ function BodyCell<TFeatures extends DataTableFeatures<TData>, TData extends RowD
     );
   }
 
-  if (titleDescription) {
+  if (meta?.cellType === "title") {
     return (
-      <DataTableTitleCell description={titleDescription(cell.row.original)}>
+      <DataTableTitleCell description={meta.getDescription(cell.row.original)}>
         <FlexRender cell={cell} />
       </DataTableTitleCell>
     );
