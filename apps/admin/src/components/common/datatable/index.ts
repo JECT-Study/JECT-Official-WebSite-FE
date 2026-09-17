@@ -11,8 +11,11 @@ import {
 } from "./DataTable";
 import { DataTableView } from "./DataTableView";
 
-export { createSelectColumn } from "./createSelectColumn";
-export type { DataTableColumnMeta } from "./types";
+export {
+  createDataTableColumnHelper,
+  type DataTableColumnDef,
+  type DataTableColumnHelper,
+} from "./features";
 
 export const DataTable = Object.assign(DataTableView, {
   Root: DataTableRoot,

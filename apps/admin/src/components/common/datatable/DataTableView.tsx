@@ -5,11 +5,6 @@ import {
   type ReactTable,
   type RowData,
 } from "@tanstack/react-table";
-import {
-  row_getCanSelect,
-  row_getIsSelected,
-  row_getVisibleCells,
-} from "@tanstack/react-table/static-functions";
 
 import {
   DataTableBody,
@@ -22,23 +17,14 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTable";
-import type { DataTableColumnMeta, DataTableFeatures } from "./types";
+import type { DataTableFeatures } from "./features";
 
-// 제네릭 안에서는 columnMeta 슬롯의 조건부 타입이 풀리지 않는다. 타입 매개변수 제약으로 등록을 보장하고 여기서만 좁힌다.
-function readMeta<TData>(meta: object | undefined) {
-  return meta as DataTableColumnMeta<TData> | undefined;
+interface HeaderCellProps<TData extends RowData> {
+  header: Header<DataTableFeatures<TData>, TData>;
 }
 
-interface HeaderCellProps<TFeatures extends DataTableFeatures<TData>, TData extends RowData> {
-  header: Header<TFeatures, TData>;
-}
-
-function HeaderCell<TFeatures extends DataTableFeatures<TData>, TData extends RowData>({
-  header,
-}: HeaderCellProps<TFeatures, TData>) {
-  const meta = readMeta<TData>(header.column.columnDef.meta);
-
-  if (meta?.cellType === "checkbox") {
+function HeaderCell<TData extends RowData>({ header }: HeaderCellProps<TData>) {
+  if (header.column.columnDef.meta?.cellType === "checkbox") {
     return (
       <DataTableCheckboxHeaderItem>
         <FlexRender header={header} />
@@ -53,14 +39,12 @@ function HeaderCell<TFeatures extends DataTableFeatures<TData>, TData extends Ro
   );
 }
 
-interface BodyCellProps<TFeatures extends DataTableFeatures<TData>, TData extends RowData> {
-  cell: Cell<TFeatures, TData>;
+interface BodyCellProps<TData extends RowData> {
+  cell: Cell<DataTableFeatures<TData>, TData>;
 }
 
-function BodyCell<TFeatures extends DataTableFeatures<TData>, TData extends RowData>({
-  cell,
-}: BodyCellProps<TFeatures, TData>) {
-  const meta = readMeta<TData>(cell.column.columnDef.meta);
+function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
+  const meta = cell.column.columnDef.meta;
 
   if (meta?.cellType === "checkbox") {
     return (
@@ -85,15 +69,15 @@ function BodyCell<TFeatures extends DataTableFeatures<TData>, TData extends RowD
   );
 }
 
-interface DataTableViewProps<TFeatures extends DataTableFeatures<TData>, TData extends RowData> {
-  table: ReactTable<TFeatures, TData>;
+interface DataTableViewProps<TData extends RowData> {
+  table: ReactTable<DataTableFeatures<TData>, TData>;
   className?: string;
 }
 
-export function DataTableView<TFeatures extends DataTableFeatures<TData>, TData extends RowData>({
+export function DataTableView<TData extends RowData>({
   table,
   className,
-}: DataTableViewProps<TFeatures, TData>) {
+}: DataTableViewProps<TData>) {
   return (
     <DataTableRoot className={className}>
       <DataTableHeader>
@@ -103,12 +87,9 @@ export function DataTableView<TFeatures extends DataTableFeatures<TData>, TData 
       </DataTableHeader>
       <DataTableBody>
         {table.getRowModel().rows.map((row) => (
-          <DataTableRow
-            key={row.id}
-            selected={row_getIsSelected(row)}
-            disabled={!row_getCanSelect(row)}
-          >
-            {row_getVisibleCells(row).map((cell) => (
+          <DataTableRow key={row.id} selected={row.getIsSelected()} disabled={!row.getCanSelect()}>
+            {/* 열 숨기기 기능을 등록하지 않아 모든 셀이 보이는 셀이다. 등록하면 getVisibleCells로 바꾼다. */}
+            {row.getAllCells().map((cell) => (
               <BodyCell key={cell.id} cell={cell} />
             ))}
           </DataTableRow>
