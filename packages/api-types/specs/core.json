@@ -671,6 +671,39 @@
         }
       }
     },
+    "/recruits/{recruitId}": {
+      "get": {
+        "tags": [
+          "Recruit"
+        ],
+        "summary": "모집공고 단건 조회",
+        "description": "모집공고의 상세정보와 안내사항 및 FAQ를 조회합니다.",
+        "operationId": "getRecruit",
+        "parameters": [
+          {
+            "name": "recruitId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecruitResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recruits/active": {
       "get": {
         "tags": [
@@ -1326,6 +1359,91 @@
           }
         }
       },
+      "RecruitFaqResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "RecruitResponse": {
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterName": {
+            "type": "string"
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "recruitTypeDescription": {
+            "type": "string"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "recruitTypeDetailDescription": {
+            "type": "string"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "jobFamilyDescription": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recruitInformation": {
+            "type": "string"
+          },
+          "notice": {
+            "type": "string"
+          },
+          "faqs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecruitFaqResponse"
+            }
+          }
+        }
+      },
+      "RecruitType": {
+        "type": "string",
+        "enum": [
+          "SEMESTER",
+          "MAKERS",
+          "SUPPORTERS",
+          "REGULAR",
+          "REGULAR_WAITLIST",
+          "BACKFILL",
+          "MANUAL"
+        ]
+      },
+      "RecruitTypeDetail": {
+        "type": "string",
+        "enum": [
+          "REGULAR",
+          "NEW",
+          "REFILL"
+        ]
+      },
       "ActiveRecruitmentResponse": {
         "type": "object",
         "properties": {
@@ -1365,6 +1483,9 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "summary": {
+            "type": "string"
           }
         }
       },
@@ -1378,26 +1499,6 @@
             }
           }
         }
-      },
-      "RecruitType": {
-        "type": "string",
-        "enum": [
-          "SEMESTER",
-          "MAKERS",
-          "SUPPORTERS",
-          "REGULAR",
-          "REGULAR_WAITLIST",
-          "BACKFILL",
-          "MANUAL"
-        ]
-      },
-      "RecruitTypeDetail": {
-        "type": "string",
-        "enum": [
-          "REGULAR",
-          "NEW",
-          "REFILL"
-        ]
       },
       "Category": {
         "type": "string",

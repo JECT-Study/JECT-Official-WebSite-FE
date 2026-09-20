@@ -704,18 +704,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/semesters/{semesterId}/events/{semesterEventId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 기수별 행사 삭제
+         * @description 선택한 기수의 행사를 삭제합니다.
+         */
+        delete: operations["deleteEvent"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {string} */
         JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "SUPPORTER" | "OPS" | "INFRA" | "BX" | "ER";
+        RecruitFaq: {
+            title?: string;
+            content?: string;
+        };
+        RecruitFaqRequest: {
+            title: string;
+            content: string;
+        };
         RecruitUpdateRequest: {
             jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
             startDate: string;
             /** Format: date-time */
             endDate: string;
+            summary?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqRequest"][];
+            faqsOrNull?: components["schemas"]["RecruitFaq"][];
         };
         CustomVariableRequest: {
             key: string;
@@ -783,6 +816,10 @@ export interface components {
             startDate: string;
             /** Format: date-time */
             endDate: string;
+            summary?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqRequest"][];
         };
         SemesterRegisterRequest: {
             name?: string;
@@ -2747,6 +2784,27 @@ export interface operations {
                 content: {
                     "*/*": number;
                 };
+            };
+        };
+    };
+    deleteEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                semesterId: number;
+                semesterEventId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
