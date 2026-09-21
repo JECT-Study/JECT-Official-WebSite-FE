@@ -69,6 +69,10 @@
       "description": "운영 서포터즈 구성원 API"
     },
     {
+      "name": "AdminMailDispatch",
+      "description": "단체 메일 발송 API (어드민 전용)"
+    },
+    {
       "name": "Semester",
       "description": "기수 API"
     },
@@ -891,6 +895,48 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/MailPreviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/mails/dispatches": {
+      "post": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "단체 메일 발송",
+        "description": "선택한 제출 지원자에게 메일을 발송하고 대상별 결과를 기록합니다.",
+        "operationId": "sendMail",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMailDispatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailDispatchResponse"
                 }
               }
             }
@@ -2628,6 +2674,79 @@
           },
           "body": {
             "type": "string"
+          }
+        }
+      },
+      "SendMailDispatchRequest": {
+        "required": [
+          "applyIds",
+          "recruitId",
+          "scenarioId"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scenarioId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyIds": {
+            "maxItems": 500,
+            "minItems": 0,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "subjectOverride": {
+            "type": "string"
+          },
+          "inputVariables": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MailDispatchJobStatus": {
+        "type": "string",
+        "enum": [
+          "REQUESTED",
+          "PROCESSING",
+          "COMPLETED",
+          "FAILED"
+        ]
+      },
+      "MailDispatchResponse": {
+        "type": "object",
+        "properties": {
+          "dispatchJobId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MailDispatchJobStatus"
+          },
+          "targetCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "processingCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "successCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "failedCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
