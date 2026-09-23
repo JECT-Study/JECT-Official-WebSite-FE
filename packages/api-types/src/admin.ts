@@ -292,6 +292,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/mails/dispatches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 단체 메일 발송
+         * @description 선택한 제출 지원자에게 메일을 발송하고 대상별 결과를 기록합니다.
+         */
+        post: operations["sendMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/emails/send/manual": {
         parameters: {
             query?: never;
@@ -929,6 +949,32 @@ export interface components {
             receiverEmail?: string;
             subject?: string;
             body?: string;
+        };
+        SendMailDispatchRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            /** Format: int64 */
+            scenarioId: number;
+            applyIds: number[];
+            subjectOverride?: string;
+            inputVariables?: {
+                [key: string]: string;
+            };
+        };
+        /** @enum {string} */
+        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED";
+        MailDispatchResponse: {
+            /** Format: int64 */
+            dispatchJobId?: number;
+            status?: components["schemas"]["MailDispatchJobStatus"];
+            /** Format: int32 */
+            targetCount?: number;
+            /** Format: int32 */
+            processingCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+            /** Format: int32 */
+            failedCount?: number;
         };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
@@ -2162,6 +2208,32 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["MailPreviewResponse"];
+                };
+            };
+        };
+    };
+    sendMail: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMailDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
                 };
             };
         };
