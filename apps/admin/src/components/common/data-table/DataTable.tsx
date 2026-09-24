@@ -78,9 +78,13 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
   return (
     <DataTableRoot className={className}>
       <DataTableHeader>
-        {table.getHeaderGroups()[0].headers.map((header) => (
-          <HeaderCell key={header.id} header={header} />
-        ))}
+        {/* DataTable은 디자인 시스템상 헤더 그룹을 제공하지 않으므로 맨 아래 헤더 그룹만 쓴다. */}
+        {table
+          .getHeaderGroups()
+          .at(-1)
+          ?.headers.map((header) => (
+            <HeaderCell key={header.id} header={header} />
+          ))}
       </DataTableHeader>
       <DataTableBody>
         {table.getRowModel().rows.map((row) => (
