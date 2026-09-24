@@ -1,9 +1,36 @@
+import { useRef, useState } from "react";
+
+import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { Outlet } from "react-router-dom";
 
+import { Header } from "./Header";
+import { Sidebar } from "./Sidebar";
+
 export default function RootLayout() {
+  const { isDesktop } = useMediaQueryFlags();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [wasDesktop, setWasDesktop] = useState(isDesktop);
+  const sidebarToggleRef = useRef<HTMLButtonElement>(null);
+
+  // 데스크톱 화면으로 전환되면 Radix Dialog가 언마운트되어 onOpenChange가 호출되지 않는다.
+  if (isDesktop !== wasDesktop) {
+    setWasDesktop(isDesktop);
+    if (isDesktop) setIsSidebarOpen(false);
+  }
+
   return (
-    <div className="min-h-dvh">
-      <Outlet />
+    <div className="flex min-h-dvh bg-surface-standard">
+      <Sidebar
+        isOpen={isSidebarOpen}
+        triggerRef={sidebarToggleRef}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Header toggleRef={sidebarToggleRef} onOpenSidebar={() => setIsSidebarOpen(true)} />
+        <main className="flex flex-1 flex-col">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
