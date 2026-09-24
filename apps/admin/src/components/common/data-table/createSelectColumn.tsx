@@ -19,6 +19,7 @@ export function createSelectColumn<TData extends RowData>(
               ? "indeterminate"
               : false
         }
+        disabled={!table.getRowModel().rows.some((row) => row.getCanSelect())}
         onCheckedChange={(next) => table.toggleAllRowsSelected(next === true)}
       />
     ),

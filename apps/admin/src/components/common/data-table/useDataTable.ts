@@ -42,17 +42,32 @@ export function useDataTable<TData extends RowData>({
   selection,
 }: UseDataTableOptions<TData>) {
   const [features] = useState(createDataTableFeatures<TData>);
-  const isSelectable = selection !== undefined;
+  const hasSelection = selection !== undefined;
 
   const tableColumns = useMemo(
     () =>
-      isSelectable
+      hasSelection
         ? [createSelectColumn(createDataTableColumnHelper<TData>()), ...columns]
         : columns,
-    [columns, isSelectable]
+    [columns, hasSelection]
   );
 
   const canSelect = selection?.canSelect;
+  const rowSelection = selection?.rowSelection;
+  const onRowSelectionChange = selection?.onRowSelectionChange;
+
+  // 표는 선택 id가 실제 행에 있는지 확인하지 않는다. 걸러서 넘기지 않으면 지워진 행이 선택된 채로 남는다.
+  const tableSelection = useMemo(() => {
+    if (!rowSelection) return EMPTY_SELECTION;
+
+    const selectableIds = new Set(data.filter((row) => canSelect?.(row) ?? true).map(getRowId));
+    const staleIds = Object.keys(rowSelection).filter((id) => !selectableIds.has(id));
+    if (staleIds.length === 0) return rowSelection;
+
+    const next = { ...rowSelection };
+    staleIds.forEach((id) => delete next[id]);
+    return next;
+  }, [canSelect, data, getRowId, rowSelection]);
 
   return useTable({
     features,
@@ -60,8 +75,8 @@ export function useDataTable<TData extends RowData>({
     data,
     getRowId,
     enableRowSelection: canSelect ? (row) => canSelect(row.original) : undefined,
-    state: { rowSelection: selection?.rowSelection ?? EMPTY_SELECTION },
-    onRowSelectionChange: selection?.onRowSelectionChange,
+    state: { rowSelection: tableSelection },
+    onRowSelectionChange,
     meta: { getRowName: selection?.getRowName },
   });
 }
