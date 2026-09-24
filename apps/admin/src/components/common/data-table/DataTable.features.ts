@@ -8,7 +8,7 @@ import {
   tableFeatures,
 } from "@tanstack/react-table";
 
-import type { DataTableColumnMeta, DataTableMeta } from "./types";
+import type { DataTableColumnMeta, DataTableMeta } from "./DataTable.types";
 
 // 기능 목록을 고정해야 행 타입만 제네릭인 상태에서도 표, 행, 열 정의의 타입이 추론된다.
 export function createDataTableFeatures<TData extends RowData>() {

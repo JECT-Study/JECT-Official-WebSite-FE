@@ -12,7 +12,7 @@ import {
   createDataTableColumnHelper,
   createDataTableFeatures,
   type DataTableColumnDef,
-} from "./features";
+} from "./DataTable.features";
 
 interface DataTableSelectionOptions<TData> {
   rowSelection: RowSelectionState;

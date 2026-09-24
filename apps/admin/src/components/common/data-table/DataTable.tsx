@@ -6,6 +6,7 @@ import {
   type RowData,
 } from "@tanstack/react-table";
 
+import type { DataTableFeatures } from "./DataTable.features";
 import {
   DataTableBody,
   DataTableCell,
@@ -17,7 +18,6 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTablePrimitives";
-import type { DataTableFeatures } from "./features";
 
 interface HeaderCellProps<TData extends RowData> {
   header: Header<DataTableFeatures<TData>, TData>;

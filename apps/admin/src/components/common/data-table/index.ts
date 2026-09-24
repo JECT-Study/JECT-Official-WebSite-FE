@@ -15,7 +15,7 @@ export {
   createDataTableColumnHelper,
   type DataTableColumnDef,
   type DataTableColumnHelper,
-} from "./features";
+} from "./DataTable.features";
 export { useDataTable } from "./useDataTable";
 
 export const DataTable = Object.assign(DataTableBase, {
