@@ -1,21 +1,28 @@
 import { useRef, useState } from "react";
 
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 
 export default function RootLayout() {
+  const { key: locationKey } = useLocation();
   const { isDesktop } = useMediaQueryFlags();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [wasDesktop, setWasDesktop] = useState(isDesktop);
+  const [lastLocationKey, setLastLocationKey] = useState(locationKey);
   const sidebarToggleRef = useRef<HTMLButtonElement>(null);
 
   // 데스크톱 화면으로 전환되면 Radix Dialog가 언마운트되어 onOpenChange가 호출되지 않는다.
   if (isDesktop !== wasDesktop) {
     setWasDesktop(isDesktop);
     if (isDesktop) setIsSidebarOpen(false);
+  }
+
+  if (locationKey !== lastLocationKey) {
+    setLastLocationKey(locationKey);
+    setIsSidebarOpen(false);
   }
 
   return (

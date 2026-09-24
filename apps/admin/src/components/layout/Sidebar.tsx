@@ -21,7 +21,7 @@ export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
   if (isDesktop) {
     return (
       <aside data-theme="dark" className={cn(PANEL_CLASS, "sticky top-0 h-dvh")}>
-        <SidebarContent onNavigate={onClose} />
+        <SidebarContent />
       </aside>
     );
   }
@@ -44,7 +44,7 @@ export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
           <Dialog.Title asChild>
             <VisuallyHidden.Root>주요 메뉴</VisuallyHidden.Root>
           </Dialog.Title>
-          <SidebarContent onNavigate={onClose} />
+          <SidebarContent />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

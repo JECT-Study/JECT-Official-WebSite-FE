@@ -7,11 +7,7 @@ import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
-interface SidebarContentProps {
-  onNavigate: () => void;
-}
-
-export function SidebarContent({ onNavigate }: SidebarContentProps) {
+export function SidebarContent() {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
 
@@ -46,7 +42,6 @@ export function SidebarContent({ onNavigate }: SidebarContentProps) {
                         key={link.href}
                         link={link}
                         isSelected={link === activeLink}
-                        onNavigate={onNavigate}
                       />
                     ))}
                   </Menu.Group>
