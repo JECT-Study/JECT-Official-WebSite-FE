@@ -3,3 +3,53 @@
 
 @import "tailwindcss";
 @import "@ject/styles";
+
+/* 패널이 들어오는 방향은 사용하는 곳에서 정한다. */
+@property --sheet-offset {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
+/* Radix Dialog는 퇴장 애니메이션이 끝나기를 기다리므로 transition이 아닌 keyframes로 정의한다. */
+@keyframes sheet-in {
+  from {
+    translate: var(--sheet-offset) 0;
+  }
+}
+
+@keyframes sheet-out {
+  to {
+    translate: var(--sheet-offset) 0;
+  }
+}
+
+@keyframes curtain-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes curtain-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@layer components {
+  .sheet-panel[data-state="open"] {
+    animation: sheet-in var(--duration-300) var(--ease-entrance);
+  }
+
+  .sheet-panel[data-state="closed"] {
+    animation: sheet-out var(--duration-300) var(--ease-leave);
+  }
+
+  .sheet-curtain[data-state="open"] {
+    animation: curtain-in var(--duration-300) var(--ease-entrance);
+  }
+
+  .sheet-curtain[data-state="closed"] {
+    animation: curtain-out var(--duration-300) var(--ease-leave);
+  }
+}
