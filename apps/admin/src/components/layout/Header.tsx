@@ -6,18 +6,18 @@ import { useLocation } from "react-router-dom";
 import { findActiveLink } from "@/constants/navigation";
 
 interface HeaderProps {
-  toggleRef: RefObject<HTMLButtonElement | null>;
+  triggerRef: RefObject<HTMLButtonElement | null>;
   onOpenSidebar: () => void;
 }
 
-export function Header({ toggleRef, onOpenSidebar }: HeaderProps) {
+export function Header({ triggerRef, onOpenSidebar }: HeaderProps) {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
 
   return (
     <header className="flex items-center gap-24 px-margin-lg pt-20 pb-12 desktop:px-margin-xl desktop:pt-28 desktop:pb-20">
       <IconButton
-        ref={toggleRef}
+        ref={triggerRef}
         hierarchy="primary"
         icon="panel-left"
         size="lg"
