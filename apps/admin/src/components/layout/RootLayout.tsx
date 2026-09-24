@@ -38,7 +38,7 @@ export default function RootLayout() {
         <Header
           triggerRef={sidebarTriggerRef}
           onOpenSidebar={() => setIsSidebarOpen(true)}
-          onActionSlotChange={setHeaderActionSlot}
+          actionSlotRef={setHeaderActionSlot}
         />
         <main className="flex flex-1 flex-col">
           <HeaderActionSlotContext value={headerActionSlot}>
