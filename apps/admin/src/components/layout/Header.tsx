@@ -1,4 +1,4 @@
-import type { Ref, RefObject } from "react";
+import type { Ref } from "react";
 
 import { IconButton } from "@jects/jds";
 import { useLocation } from "react-router-dom";
@@ -6,19 +6,17 @@ import { useLocation } from "react-router-dom";
 import { findActiveLink } from "@/constants/navigation";
 
 interface HeaderProps {
-  triggerRef: RefObject<HTMLButtonElement | null>;
   actionSlotRef: Ref<HTMLDivElement>;
   onOpenSidebar: () => void;
 }
 
-export function Header({ triggerRef, actionSlotRef, onOpenSidebar }: HeaderProps) {
+export function Header({ actionSlotRef, onOpenSidebar }: HeaderProps) {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
 
   return (
     <header className="flex items-center gap-24 px-margin-lg pt-20 pb-12 desktop:gap-28 desktop:px-margin-xl desktop:pt-28 desktop:pb-20">
       <IconButton
-        ref={triggerRef}
         hierarchy="primary"
         icon="panel-left"
         size="lg"
