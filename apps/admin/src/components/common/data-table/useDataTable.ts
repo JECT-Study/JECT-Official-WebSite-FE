@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   type OnChangeFn,
@@ -68,6 +68,11 @@ export function useDataTable<TData extends RowData>({
     staleIds.forEach((id) => delete next[id]);
     return next;
   }, [canSelect, data, getRowId, rowSelection]);
+
+  // 일괄 작업은 호출부가 들고 있는 선택 상태를 그대로 쓰므로 걸러낸 결과를 되돌려준다.
+  useEffect(() => {
+    if (tableSelection !== rowSelection) onRowSelectionChange?.(tableSelection);
+  }, [onRowSelectionChange, rowSelection, tableSelection]);
 
   return useTable({
     features,
