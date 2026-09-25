@@ -1,7 +1,9 @@
-import { type ReactNode, useRef } from "react";
+import type { ReactNode } from "react";
 
 import { LocalNavigation } from "@jects/jds";
 import { Dialog } from "radix-ui";
+
+import { useDialogOpenerFocus } from "@/hooks/useDialogOpenerFocus";
 
 interface DrawerProps {
   open: boolean;
@@ -11,7 +13,7 @@ interface DrawerProps {
 }
 
 export function Drawer({ open, title, onOpenChange, children }: DrawerProps) {
-  const openerRef = useRef<HTMLElement | null>(null);
+  const openerFocus = useDialogOpenerFocus();
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -20,13 +22,7 @@ export function Drawer({ open, title, onOpenChange, children }: DrawerProps) {
         <Dialog.Content
           aria-label={title}
           onInteractOutside={(event) => event.preventDefault()}
-          onOpenAutoFocus={() => {
-            openerRef.current = document.activeElement as HTMLElement | null;
-          }}
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            openerRef.current?.focus();
-          }}
+          {...openerFocus}
           className="sheet-panel fixed inset-y-0 right-0 z-raised flex w-full max-w-[700px] flex-col bg-surface-standard [--sheet-offset:100%]"
         >
           <div className="border-b border-b-stroke-alpha-subtler px-margin-lg pt-24 pb-8">
