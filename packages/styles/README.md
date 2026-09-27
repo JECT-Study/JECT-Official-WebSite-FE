@@ -59,3 +59,12 @@ pnpm gen:theme
 
 `fonts.css`가 `Pretendard Variable`과 `D2Coding`을 선언하고 파일은 `fonts/`에 둡니다. JDS
 리셋이 이 이름들을 `body`에 지정합니다.
+
+## 시트 애니메이션
+
+`sheet.css`는 Radix Dialog로 여닫는 패널과 배경에 등장, 퇴장 애니메이션을 적용합니다.
+Radix가 붙이는 `data-state` 속성을 기준으로 동작합니다.
+
+- `sheet-panel`: 패널에 지정합니다. 들어오는 방향은 `--sheet-offset`으로 정합니다. 왼쪽에서
+  들어오면 `[--sheet-offset:-100%]`, 오른쪽에서 들어오면 `[--sheet-offset:100%]`입니다.
+- `sheet-curtain`: 배경에 지정합니다.
