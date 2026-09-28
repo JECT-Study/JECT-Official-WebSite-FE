@@ -19,7 +19,7 @@ import type { DataTableReorderOptions } from "./DataTable.types";
 interface DataTableSelectionOptions<TData> {
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
-  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 disabled로 그린다. */
+  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 선택 불가 스타일로 그린다. */
   canSelect?: (row: TData) => boolean;
 }
 

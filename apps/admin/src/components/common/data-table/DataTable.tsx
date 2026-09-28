@@ -82,7 +82,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
   const rows = table.getRowModel().rows.map((row, index) => {
     const rowProps = {
       selected: row.getIsSelected(),
-      disabled: !row.getCanSelect(),
+      selectionDisabled: !row.getCanSelect(),
       // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
       children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
     };
