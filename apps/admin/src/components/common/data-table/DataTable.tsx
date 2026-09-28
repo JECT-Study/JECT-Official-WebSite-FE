@@ -1,6 +1,3 @@
-import { arrayMove } from "@dnd-kit/helpers";
-import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
-import { isSortable } from "@dnd-kit/react/sortable";
 import {
   type Cell,
   FlexRender,
@@ -21,6 +18,7 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTablePrimitives";
+import { DataTableReorderProvider } from "./DataTableReorderProvider";
 import { DraggableRow } from "./DraggableRow";
 
 interface HeaderCellProps<TData extends RowData> {
@@ -81,29 +79,6 @@ interface DataTableProps<TData extends RowData> {
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
   const reorder = table.options.meta?.reorder;
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    if (event.canceled) return;
-
-    const { source } = event.operation;
-    if (!isSortable(source)) return;
-
-    // 낙관적 정렬로 드롭 시점의 target은 source 자신이므로 드래그 전 순서에서 두 행의 id를 구한다.
-    const rowIds = table.getRowModel().rows.map((row) => row.id);
-    const activeId = rowIds[source.initialIndex];
-    const overId = rowIds[source.index];
-    const { getRowId } = table.options;
-    if (!getRowId || activeId === undefined || overId === undefined || activeId === overId) return;
-
-    reorder?.onReorder((data) => {
-      const dataIds = data.map((row, index) => getRowId(row, index));
-      const oldIndex = dataIds.indexOf(activeId);
-      const newIndex = dataIds.indexOf(overId);
-      if (oldIndex === -1 || newIndex === -1) return data;
-
-      return arrayMove(data, oldIndex, newIndex);
-    });
-  };
-
   const rows = table.getRowModel().rows.map((row, index) => {
     const rowProps = {
       selected: row.getIsSelected(),
@@ -131,7 +106,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
           ))}
       </DataTableHeader>
       <DataTableBody>
-        {reorder ? <DragDropProvider onDragEnd={handleDragEnd}>{rows}</DragDropProvider> : rows}
+        {reorder ? <DataTableReorderProvider table={table}>{rows}</DataTableReorderProvider> : rows}
       </DataTableBody>
     </DataTableRoot>
   );
