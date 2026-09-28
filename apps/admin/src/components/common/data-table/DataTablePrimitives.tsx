@@ -66,7 +66,7 @@ export function DataTableBody(props: ComponentProps<"tbody">) {
   return <tbody {...props} />;
 }
 
-interface DataTableRowProps extends ComponentProps<"tr"> {
+export interface DataTableRowProps extends ComponentProps<"tr"> {
   selected?: boolean;
   disabled?: boolean;
 }

@@ -1,3 +1,6 @@
+import { arrayMove } from "@dnd-kit/helpers";
+import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
+import { isSortable } from "@dnd-kit/react/sortable";
 import {
   type Cell,
   FlexRender,
@@ -18,6 +21,7 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTablePrimitives";
+import { DraggableRow } from "./DraggableRow";
 
 interface HeaderCellProps<TData extends RowData> {
   header: Header<DataTableFeatures<TData>, TData>;
@@ -75,6 +79,46 @@ interface DataTableProps<TData extends RowData> {
 }
 
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
+  const reorder = table.options.meta?.reorder;
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (event.canceled) return;
+
+    const { source } = event.operation;
+    if (!isSortable(source)) return;
+
+    // 낙관적 정렬로 드롭 시점의 target은 source 자신이므로 드래그 전 순서에서 두 행의 id를 구한다.
+    const rowIds = table.getRowModel().rows.map((row) => row.id);
+    const activeId = rowIds[source.initialIndex];
+    const overId = rowIds[source.index];
+    const { getRowId } = table.options;
+    if (!getRowId || activeId === undefined || overId === undefined || activeId === overId) return;
+
+    reorder?.onReorder((data) => {
+      const dataIds = data.map((row, index) => getRowId(row, index));
+      const oldIndex = dataIds.indexOf(activeId);
+      const newIndex = dataIds.indexOf(overId);
+      if (oldIndex === -1 || newIndex === -1) return data;
+
+      return arrayMove(data, oldIndex, newIndex);
+    });
+  };
+
+  const rows = table.getRowModel().rows.map((row, index) => {
+    const rowProps = {
+      selected: row.getIsSelected(),
+      disabled: !row.getCanSelect(),
+      // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
+      children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
+    };
+
+    return reorder ? (
+      <DraggableRow key={row.id} id={row.id} index={index} {...rowProps} />
+    ) : (
+      <DataTableRow key={row.id} {...rowProps} />
+    );
+  });
+
   return (
     <DataTableRoot className={className}>
       <DataTableHeader>
@@ -87,14 +131,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
           ))}
       </DataTableHeader>
       <DataTableBody>
-        {table.getRowModel().rows.map((row) => (
-          <DataTableRow key={row.id} selected={row.getIsSelected()} disabled={!row.getCanSelect()}>
-            {/* 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다. */}
-            {row.getAllCells().map((cell) => (
-              <BodyCell key={cell.id} cell={cell} />
-            ))}
-          </DataTableRow>
-        ))}
+        {reorder ? <DragDropProvider onDragEnd={handleDragEnd}>{rows}</DragDropProvider> : rows}
       </DataTableBody>
     </DataTableRoot>
   );
