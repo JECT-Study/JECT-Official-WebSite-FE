@@ -1,11 +1,20 @@
 import type { ReactNode } from "react";
 
+import { RestrictToVerticalAxis } from "@dnd-kit/abstract/modifiers";
+import { RestrictToElement } from "@dnd-kit/dom/modifiers";
 import { arrayMove } from "@dnd-kit/helpers";
 import { DragDropProvider, type DragEndEvent } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
 import type { ReactTable, RowData } from "@tanstack/react-table";
 
 import type { DataTableFeatures } from "./DataTable.features";
+
+const MODIFIERS = [
+  RestrictToVerticalAxis,
+  RestrictToElement.configure({
+    element: (operation) => operation.source?.element?.closest("tbody") ?? null,
+  }),
+];
 
 interface DataTableReorderProviderProps<TData extends RowData> {
   table: ReactTable<DataTableFeatures<TData>, TData>;
@@ -39,5 +48,9 @@ export function DataTableReorderProvider<TData extends RowData>({
     });
   };
 
-  return <DragDropProvider onDragEnd={handleDragEnd}>{children}</DragDropProvider>;
+  return (
+    <DragDropProvider modifiers={MODIFIERS} onDragEnd={handleDragEnd}>
+      {children}
+    </DragDropProvider>
+  );
 }
