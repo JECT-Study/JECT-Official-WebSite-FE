@@ -9,11 +9,11 @@ interface DraggableRowProps extends DataTableRowProps {
 }
 
 export function DraggableRow({ id, index, ...props }: DraggableRowProps) {
-  const { ref, handleRef } = useSortable({ id, index });
+  const { ref, handleRef, isDragging } = useSortable({ id, index });
 
   return (
     <DragHandleContext value={{ handleRef }}>
-      <DataTableRow ref={ref} {...props} />
+      <DataTableRow ref={ref} dragging={isDragging} {...props} />
     </DragHandleContext>
   );
 }

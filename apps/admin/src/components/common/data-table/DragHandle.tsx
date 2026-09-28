@@ -23,6 +23,7 @@ export function DragHandle({ label }: DragHandleProps) {
       icon="grip-vertical"
       hierarchy="accent"
       accentColor={HANDLE_COLOR}
+      className="cursor-grab"
       aria-label={label}
     />
   );

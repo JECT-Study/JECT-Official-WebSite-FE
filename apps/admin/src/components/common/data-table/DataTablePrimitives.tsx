@@ -7,6 +7,10 @@ const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
   "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[selection-disabled=false]:group-hover:bg-fill-bold/5 group-data-[selection-disabled=false]:group-active:bg-fill-bold/8";
+// border-top을 쓰면 드래그 중 행 높이가 1px 늘어나므로 안쪽 그림자로 그린다.
+// dnd-kit이 원래 자리에 두는 placeholder는 행 전체가 숨겨져 빈 자리가 이웃 행에 붙어 보이므로 칸의 선만 드러낸다.
+const DRAGGING_CELL =
+  "group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[inset_0_1px_0_var(--color-stroke-subtle)] in-[[data-dnd-placeholder]]:visible in-[[data-dnd-placeholder]]:bg-transparent! in-[[data-dnd-placeholder]]:shadow-none! in-[[data-dnd-placeholder]]:*:invisible";
 const SELECTION_DISABLED_TEXT = "group-data-[selection-disabled=true]:text-object-subtle";
 // 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CONTROL_CELL = "w-[44px]";
@@ -69,11 +73,13 @@ export function DataTableBody(props: ComponentProps<"tbody">) {
 export interface DataTableRowProps extends ComponentProps<"tr"> {
   selected?: boolean;
   selectionDisabled?: boolean;
+  dragging?: boolean;
 }
 
 export function DataTableRow({
   selected = false,
   selectionDisabled = false,
+  dragging = false,
   className,
   ...props
 }: DataTableRowProps) {
@@ -81,8 +87,11 @@ export function DataTableRow({
     <tr
       data-selected={selected}
       data-selection-disabled={selectionDisabled}
+      data-dragging={dragging}
       className={cn(
         "group data-[selected=true]:bg-accent-alpha-subtlest data-[selection-disabled=true]:bg-fill-subtlest/54 data-[selected=true]:data-[selection-disabled=true]:bg-accent-alpha-subtlest/54",
+        // 드래그 중인 행이 다른 행과 겹쳐도 비치지 않도록 반투명한 선택 배경보다 불투명 배경을 우선한다.
+        "data-[dragging=true]:bg-surface-standard!",
         className
       )}
       {...props}
@@ -96,6 +105,7 @@ export function DataTableCell({ className, children, ...props }: ComponentProps<
       className={cn(
         CELL,
         BODY_CELL,
+        DRAGGING_CELL,
         "text-label-md font-label-normal text-object-normal",
         SELECTION_DISABLED_TEXT,
         className
@@ -120,7 +130,7 @@ export function DataTableTitleCell({
   ...props
 }: DataTableTitleCellProps) {
   return (
-    <th scope="row" className={cn(CELL, BODY_CELL, className)} {...props}>
+    <th scope="row" className={cn(CELL, BODY_CELL, DRAGGING_CELL, className)} {...props}>
       <span
         className={cn(
           "block truncate text-label-lg font-label-normal text-object-bolder",
@@ -143,7 +153,7 @@ export function DataTableTitleCell({
 
 export function DataTableControlCell({ className, children, ...props }: ComponentProps<"td">) {
   return (
-    <td className={cn(CELL, BODY_CELL, CONTROL_CELL, className)} {...props}>
+    <td className={cn(CELL, BODY_CELL, DRAGGING_CELL, CONTROL_CELL, className)} {...props}>
       <div className="flex h-[22px] items-center">{children}</div>
     </td>
   );
