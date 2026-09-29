@@ -6,11 +6,12 @@ import { Dialog } from "radix-ui";
 interface DrawerProps {
   open: boolean;
   title: string;
+  headerAction?: ReactNode;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
 }
 
-export function Drawer({ open, title, onOpenChange, children }: DrawerProps) {
+export function Drawer({ open, title, headerAction, onOpenChange, children }: DrawerProps) {
   const openerRef = useRef<HTMLElement | null>(null);
 
   return (
@@ -35,6 +36,7 @@ export function Drawer({ open, title, onOpenChange, children }: DrawerProps) {
               stretched
               title={title}
               titleAs="h2"
+              suffixAction={headerAction}
               onBackClick={() => onOpenChange(false)}
             />
           </div>
