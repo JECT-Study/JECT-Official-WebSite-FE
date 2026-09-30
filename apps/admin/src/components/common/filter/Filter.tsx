@@ -1,6 +1,6 @@
+import type { FilterField, FilterOptionValue, FilterValues } from "./Filter.types";
 import FilterAddButton from "./FilterAddButton";
 import FilterChip from "./FilterChip";
-import type { FilterField, FilterOptionValue, FilterValues } from "./types";
 
 interface FilterProps {
   fields: FilterField[];

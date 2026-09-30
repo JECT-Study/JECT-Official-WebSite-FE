@@ -4,7 +4,7 @@ import { BlockButton, Select } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
 import { Popover } from "radix-ui";
 
-import type { FilterField } from "./types";
+import type { FilterField } from "./Filter.types";
 
 interface FilterAddButtonProps {
   fields: FilterField[];

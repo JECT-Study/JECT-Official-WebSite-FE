@@ -2,7 +2,7 @@ import { Chip, MultiSelect } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
 import { Popover } from "radix-ui";
 
-import type { FilterField, FilterOptionValue } from "./types";
+import type { FilterField, FilterOptionValue } from "./Filter.types";
 
 interface FilterChipProps {
   field: FilterField;
