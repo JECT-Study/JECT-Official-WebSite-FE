@@ -22,7 +22,13 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <BlockButton hierarchy="secondary" size="xs" variant="hollow" prefixIcon="plus">
+        <BlockButton
+          hierarchy="secondary"
+          size="xs"
+          variant="hollow"
+          prefixIcon="plus"
+          disabled={fields.length === 0}
+        >
           필터 추가
         </BlockButton>
       </Popover.Trigger>
