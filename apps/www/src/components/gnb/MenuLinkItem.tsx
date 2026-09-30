@@ -1,7 +1,6 @@
 "use client";
 
-import type { MouseEvent } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { DropdownMenu } from "@jects/jds";
 
@@ -12,8 +11,6 @@ interface MenuLinkItemProps {
 }
 
 export function MenuLinkItem({ link }: MenuLinkItemProps) {
-  const router = useRouter();
-
   if (link.isExternal) {
     return (
       <DropdownMenu.Anchor
@@ -28,16 +25,9 @@ export function MenuLinkItem({ link }: MenuLinkItemProps) {
     );
   }
 
-  // NOTE: DropdownMenu.Anchor에 asChild가 없어 이동을 라우터가 맡는다.
-  // TODO: JDS가 asChild를 지원하면 next/link로 교체한다.
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    router.push(link.href);
-  };
-
   return (
-    <DropdownMenu.Anchor href={link.href} onClick={handleClick}>
-      {link.label}
+    <DropdownMenu.Anchor asChild>
+      <Link href={link.href}>{link.label}</Link>
     </DropdownMenu.Anchor>
   );
 }

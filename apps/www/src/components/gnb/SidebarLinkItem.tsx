@@ -1,7 +1,6 @@
 "use client";
 
-import type { MouseEvent } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Menu } from "@jects/jds";
 
@@ -13,8 +12,6 @@ interface SidebarLinkItemProps {
 }
 
 export function SidebarLinkItem({ link, onNavigate }: SidebarLinkItemProps) {
-  const router = useRouter();
-
   if (link.isExternal) {
     return (
       <Menu.Anchor
@@ -29,17 +26,9 @@ export function SidebarLinkItem({ link, onNavigate }: SidebarLinkItemProps) {
     );
   }
 
-  // NOTE: Menu.Anchor에 asChild가 없어 이동을 라우터가 맡는다.
-  // TODO: JDS가 asChild를 지원하면 next/link로 교체한다.
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    onNavigate();
-    router.push(link.href);
-  };
-
   return (
-    <Menu.Anchor href={link.href} onClick={handleClick}>
-      {link.label}
+    <Menu.Anchor asChild onClick={onNavigate}>
+      <Link href={link.href}>{link.label}</Link>
     </Menu.Anchor>
   );
 }
