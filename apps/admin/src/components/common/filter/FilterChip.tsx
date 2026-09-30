@@ -23,15 +23,20 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
 
   return (
     <Popover.Root>
-      <Popover.Trigger asChild>
-        <Chip
-          label={field.label}
-          onRemove={onRemove}
-          valueLabel={field.options
-            .filter((option) => selected.includes(option.value))
-            .map((option) => option.label)}
-        />
-      </Popover.Trigger>
+      {/* Chip은 ref를 안쪽 라벨 버튼에 연결하므로 팝오버 위치 기준은 칩 전체로 따로 지정한다. */}
+      <Popover.Anchor asChild>
+        <div className="inline-flex">
+          <Popover.Trigger asChild>
+            <Chip
+              label={field.label}
+              onRemove={onRemove}
+              valueLabel={field.options
+                .filter((option) => selected.includes(option.value))
+                .map((option) => option.label)}
+            />
+          </Popover.Trigger>
+        </div>
+      </Popover.Anchor>
       <Popover.Portal>
         <Popover.Content align="start" sideOffset={4}>
           <MultiSelect
