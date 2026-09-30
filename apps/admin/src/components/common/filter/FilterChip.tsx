@@ -38,7 +38,7 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
         </div>
       </Popover.Anchor>
       <Popover.Portal>
-        <Popover.Content align="start" sideOffset={4}>
+        <Popover.Content align="start" sideOffset={6}>
           <MultiSelect
             variant="control"
             options={field.options.map((option) => ({
