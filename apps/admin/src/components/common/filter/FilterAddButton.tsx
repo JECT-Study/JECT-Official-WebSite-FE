@@ -35,6 +35,7 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
       <Popover.Portal>
         <Popover.Content align="start" sideOffset={6}>
           <Select
+            width="200px"
             options={fields.map((field) => ({ value: field.id, label: field.label }))}
             value={null}
             onChange={handleAdd}
