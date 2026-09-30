@@ -29,7 +29,7 @@ export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="sheet-curtain fixed inset-0 z-overlay bg-curtain-static-dim" />
+        <Dialog.Overlay className="sheet-curtain fixed inset-0 z-raised bg-curtain-static-dim" />
         <Dialog.Content
           data-theme="dark"
           onCloseAutoFocus={(event) => {
@@ -38,7 +38,7 @@ export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
           }}
           className={cn(
             PANEL_CLASS,
-            "sheet-panel fixed inset-y-0 left-0 z-overlay [--sheet-offset:-100%]"
+            "sheet-panel fixed inset-y-0 left-0 z-raised [--sheet-offset:-100%]"
           )}
         >
           <Dialog.Title asChild>
