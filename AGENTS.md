@@ -65,6 +65,9 @@ pnpm e2e --filter=@ject/www
   됩니다.
 - **경로 alias**: `@/`는 각 앱의 `src/`를 가리킵니다. 상대경로 깊이가 2 이상이면 alias를
   사용합니다.
+- **컴포넌트 이름**: 컴포넌트 단위 디렉토리는 kebab-case로 작성합니다. React 컴포넌트를
+  정의하는 파일은 PascalCase로 작성하고, 특정 컴포넌트에 속한 부수 파일은
+  `<컴포넌트>.<역할>.ts` 또는 `<컴포넌트>.<역할>.tsx`로 작성합니다.
 - **라우트 경로**: 각 앱 `src/constants/routes.ts`의 `ROUTES`와 `routeTo`가 단일 출처입니다.
   경로 문자열을 컴포넌트에 하드코딩하지 않습니다.
 - **폼과 검증**: React Hook Form과 Zod를 사용합니다. Zod 스키마를 단일 출처로 두고
