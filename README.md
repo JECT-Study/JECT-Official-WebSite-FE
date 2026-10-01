@@ -98,6 +98,7 @@ pnpm e2e --filter=@ject/www
 - [apps/www/docs/e2e-testing.md](./apps/www/docs/e2e-testing.md): E2E 테스트
 - [packages/api-types/README.md](./packages/api-types/README.md): API 타입과 에러 코드 생성
 - [packages/styles/README.md](./packages/styles/README.md): 디자인 토큰과 Tailwind 매핑
+- [docs/radix-usage.md](./docs/radix-usage.md): Radix 직접 사용과 JDS 교체
 
 ## 배포
 
