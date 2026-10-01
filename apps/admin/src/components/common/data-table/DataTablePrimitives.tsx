@@ -7,10 +7,10 @@ const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
   "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[selection-disabled=false]:group-hover:bg-fill-bold/5 group-data-[selection-disabled=false]:group-active:bg-fill-bold/8";
-// border-top을 쓰면 드래그 중 행 높이가 1px 늘어나므로 안쪽 그림자로 그린다.
+// 드래그 중인 행의 위쪽 선은 행 높이가 바뀌지 않도록 바깥 그림자로 그린다.
 // dnd-kit이 원래 자리에 두는 placeholder는 행 전체가 숨겨져 빈 자리가 이웃 행에 붙어 보이므로 칸의 선만 드러낸다.
 const DRAGGING_CELL =
-  "group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[inset_0_1px_0_var(--color-stroke-subtle)] in-[[data-dnd-placeholder]]:visible in-[[data-dnd-placeholder]]:bg-transparent! in-[[data-dnd-placeholder]]:shadow-none! in-[[data-dnd-placeholder]]:*:invisible";
+  "group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[0_-1px_0_var(--color-stroke-subtle)] in-[[data-dnd-placeholder]]:visible in-[[data-dnd-placeholder]]:bg-transparent! in-[[data-dnd-placeholder]]:shadow-none! in-[[data-dnd-placeholder]]:*:invisible";
 const SELECTION_DISABLED_TEXT = "group-data-[selection-disabled=true]:text-object-subtle";
 // 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CONTROL_CELL = "w-[44px]";
