@@ -100,9 +100,8 @@ pnpm e2e --filter=@ject/www
 
 - **뮤테이션**: TanStack Query mutation과 `httpClient`를 사용합니다. Server Actions는
   MutationCache의 전역 에러 처리를 거치지 않으므로 사용하지 않습니다.
-- **Radix**: JDS에 없는 프리미티브만 `radix-ui`로 직접 구현하고 `src/components/` 아래
-  컴포넌트로 감싸서 사용합니다. 범위와 JDS 교체 절차는
-  [docs/radix-usage.md](./docs/radix-usage.md)를 따릅니다.
+- **Radix**: JDS에 없는 프리미티브만 `radix-ui`로 직접 구현하고 별도 컴포넌트 파일로 감싸서
+  사용합니다. 범위와 JDS 교체 절차는 [docs/radix-usage.md](./docs/radix-usage.md)를 따릅니다.
 - **스타일**: Tailwind v4 유틸리티를 사용합니다. 전역 CSS는 각 앱
   `src/styles/globals.css`가 진입점이며 `@ject/styles`를 가져옵니다. 유틸리티는 JDS 토큰으로
   만들어지므로 `bg-surface-standard`, `p-16`, `text-body-md`처럼 씁니다. Tailwind 기본
