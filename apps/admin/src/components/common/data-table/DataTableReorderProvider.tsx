@@ -31,12 +31,12 @@ export function DataTableReorderProvider<TData extends RowData>({
     const { source } = event.operation;
     if (!isSortable(source)) return;
 
-    // 낙관적 정렬로 드롭 시점의 target은 source 자신이므로 드래그 전 순서에서 두 행의 id를 구한다.
+    // 낙관적 정렬로 드롭 시점의 target은 source 자신이므로 목적지 행은 드래그 전 순서에서 구한다.
     const rowIds = table.getRowModel().rows.map((row) => row.id);
-    const activeId = rowIds[source.initialIndex];
+    const activeId = String(source.id);
     const overId = rowIds[source.index];
     const { getRowId } = table.options;
-    if (!getRowId || activeId === undefined || overId === undefined || activeId === overId) return;
+    if (!getRowId || overId === undefined || activeId === overId) return;
 
     table.options.meta?.reorder?.onReorder((data) => {
       const dataIds = data.map((row, index) => getRowId(row, index));
