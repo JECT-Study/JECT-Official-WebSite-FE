@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-import { BlockButton, Divider, DropdownMenu, IconButton, SegmentedControls } from "@jects/jds";
+import { BlockButton, Divider, DropdownMenu, SegmentedControls } from "@jects/jds";
 
 import { Logo } from "@/components/common/logo";
 import { NAVIGATION_SECTIONS } from "@/constants/navigation";
@@ -24,7 +24,6 @@ export function GlobalNavigationBar() {
 
   const variant = useGlobalNavigationVariant();
   const { theme, setTheme } = useTheme();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isHoverOpen = useRef(false);
@@ -154,17 +153,8 @@ export function GlobalNavigationBar() {
               지원하기
             </BlockButton>
 
-            <IconButton
-              hierarchy="primary"
-              icon="menu"
-              size="lg"
-              aria-label="메뉴 열기"
-              onClick={() => setIsSidebarOpen(true)}
-              className={cn("tablet:hidden", heroTextClass)}
-            />
+            <Sidebar triggerClassName={heroTextClass} />
           </div>
-
-          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
         </nav>
       </header>
     </div>
