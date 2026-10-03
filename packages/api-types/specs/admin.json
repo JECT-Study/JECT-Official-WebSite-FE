@@ -903,6 +903,53 @@
       }
     },
     "/admin/mails/dispatches": {
+      "get": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "단체 메일 발송 작업 목록 조회",
+        "description": "관리자 본인의 발송 작업을 최신순으로 조회합니다.",
+        "operationId": "searchJobs",
+        "parameters": [
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MailDispatchJobStatus"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageMailDispatchJobResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "AdminMailDispatch"
@@ -1730,6 +1777,88 @@
                   "items": {
                     "$ref": "#/components/schemas/MailRecruitResponse"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/mails/dispatches/{dispatchJobId}": {
+      "get": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "단체 메일 발송 작업 상세 조회",
+        "description": "관리자 본인의 발송 작업 요약을 조회합니다.",
+        "operationId": "getJob",
+        "parameters": [
+          {
+            "name": "dispatchJobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailDispatchJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/mails/dispatches/{dispatchJobId}/targets": {
+      "get": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "단체 메일 수신자별 결과 조회",
+        "description": "발송 작업의 수신자별 결과를 상태로 필터링해 조회합니다.",
+        "operationId": "searchTargets_1",
+        "parameters": [
+          {
+            "name": "dispatchJobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/MailDispatchTargetStatus"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageMailDispatchTargetResponse"
                 }
               }
             }
@@ -3992,6 +4121,184 @@
           "BACKFILL",
           "MANUAL"
         ]
+      },
+      "MailDispatchJobResponse": {
+        "type": "object",
+        "properties": {
+          "dispatchJobId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scenarioId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "requestedByAdminId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MailDispatchJobStatus"
+          },
+          "targetCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "processingCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "successCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "failedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PageMailDispatchJobResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MailDispatchJobResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MailDispatchTargetStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "SENT",
+          "FAILED"
+        ]
+      },
+      "MailDispatchTargetResponse": {
+        "type": "object",
+        "properties": {
+          "targetId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MailDispatchTargetStatus"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "failureReason": {
+            "type": "string"
+          }
+        }
+      },
+      "PageMailDispatchTargetResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MailDispatchTargetResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
       },
       "ApplyStatus": {
         "type": "string",
