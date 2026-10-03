@@ -79,7 +79,7 @@ interface DataTableProps<TData extends RowData> {
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
   const reorder = table.options.meta?.reorder;
 
-  const rows = table.getRowModel().rows.map((row, index) => {
+  const rows = table.getRowModel().rows.map((row) => {
     const rowProps = {
       selected: row.getIsSelected(),
       selectionDisabled: !row.getCanSelect(),
@@ -88,7 +88,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
     };
 
     return reorder ? (
-      <DraggableRow key={row.id} id={row.id} index={index} {...rowProps} />
+      <DraggableRow key={row.id} id={row.id} {...rowProps} />
     ) : (
       <DataTableRow key={row.id} {...rowProps} />
     );

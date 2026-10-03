@@ -14,11 +14,13 @@ interface DragHandleProps {
 export function DragHandle({ label }: DragHandleProps) {
   const context = useContext(DragHandleContext);
   if (!context) throw new Error("DragHandle은 DraggableRow 안에서만 사용할 수 있습니다.");
-  const { handleRef } = context;
+  const { handleRef, attributes, listeners } = context;
 
   return (
     <IconButton
       ref={handleRef}
+      {...attributes}
+      {...listeners}
       size="lg"
       icon="grip-vertical"
       hierarchy="accent"
