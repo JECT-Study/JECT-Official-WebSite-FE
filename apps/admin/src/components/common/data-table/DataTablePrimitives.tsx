@@ -90,8 +90,8 @@ export function DataTableRow({
       data-dragging={dragging}
       className={cn(
         "group data-[selected=true]:bg-accent-alpha-subtlest data-[selection-disabled=true]:bg-fill-subtlest/54 data-[selected=true]:data-[selection-disabled=true]:bg-accent-alpha-subtlest/54",
-        // 드래그 중인 행이 다른 행과 겹쳐도 비치지 않도록 반투명한 선택 배경보다 불투명 배경을 우선한다.
-        "data-[dragging=true]:bg-surface-standard!",
+        // 드래그 중인 행이 다른 행과 겹쳐도 비치지 않도록 불투명 배경을 우선하고, 선택 배경은 그 위에 이미지로 겹친다.
+        "data-[dragging=true]:bg-surface-standard! data-[dragging=true]:data-[selected=true]:bg-[linear-gradient(var(--color-accent-alpha-subtlest)_0_0)]",
         className
       )}
       {...props}
