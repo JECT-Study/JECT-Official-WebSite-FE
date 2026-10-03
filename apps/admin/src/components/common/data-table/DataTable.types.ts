@@ -13,6 +13,5 @@ export interface DataTableReorderOptions<TData> {
 }
 
 export interface DataTableMeta<TData> {
-  getRowName?: (row: TData) => string;
   reorder?: DataTableReorderOptions<TData>;
 }

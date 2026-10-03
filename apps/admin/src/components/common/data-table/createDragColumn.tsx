@@ -8,9 +8,7 @@ export function createDragColumn<TData extends RowData>(
 ) {
   return columnHelper.display({
     id: "drag",
-    cell: ({ row, table }) => (
-      <DragHandle label={`${table.options.meta?.getRowName?.(row.original) ?? "행"} 순서 변경`} />
-    ),
+    cell: () => <DragHandle />,
     meta: { cellType: "control" },
   });
 }

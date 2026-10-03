@@ -11,7 +11,6 @@ export function createSelectColumn<TData extends RowData>(
     header: ({ table }) => (
       <Checkbox
         size="lg"
-        aria-label="전체 선택"
         checked={
           table.getIsAllRowsSelected()
             ? true
@@ -23,10 +22,9 @@ export function createSelectColumn<TData extends RowData>(
         onCheckedChange={(next) => table.toggleAllRowsSelected(next === true)}
       />
     ),
-    cell: ({ row, table }) => (
+    cell: ({ row }) => (
       <Checkbox
         size="lg"
-        aria-label={`${table.options.meta?.getRowName?.(row.original) ?? "행"} 선택`}
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}
         onCheckedChange={(next) => row.toggleSelected(next === true)}

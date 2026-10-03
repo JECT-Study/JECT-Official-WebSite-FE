@@ -29,8 +29,6 @@ interface UseDataTableOptions<TData extends RowData> {
   columns: DataTableColumnDef<TData>[];
   /** 선택 상태의 키로 쓰인다. 행 순서를 쓰면 데이터가 바뀔 때 다른 행이 선택된다. */
   getRowId: (row: TData) => string;
-  /** 체크박스와 드래그 핸들의 aria-label에 쓸 이름. "{이름} 선택", "{이름} 순서 변경"으로 읽힌다. */
-  getRowName?: (row: TData) => string;
   /** 지정하면 체크박스 열이 앞에 붙는다. */
   selection?: DataTableSelectionOptions<TData>;
   /** 지정하면 드래그 핸들 열이 체크박스 열보다 앞에 붙는다. */
@@ -43,7 +41,6 @@ export function useDataTable<TData extends RowData>({
   data,
   columns,
   getRowId,
-  getRowName,
   selection,
   reorder,
 }: UseDataTableOptions<TData>) {
@@ -90,6 +87,6 @@ export function useDataTable<TData extends RowData>({
     enableRowSelection: canSelect ? (row) => canSelect(row.original) : undefined,
     state: { rowSelection: tableSelection },
     onRowSelectionChange,
-    meta: { getRowName, reorder },
+    meta: { reorder },
   });
 }
