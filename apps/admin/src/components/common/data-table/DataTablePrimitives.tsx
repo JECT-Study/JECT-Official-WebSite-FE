@@ -6,11 +6,11 @@ import { cn } from "@/utils/cn";
 const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
-  "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[selection-disabled=false]:group-hover:bg-fill-bold/5 group-data-[selection-disabled=false]:group-active:bg-fill-bold/8";
-// 드래그 중인 행의 위아래 선은 바깥 그림자로 그려 표 끝에 닿으면 표 테두리와 겹치게 한다.
-// 행 높이가 바뀌지 않도록 원래 아래 테두리는 두께를 유지한 채 투명하게만 만든다.
+  "border-b border-stroke-alpha-subtle align-top group-last:border-b-transparent group-data-[selection-disabled=false]:group-hover:bg-fill-bold/5 group-data-[selection-disabled=false]:group-active:bg-fill-bold/8";
+// 드래그 중인 행의 위쪽 선은 행 높이가 바뀌지 않도록 바깥 그림자로 그린다.
+// 정렬 중에는 DOM 순서가 화면 순서와 달라 :last-child 대신 화면상 마지막 행의 아래 테두리를 숨긴다.
 const DRAGGING_CELL =
-  "group-data-[dragging=true]:border-b-transparent group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[0_-1px_0_var(--color-stroke-subtle),0_1px_0_var(--color-stroke-subtle)]";
+  "group-data-[visually-last=true]:border-b-transparent group-data-[dragging=true]:group-data-[visually-last=false]:border-b-stroke-subtle group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[0_-1px_0_var(--color-stroke-subtle)]";
 const SELECTION_DISABLED_TEXT = "group-data-[selection-disabled=true]:text-object-subtle";
 // 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CONTROL_CELL = "w-[44px]";
