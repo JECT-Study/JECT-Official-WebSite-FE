@@ -6,8 +6,12 @@ import { cn } from "@/utils/cn";
 const CELL = "px-8 first:pl-16 last:pr-16 py-12 text-left font-label";
 const HEADER_CELL = "border-b border-stroke-subtle align-middle";
 const BODY_CELL =
-  "border-b border-stroke-alpha-subtle align-top group-last:border-b-0 group-data-[disabled=false]:group-hover:bg-fill-bold/5 group-data-[disabled=false]:group-active:bg-fill-bold/8";
-const DISABLED_TEXT = "group-data-[disabled=true]:text-object-subtle";
+  "border-b border-stroke-alpha-subtle align-top group-last:border-b-transparent group-data-[selection-disabled=false]:group-hover:bg-fill-bold/5 group-data-[selection-disabled=false]:group-active:bg-fill-bold/8";
+// 드래그 중인 행의 위쪽 선은 행 높이가 바뀌지 않도록 바깥 그림자로 그린다.
+// 정렬 중에는 DOM 순서가 화면 순서와 달라 :last-child 대신 화면상 마지막 행의 아래 테두리를 숨긴다.
+const DRAGGING_CELL =
+  "group-data-[visually-last=true]:border-b-transparent group-data-[dragging=true]:group-data-[visually-last=false]:border-b-stroke-subtle group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[0_-1px_0_var(--color-stroke-subtle)]";
+const SELECTION_DISABLED_TEXT = "group-data-[selection-disabled=true]:text-object-subtle";
 // 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CONTROL_CELL = "w-[44px]";
 
@@ -66,23 +70,28 @@ export function DataTableBody(props: ComponentProps<"tbody">) {
   return <tbody {...props} />;
 }
 
-interface DataTableRowProps extends ComponentProps<"tr"> {
+export interface DataTableRowProps extends ComponentProps<"tr"> {
   selected?: boolean;
-  disabled?: boolean;
+  selectionDisabled?: boolean;
+  dragging?: boolean;
 }
 
 export function DataTableRow({
   selected = false,
-  disabled = false,
+  selectionDisabled = false,
+  dragging = false,
   className,
   ...props
 }: DataTableRowProps) {
   return (
     <tr
       data-selected={selected}
-      data-disabled={disabled}
+      data-selection-disabled={selectionDisabled}
+      data-dragging={dragging}
       className={cn(
-        "group data-[disabled=true]:bg-fill-subtlest/54 data-[selected=true]:bg-accent-alpha-subtlest data-[selected=true]:data-[disabled=true]:bg-accent-alpha-subtlest/54",
+        "group data-[selected=true]:bg-accent-alpha-subtlest data-[selection-disabled=true]:bg-fill-subtlest/54 data-[selected=true]:data-[selection-disabled=true]:bg-accent-alpha-subtlest/54",
+        // 드래그 중인 행이 다른 행과 겹쳐도 비치지 않도록 불투명 배경을 우선하고, 선택 배경은 그 위에 이미지로 겹친다.
+        "data-[dragging=true]:bg-surface-standard! data-[dragging=true]:data-[selected=true]:bg-[linear-gradient(var(--color-accent-alpha-subtlest)_0_0)]",
         className
       )}
       {...props}
@@ -96,8 +105,9 @@ export function DataTableCell({ className, children, ...props }: ComponentProps<
       className={cn(
         CELL,
         BODY_CELL,
+        DRAGGING_CELL,
         "text-label-md font-label-normal text-object-normal",
-        DISABLED_TEXT,
+        SELECTION_DISABLED_TEXT,
         className
       )}
       {...props}
@@ -120,11 +130,11 @@ export function DataTableTitleCell({
   ...props
 }: DataTableTitleCellProps) {
   return (
-    <th scope="row" className={cn(CELL, BODY_CELL, className)} {...props}>
+    <th scope="row" className={cn(CELL, BODY_CELL, DRAGGING_CELL, className)} {...props}>
       <span
         className={cn(
           "block truncate text-label-lg font-label-normal text-object-bolder",
-          DISABLED_TEXT
+          SELECTION_DISABLED_TEXT
         )}
       >
         {children}
@@ -132,7 +142,7 @@ export function DataTableTitleCell({
       <span
         className={cn(
           "mt-2 block truncate text-label-md font-label-subtle text-object-alternative",
-          DISABLED_TEXT
+          SELECTION_DISABLED_TEXT
         )}
       >
         {description}
@@ -143,7 +153,7 @@ export function DataTableTitleCell({
 
 export function DataTableControlCell({ className, children, ...props }: ComponentProps<"td">) {
   return (
-    <td className={cn(CELL, BODY_CELL, CONTROL_CELL, className)} {...props}>
+    <td className={cn(CELL, BODY_CELL, DRAGGING_CELL, CONTROL_CELL, className)} {...props}>
       <div className="flex h-[22px] items-center">{children}</div>
     </td>
   );

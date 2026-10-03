@@ -18,6 +18,8 @@ import {
   DataTableRow,
   DataTableTitleCell,
 } from "./DataTablePrimitives";
+import { DataTableReorderProvider } from "./DataTableReorderProvider";
+import { DraggableRow } from "./DraggableRow";
 
 interface HeaderCellProps<TData extends RowData> {
   header: Header<DataTableFeatures<TData>, TData>;
@@ -75,6 +77,23 @@ interface DataTableProps<TData extends RowData> {
 }
 
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
+  const reorder = table.options.meta?.reorder;
+
+  const rows = table.getRowModel().rows.map((row) => {
+    const rowProps = {
+      selected: row.getIsSelected(),
+      selectionDisabled: !row.getCanSelect(),
+      // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
+      children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
+    };
+
+    return reorder ? (
+      <DraggableRow key={row.id} id={row.id} {...rowProps} />
+    ) : (
+      <DataTableRow key={row.id} {...rowProps} />
+    );
+  });
+
   return (
     <DataTableRoot className={className}>
       <DataTableHeader>
@@ -87,14 +106,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
           ))}
       </DataTableHeader>
       <DataTableBody>
-        {table.getRowModel().rows.map((row) => (
-          <DataTableRow key={row.id} selected={row.getIsSelected()} disabled={!row.getCanSelect()}>
-            {/* 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다. */}
-            {row.getAllCells().map((cell) => (
-              <BodyCell key={cell.id} cell={cell} />
-            ))}
-          </DataTableRow>
-        ))}
+        {reorder ? <DataTableReorderProvider table={table}>{rows}</DataTableReorderProvider> : rows}
       </DataTableBody>
     </DataTableRoot>
   );
