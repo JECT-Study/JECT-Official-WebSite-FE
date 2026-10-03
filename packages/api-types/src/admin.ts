@@ -299,7 +299,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * 단체 메일 발송 작업 목록 조회
+         * @description 관리자 본인의 발송 작업을 최신순으로 조회합니다.
+         */
+        get: operations["searchJobs"];
         put?: never;
         /**
          * 단체 메일 발송
@@ -692,6 +696,46 @@ export interface paths {
          * @description 메일 발송 기준으로 사용할 모집 공고를 등록일 최신순으로 조회합니다.
          */
         get: operations["getRecruits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단체 메일 발송 작업 상세 조회
+         * @description 관리자 본인의 발송 작업 요약을 조회합니다.
+         */
+        get: operations["getJob"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단체 메일 수신자별 결과 조회
+         * @description 발송 작업의 수신자별 결과를 상태로 필터링해 조회합니다.
+         */
+        get: operations["searchTargets_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1549,6 +1593,80 @@ export interface components {
          * @enum {string}
          */
         RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
+        MailDispatchJobResponse: {
+            /** Format: int64 */
+            dispatchJobId?: number;
+            /** Format: int64 */
+            scenarioId?: number;
+            /** Format: int64 */
+            recruitId?: number;
+            /** Format: int64 */
+            requestedByAdminId?: number;
+            status?: components["schemas"]["MailDispatchJobStatus"];
+            /** Format: int32 */
+            targetCount?: number;
+            /** Format: int32 */
+            processingCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+            /** Format: int32 */
+            failedCount?: number;
+            /** Format: date-time */
+            requestedAt?: string;
+            /** Format: date-time */
+            startedAt?: string;
+            /** Format: date-time */
+            finishedAt?: string;
+        };
+        PageMailDispatchJobResponse: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["MailDispatchJobResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        /** @enum {string} */
+        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED";
+        MailDispatchTargetResponse: {
+            /** Format: int64 */
+            targetId?: number;
+            /** Format: int64 */
+            applyId?: number;
+            email?: string;
+            status?: components["schemas"]["MailDispatchTargetStatus"];
+            /** Format: date-time */
+            sentAt?: string;
+            failureReason?: string;
+        };
+        PageMailDispatchTargetResponse: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["MailDispatchTargetResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
         /** @enum {string} */
         ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
         AdminApplyResponse: {
@@ -2212,6 +2330,30 @@ export interface operations {
             };
         };
     };
+    searchJobs: {
+        parameters: {
+            query: {
+                recruitId?: number;
+                status?: components["schemas"]["MailDispatchJobStatus"];
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMailDispatchJobResponse"];
+                };
+            };
+        };
+    };
     sendMail: {
         parameters: {
             query?: never;
@@ -2803,6 +2945,53 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["MailRecruitResponse"][];
+                };
+            };
+        };
+    };
+    getJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchJobResponse"];
+                };
+            };
+        };
+    };
+    searchTargets_1: {
+        parameters: {
+            query: {
+                status?: components["schemas"]["MailDispatchTargetStatus"];
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMailDispatchTargetResponse"];
                 };
             };
         };

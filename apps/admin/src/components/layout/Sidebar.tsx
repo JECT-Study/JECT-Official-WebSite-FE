@@ -1,8 +1,7 @@
-import type { RefObject } from "react";
-
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { Dialog, VisuallyHidden } from "radix-ui";
 
+import { useDialogOpenerFocus } from "@/hooks/useDialogOpenerFocus";
 import { cn } from "@/utils/cn";
 
 import { SidebarContent } from "./SidebarContent";
@@ -11,12 +10,12 @@ const PANEL_CLASS = "flex w-[220px] flex-col border-x border-stroke-subtle bg-su
 
 interface SidebarProps {
   isOpen: boolean;
-  triggerRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
 }
 
-export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { isDesktop } = useMediaQueryFlags();
+  const openerFocus = useDialogOpenerFocus();
 
   if (isDesktop) {
     return (
@@ -29,16 +28,13 @@ export function Sidebar({ isOpen, triggerRef, onClose }: SidebarProps) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="sheet-curtain fixed inset-0 z-overlay bg-curtain-static-dim" />
+        <Dialog.Overlay className="sheet-curtain fixed inset-0 z-raised bg-curtain-static-dim" />
         <Dialog.Content
           data-theme="dark"
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            triggerRef.current?.focus();
-          }}
+          {...openerFocus}
           className={cn(
             PANEL_CLASS,
-            "sheet-panel fixed inset-y-0 left-0 z-overlay [--sheet-offset:-100%]"
+            "sheet-panel fixed inset-y-0 left-0 z-raised [--sheet-offset:-100%]"
           )}
         >
           <Dialog.Title asChild>
