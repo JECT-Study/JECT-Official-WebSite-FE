@@ -38,7 +38,11 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
         </div>
       </Popover.Anchor>
       <Popover.Portal>
-        <Popover.Content align="start" sideOffset={6}>
+        <Popover.Content
+          align="start"
+          sideOffset={6}
+          className="z-floated *:max-h-(--radix-popover-content-available-height)"
+        >
           <MultiSelect
             width="200px"
             variant="control"

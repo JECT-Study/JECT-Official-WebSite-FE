@@ -33,7 +33,11 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
         </BlockButton>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content align="start" sideOffset={6}>
+        <Popover.Content
+          align="start"
+          sideOffset={6}
+          className="z-floated *:max-h-(--radix-popover-content-available-height)"
+        >
           <Select
             width="200px"
             options={fields.map((field) => ({ value: field.id, label: field.label }))}
