@@ -7,19 +7,19 @@ import {
   useTable,
 } from "@tanstack/react-table";
 
+import { createDragColumn } from "./createDragColumn";
 import { createSelectColumn } from "./createSelectColumn";
 import {
   createDataTableColumnHelper,
   createDataTableFeatures,
   type DataTableColumnDef,
 } from "./DataTable.features";
+import type { DataTableReorderOptions } from "./DataTable.types";
 
 interface DataTableSelectionOptions<TData> {
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
-  /** 체크박스의 aria-label에 쓸 이름. "{이름} 선택"으로 읽힌다. */
-  getRowName: (row: TData) => string;
-  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 disabled로 그린다. */
+  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 선택 불가 스타일로 그린다. */
   canSelect?: (row: TData) => boolean;
 }
 
@@ -31,6 +31,8 @@ interface UseDataTableOptions<TData extends RowData> {
   getRowId: (row: TData) => string;
   /** 지정하면 체크박스 열이 앞에 붙는다. */
   selection?: DataTableSelectionOptions<TData>;
+  /** 지정하면 드래그 핸들 열이 체크박스 열보다 앞에 붙는다. */
+  reorder?: DataTableReorderOptions<TData>;
 }
 
 const EMPTY_SELECTION: RowSelectionState = {};
@@ -40,16 +42,19 @@ export function useDataTable<TData extends RowData>({
   columns,
   getRowId,
   selection,
+  reorder,
 }: UseDataTableOptions<TData>) {
   const [features] = useState(createDataTableFeatures<TData>);
   const hasSelection = selection !== undefined;
+  const hasReorder = reorder !== undefined;
 
   const tableColumns = useMemo(
-    () =>
-      hasSelection
-        ? [createSelectColumn(createDataTableColumnHelper<TData>()), ...columns]
-        : columns,
-    [columns, hasSelection]
+    () => [
+      ...(hasReorder ? [createDragColumn(createDataTableColumnHelper<TData>())] : []),
+      ...(hasSelection ? [createSelectColumn(createDataTableColumnHelper<TData>())] : []),
+      ...columns,
+    ],
+    [columns, hasSelection, hasReorder]
   );
 
   const canSelect = selection?.canSelect;
@@ -82,6 +87,6 @@ export function useDataTable<TData extends RowData>({
     enableRowSelection: canSelect ? (row) => canSelect(row.original) : undefined,
     state: { rowSelection: tableSelection },
     onRowSelectionChange,
-    meta: { getRowName: selection?.getRowName },
+    meta: { reorder },
   });
 }
