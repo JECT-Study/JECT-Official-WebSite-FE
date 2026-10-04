@@ -22,7 +22,7 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
   };
 
   return (
-    <Popover.Root>
+    <Popover.Root modal>
       {/* Chip은 ref를 안쪽 라벨 버튼에 연결하므로 팝오버 위치 기준은 칩 전체로 따로 지정한다. */}
       <Popover.Anchor asChild>
         <div className="inline-flex">

@@ -20,7 +20,7 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
   };
 
   return (
-    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+    <Popover.Root modal open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
         <BlockButton
           hierarchy="secondary"
