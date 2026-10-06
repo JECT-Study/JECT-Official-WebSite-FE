@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type Ref, useState } from "react";
 
 import { BlockButton, Select } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
@@ -7,12 +7,18 @@ import { Popover } from "radix-ui";
 import type { FilterField } from "./Filter.types";
 
 interface FilterAddButtonProps {
+  ref?: Ref<HTMLButtonElement>;
   fields: FilterField[];
   onAdd: (fieldId: string) => void;
   onCloseAutoFocus?: (event: Event) => void;
 }
 
-export default function FilterAddButton({ fields, onAdd, onCloseAutoFocus }: FilterAddButtonProps) {
+export default function FilterAddButton({
+  ref,
+  fields,
+  onAdd,
+  onCloseAutoFocus,
+}: FilterAddButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAdd = (fieldId: string) => {
@@ -24,6 +30,7 @@ export default function FilterAddButton({ fields, onAdd, onCloseAutoFocus }: Fil
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
         <BlockButton
+          ref={ref}
           hierarchy="secondary"
           size="xs"
           variant="hollow"

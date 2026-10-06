@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 import type { FilterField, FilterOptionValue, FilterValues } from "./Filter.types";
 import FilterAddButton from "./FilterAddButton";
@@ -12,6 +12,22 @@ interface FilterProps {
 
 export default function Filter({ fields, values, onValuesChange }: FilterProps) {
   const chipRefs = useRef(new Map<string, HTMLButtonElement>());
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const pendingFocusRef = useRef<{
+    removedFieldId: string;
+    nextFieldId: string | undefined;
+  } | null>(null);
+
+  // 칩이 빠지고 필터 추가 버튼이 활성화된 뒤에 포커스해야 해서, 부모가 제거를 반영한 렌더링 후에 옮긴다.
+  useLayoutEffect(() => {
+    const pending = pendingFocusRef.current;
+    if (pending === null || pending.removedFieldId in values) return;
+    pendingFocusRef.current = null;
+    const target = pending.nextFieldId
+      ? chipRefs.current.get(pending.nextFieldId)
+      : addButtonRef.current;
+    target?.focus();
+  });
 
   const addedFields = Object.keys(values)
     .map((fieldId) => fields.find((field) => field.id === fieldId))
@@ -24,6 +40,11 @@ export default function Filter({ fields, values, onValuesChange }: FilterProps) 
   };
 
   const handleRemoveFilter = (fieldId: string) => {
+    const nextField = addedFields[addedFields.findIndex((field) => field.id === fieldId) + 1];
+    pendingFocusRef.current = {
+      removedFieldId: fieldId,
+      nextFieldId: nextField?.id,
+    };
     onValuesChange(Object.fromEntries(Object.entries(values).filter(([id]) => id !== fieldId)));
   };
 
@@ -55,6 +76,7 @@ export default function Filter({ fields, values, onValuesChange }: FilterProps) 
         />
       ))}
       <FilterAddButton
+        ref={addButtonRef}
         fields={addableFields}
         onAdd={handleAddFilter}
         onCloseAutoFocus={handleAddButtonCloseAutoFocus}
