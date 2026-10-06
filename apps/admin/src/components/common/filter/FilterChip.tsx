@@ -1,3 +1,5 @@
+import type { Ref } from "react";
+
 import { Chip, MultiSelect } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
 import { Popover } from "radix-ui";
@@ -5,13 +7,14 @@ import { Popover } from "radix-ui";
 import type { FilterField, FilterOptionValue } from "./Filter.types";
 
 interface FilterChipProps {
+  ref?: Ref<HTMLButtonElement>;
   field: FilterField;
   selected: FilterOptionValue[];
   onChange: (values: FilterOptionValue[]) => void;
   onRemove: () => void;
 }
 
-export default function FilterChip({ field, selected, onChange, onRemove }: FilterChipProps) {
+export default function FilterChip({ ref, field, selected, onChange, onRemove }: FilterChipProps) {
   // JDS Select는 값을 문자열로만 다뤄서 숫자 값은 원래 옵션을 찾아 되돌린다.
   const handleChange = (values: string[]) => {
     onChange(
@@ -28,6 +31,7 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
         <div className="inline-flex">
           <Popover.Trigger asChild>
             <Chip
+              ref={ref}
               label={field.label}
               onRemove={onRemove}
               valueLabel={field.options

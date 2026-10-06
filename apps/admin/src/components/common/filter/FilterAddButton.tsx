@@ -9,9 +9,10 @@ import type { FilterField } from "./Filter.types";
 interface FilterAddButtonProps {
   fields: FilterField[];
   onAdd: (fieldId: string) => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }
 
-export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps) {
+export default function FilterAddButton({ fields, onAdd, onCloseAutoFocus }: FilterAddButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAdd = (fieldId: string) => {
@@ -37,6 +38,7 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
           align="start"
           sideOffset={6}
           className="z-floated *:max-h-(--radix-popover-content-available-height)"
+          onCloseAutoFocus={onCloseAutoFocus}
           // 포털로 드로어 밖에 렌더링되어 드로어의 스크롤 잠금에 막히므로, document에 닿기 전에 휠/터치 전파를 멈춘다.
           onWheel={(event) => {
             event.stopPropagation();
