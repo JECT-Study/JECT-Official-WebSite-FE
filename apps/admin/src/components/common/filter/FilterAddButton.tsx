@@ -20,7 +20,7 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
   };
 
   return (
-    <Popover.Root modal open={isOpen} onOpenChange={setIsOpen}>
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
         <BlockButton
           hierarchy="secondary"
@@ -37,6 +37,13 @@ export default function FilterAddButton({ fields, onAdd }: FilterAddButtonProps)
           align="start"
           sideOffset={6}
           className="z-floated *:max-h-(--radix-popover-content-available-height)"
+          // 포털로 드로어 밖에 렌더링되어 드로어의 스크롤 잠금에 막히므로, document에 닿기 전에 휠/터치 전파를 멈춘다.
+          onWheel={(event) => {
+            event.stopPropagation();
+          }}
+          onTouchMove={(event) => {
+            event.stopPropagation();
+          }}
         >
           <Select
             width="200px"

@@ -22,7 +22,7 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
   };
 
   return (
-    <Popover.Root modal>
+    <Popover.Root>
       {/* Chip은 ref를 안쪽 라벨 버튼에 연결하므로 팝오버 위치 기준은 칩 전체로 따로 지정한다. */}
       <Popover.Anchor asChild>
         <div className="inline-flex">
@@ -42,6 +42,13 @@ export default function FilterChip({ field, selected, onChange, onRemove }: Filt
           align="start"
           sideOffset={6}
           className="z-floated *:max-h-(--radix-popover-content-available-height)"
+          // 포털로 드로어 밖에 렌더링되어 드로어의 스크롤 잠금에 막히므로, document에 닿기 전에 휠/터치 전파를 멈춘다.
+          onWheel={(event) => {
+            event.stopPropagation();
+          }}
+          onTouchMove={(event) => {
+            event.stopPropagation();
+          }}
         >
           <MultiSelect
             width="200px"
