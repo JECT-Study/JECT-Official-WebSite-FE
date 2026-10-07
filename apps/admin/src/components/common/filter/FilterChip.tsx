@@ -15,15 +15,6 @@ interface FilterChipProps {
 }
 
 export default function FilterChip({ ref, field, selected, onChange, onRemove }: FilterChipProps) {
-  // JDS Select는 값을 문자열로만 다뤄서 숫자 값은 원래 옵션을 찾아 되돌린다.
-  const handleChange = (values: string[]) => {
-    onChange(
-      values.map(
-        (value) => field.options.find((option) => String(option.value) === value)?.value ?? value
-      )
-    );
-  };
-
   return (
     <Popover.Root>
       {/* Chip은 ref를 안쪽 라벨 버튼에 연결하므로 팝오버 위치 기준은 칩 전체로 따로 지정한다. */}
@@ -62,7 +53,8 @@ export default function FilterChip({ ref, field, selected, onChange, onRemove }:
               label: option.label,
             }))}
             value={selected.map(String)}
-            onChange={handleChange}
+            // JDS는 문자열을 돌려주고, Filter가 normalizeFilterValues로 원래 옵션 값으로 되돌린다.
+            onChange={onChange}
             aria-label={`${field.label} 선택`}
           />
         </Popover.Content>

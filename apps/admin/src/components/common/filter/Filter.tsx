@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 
 import type { FilterField, FilterOptionValue, FilterValues } from "./Filter.types";
+import { normalizeFilterValues } from "./Filter.utils";
 import FilterAddButton from "./FilterAddButton";
 import FilterChip from "./FilterChip";
 
@@ -29,14 +30,20 @@ export default function Filter({ fields, values, onValuesChange }: FilterProps) 
     target?.focus();
   });
 
-  const addedFields = Object.keys(values)
+  const normalizedValues = normalizeFilterValues(fields, values);
+
+  const addedFields = Object.keys(normalizedValues)
     .map((fieldId) => fields.find((field) => field.id === fieldId))
     .filter((field) => field !== undefined);
 
-  const addableFields = fields.filter((field) => !(field.id in values));
+  const addableFields = fields.filter((field) => !(field.id in normalizedValues));
+
+  const changeValues = (nextValues: FilterValues) => {
+    onValuesChange(normalizeFilterValues(fields, nextValues));
+  };
 
   const handleAddFilter = (fieldId: string) => {
-    onValuesChange({ ...values, [fieldId]: [] });
+    changeValues({ ...normalizedValues, [fieldId]: [] });
   };
 
   const handleRemoveFilter = (fieldId: string) => {
@@ -45,11 +52,13 @@ export default function Filter({ fields, values, onValuesChange }: FilterProps) 
       removedFieldId: fieldId,
       nextFieldId: nextField?.id,
     };
-    onValuesChange(Object.fromEntries(Object.entries(values).filter(([id]) => id !== fieldId)));
+    changeValues(
+      Object.fromEntries(Object.entries(normalizedValues).filter(([id]) => id !== fieldId))
+    );
   };
 
   const handleChangeOptions = (fieldId: string, selected: FilterOptionValue[]) => {
-    onValuesChange({ ...values, [fieldId]: selected });
+    changeValues({ ...normalizedValues, [fieldId]: selected });
   };
 
   // 마지막 필터를 추가하면 트리거가 비활성화되어 Radix의 포커스 복귀가 실패하므로 마지막 칩으로 옮긴다.
@@ -70,7 +79,7 @@ export default function Filter({ fields, values, onValuesChange }: FilterProps) 
             else chipRefs.current.delete(field.id);
           }}
           field={field}
-          selected={values[field.id] ?? []}
+          selected={normalizedValues[field.id] ?? []}
           onChange={(selected) => handleChangeOptions(field.id, selected)}
           onRemove={() => handleRemoveFilter(field.id)}
         />
