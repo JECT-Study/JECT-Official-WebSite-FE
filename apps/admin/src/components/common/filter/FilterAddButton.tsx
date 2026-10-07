@@ -44,6 +44,7 @@ export default function FilterAddButton({
         <Popover.Content
           align="start"
           sideOffset={6}
+          // Select가 className을 받지 않아 `*:`로 JDS DOM 구조에 의존한다. JDS Popover로 교체할 때 정리한다.
           className="z-floated *:max-h-(--radix-popover-content-available-height)"
           onCloseAutoFocus={onCloseAutoFocus}
           // 포털로 드로어 밖에 렌더링되어 드로어의 스크롤 잠금에 막히므로, document에 닿기 전에 휠/터치 전파를 멈춘다.
