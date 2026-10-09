@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from "react";
+
 import {
   type Cell,
   FlexRender,
@@ -86,6 +88,16 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
       selected: row.getIsSelected(),
       selectionDisabled: !row.getCanSelect(),
       onClick: onRowClick && (() => onRowClick(row.original)),
+      tabIndex: onRowClick ? 0 : undefined,
+      onKeyDown:
+        onRowClick &&
+        ((event: KeyboardEvent<HTMLTableRowElement>) => {
+          // 체크박스나 드래그 핸들에서 올라온 키는 무시한다.
+          if (event.target !== event.currentTarget) return;
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          onRowClick(row.original);
+        }),
       // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
       children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
     };
