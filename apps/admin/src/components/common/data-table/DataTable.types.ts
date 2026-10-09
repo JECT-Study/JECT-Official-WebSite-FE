@@ -13,4 +13,5 @@ export interface DataTableReorderOptions<TData> {
 
 export interface DataTableMeta<TData> {
   reorder?: DataTableReorderOptions<TData>;
+  onRowClick?: (row: TData) => void;
 }

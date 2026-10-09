@@ -49,8 +49,9 @@ function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   const meta = cell.column.columnDef.meta;
 
   if (meta?.cellType === "control") {
+    // 체크박스나 드래그 핸들을 누를 때 행 클릭이 함께 실행되지 않게 한다.
     return (
-      <DataTableControlCell>
+      <DataTableControlCell onClick={(event) => event.stopPropagation()}>
         <FlexRender cell={cell} />
       </DataTableControlCell>
     );
@@ -78,11 +79,13 @@ interface DataTableProps<TData extends RowData> {
 
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
   const reorder = table.options.meta?.reorder;
+  const onRowClick = table.options.meta?.onRowClick;
 
   const rows = table.getRowModel().rows.map((row) => {
     const rowProps = {
       selected: row.getIsSelected(),
       selectionDisabled: !row.getCanSelect(),
+      onClick: onRowClick && (() => onRowClick(row.original)),
       // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
       children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
     };

@@ -33,6 +33,7 @@ interface UseDataTableOptions<TData extends RowData> {
   selection?: DataTableSelectionOptions<TData>;
   /** 지정하면 드래그 핸들 열이 체크박스 열보다 앞에 붙는다. */
   reorder?: DataTableReorderOptions<TData>;
+  onRowClick?: (row: TData) => void;
 }
 
 const EMPTY_SELECTION: RowSelectionState = {};
@@ -43,6 +44,7 @@ export function useDataTable<TData extends RowData>({
   getRowId,
   selection,
   reorder,
+  onRowClick,
 }: UseDataTableOptions<TData>) {
   const [features] = useState(createDataTableFeatures<TData>);
   const hasSelection = selection !== undefined;
@@ -87,6 +89,6 @@ export function useDataTable<TData extends RowData>({
     enableRowSelection: canSelect ? (row) => canSelect(row.original) : undefined,
     state: { rowSelection: tableSelection },
     onRowSelectionChange,
-    meta: { reorder },
+    meta: { reorder, onRowClick },
   });
 }
