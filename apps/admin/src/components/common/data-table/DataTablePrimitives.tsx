@@ -11,6 +11,10 @@ const BODY_CELL =
 // 정렬 중에는 DOM 순서가 화면 순서와 달라 :last-child 대신 화면상 마지막 행의 아래 테두리를 숨긴다.
 const DRAGGING_CELL =
   "group-data-[visually-last=true]:border-b-transparent group-data-[dragging=true]:group-data-[visually-last=false]:border-b-stroke-subtle group-data-[dragging=true]:bg-fill-bold/8 group-data-[dragging=true]:shadow-[0_-1px_0_var(--color-stroke-subtle)]";
+// JDS 포커스 링 값을 쓰고, 표가 바깥을 잘라내므로 안쪽에 그린다.
+// tr의 가상 요소는 셀로 취급되어 열이 늘어나므로 첫 셀의 가상 요소 하나로 행을 감싸고, 아래 구분선은 덮지 않는다.
+const FOCUS_RING_CELL =
+  "group-focus-visible:first:before:pointer-events-none group-focus-visible:first:before:absolute group-focus-visible:first:before:inset-0 group-focus-visible:first:before:bottom-px group-focus-visible:first:before:shadow-[inset_0_0_0_2px_var(--color-accent-alpha-alternative)] group-last:group-focus-visible:first:before:bottom-0 group-last:group-focus-visible:first:before:rounded-b-[calc(var(--radius-10)-1px)]";
 const SELECTION_DISABLED_TEXT = "group-data-[selection-disabled=true]:text-object-subtle";
 // 컨트롤 20px에 왼쪽 여백 16, 오른쪽 여백 8을 더해 다음 칸까지 간격 16을 맞춘다.
 const CONTROL_CELL = "w-[44px]";
@@ -92,6 +96,8 @@ export function DataTableRow({
         "group data-[selected=true]:bg-accent-alpha-subtlest data-[selection-disabled=true]:bg-fill-subtlest/54 data-[selected=true]:data-[selection-disabled=true]:bg-accent-alpha-subtlest/54",
         // 드래그 중인 행이 다른 행과 겹쳐도 비치지 않도록 불투명 배경을 우선하고, 선택 배경은 그 위에 이미지로 겹친다.
         "data-[dragging=true]:bg-surface-standard! data-[dragging=true]:data-[selected=true]:bg-[linear-gradient(var(--color-accent-alpha-subtlest)_0_0)]",
+        // 포커스 링을 그리는 첫 셀의 가상 요소가 행 기준으로 놓인다.
+        "relative outline-none",
         className
       )}
       {...props}
@@ -106,6 +112,7 @@ export function DataTableCell({ className, children, ...props }: ComponentProps<
         CELL,
         BODY_CELL,
         DRAGGING_CELL,
+        FOCUS_RING_CELL,
         "text-label-md font-label-normal text-object-normal",
         SELECTION_DISABLED_TEXT,
         className
@@ -130,7 +137,11 @@ export function DataTableTitleCell({
   ...props
 }: DataTableTitleCellProps) {
   return (
-    <th scope="row" className={cn(CELL, BODY_CELL, DRAGGING_CELL, className)} {...props}>
+    <th
+      scope="row"
+      className={cn(CELL, BODY_CELL, DRAGGING_CELL, FOCUS_RING_CELL, className)}
+      {...props}
+    >
       <span
         className={cn(
           "block truncate text-label-lg font-label-normal text-object-bolder",
@@ -153,7 +164,10 @@ export function DataTableTitleCell({
 
 export function DataTableControlCell({ className, children, ...props }: ComponentProps<"td">) {
   return (
-    <td className={cn(CELL, BODY_CELL, DRAGGING_CELL, CONTROL_CELL, className)} {...props}>
+    <td
+      className={cn(CELL, BODY_CELL, DRAGGING_CELL, FOCUS_RING_CELL, CONTROL_CELL, className)}
+      {...props}
+    >
       <div className="flex h-[22px] items-center">{children}</div>
     </td>
   );
