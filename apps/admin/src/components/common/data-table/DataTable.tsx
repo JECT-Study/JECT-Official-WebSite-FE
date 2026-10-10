@@ -51,9 +51,9 @@ function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   const meta = cell.column.columnDef.meta;
 
   if (meta?.cellType === "control") {
-    // 체크박스나 드래그 핸들을 누를 때 행 클릭이 함께 실행되지 않게 한다.
+    // 체크박스나 드래그 핸들을 누를 때 행 클릭이 함께 실행되지 않게 하고, 커서도 행 클릭 표시를 따르지 않는다.
     return (
-      <DataTableControlCell onClick={(event) => event.stopPropagation()}>
+      <DataTableControlCell className="cursor-default" onClick={(event) => event.stopPropagation()}>
         <FlexRender cell={cell} />
       </DataTableControlCell>
     );
@@ -89,6 +89,7 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
       selectionDisabled: !row.getCanSelect(),
       onClick: onRowClick && (() => onRowClick(row.original)),
       tabIndex: onRowClick ? 0 : undefined,
+      className: onRowClick ? "cursor-pointer" : undefined,
       onKeyDown:
         onRowClick &&
         ((event: KeyboardEvent<HTMLTableRowElement>) => {
