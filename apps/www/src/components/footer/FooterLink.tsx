@@ -1,4 +1,4 @@
-import { Icon } from "@/components/jds";
+import { Icon } from "@jects/jds";
 
 interface FooterLinkProps {
   href: string;

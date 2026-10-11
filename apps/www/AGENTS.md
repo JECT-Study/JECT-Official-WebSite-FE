@@ -55,10 +55,10 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
 - **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
   `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로
   여기서 정합니다. 페이지마다 `max-w-[922px]` 등을 다시 작성하지 않습니다.
-- **JDS와 서버 컴포넌트**: `@jects/jds`는 모듈 평가 단계에서 `createContext`를 호출하므로 서버
-  컴포넌트에서 직접 가져오면 빌드가 실패합니다. 서버 컴포넌트는 `@/components/jds`를 거쳐
-  가져오고(이 파일이 클라이언트 경계입니다), 클라이언트 컴포넌트는 `@jects/jds`에서 바로
-  가져옵니다. 새로 쓰는 컴포넌트는 `@/components/jds`에 re-export를 추가합니다.
+- **JDS와 서버 컴포넌트**: `Tabs.Root`처럼 dot notation으로 사용하는 컴포넌트와
+  `toastController` 같은 컴포넌트가 아닌 값은 서버 컴포넌트에서 사용할 수 없으므로
+  `"use client"` 파일 안에서 사용합니다. `@jects/jds/tokens`, `@jects/jds/utils`,
+  `@jects/jds/theme`에서 가져온 값은 서버 컴포넌트에서도 사용할 수 있습니다.
 - **SVG**: `import Icon from "@/assets/icon.svg"` 형태로 가져오면 React 컴포넌트입니다
   (`next.config.ts`의 turbopack svgr 규칙). 기존 앱의 `?react` 접미사는 사용하지 않으므로
   이전할 때 import 경로에서 제거합니다.
