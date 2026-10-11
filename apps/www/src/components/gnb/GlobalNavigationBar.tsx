@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { BlockButton, Divider, DropdownMenu, SegmentedControls } from "@jects/jds";
 
@@ -20,7 +20,6 @@ const MENU_CLOSE_DELAY_MS = 150;
 
 export function GlobalNavigationBar() {
   const pathname = usePathname();
-  const router = useRouter();
 
   const variant = useGlobalNavigationVariant();
   const { theme, setTheme } = useTheme();
@@ -33,8 +32,6 @@ export function GlobalNavigationBar() {
   const isOnHero = variant === "empty" && pathname === ROUTES.main;
   const heroTextClass = isOnHero ? "text-system-white!" : "";
   const heroButtonClass = isOnHero ? "bg-surface-static-deepest! text-object-static-boldest!" : "";
-
-  const handleApplyClick = () => router.push(ROUTES.applyList);
 
   const openMenu = (name: string) => {
     clearTimeout(closeTimer.current ?? undefined);
@@ -137,20 +134,20 @@ export function GlobalNavigationBar() {
             )}
 
             <BlockButton
+              asChild
               hierarchy="primary"
               size="sm"
-              onClick={handleApplyClick}
               className={cn("hidden tablet:inline-flex", heroButtonClass)}
             >
-              지원하기
+              <Link href={ROUTES.applyList}>지원하기</Link>
             </BlockButton>
             <BlockButton
+              asChild
               hierarchy="primary"
               size="xs"
-              onClick={handleApplyClick}
               className={cn("tablet:hidden", heroButtonClass)}
             >
-              지원하기
+              <Link href={ROUTES.applyList}>지원하기</Link>
             </BlockButton>
 
             <Sidebar triggerClassName={heroTextClass} />
