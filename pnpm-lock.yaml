@@ -45,8 +45,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/styles
       '@jects/jds':
-        specifier: ^0.7.0
-        version: 0.7.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.8.0
+        version: 0.8.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@tanstack/react-query':
         specifier: ^5.101.4
         version: 5.101.4(react@19.2.8)
@@ -145,8 +145,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/styles
       '@jects/jds':
-        specifier: ^0.7.0
-        version: 0.7.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.8.0
+        version: 0.8.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@tanstack/react-query':
         specifier: ^5.101.4
         version: 5.101.4(react@19.2.8)
@@ -245,8 +245,8 @@ importers:
   packages/styles:
     dependencies:
       '@jects/jds':
-        specifier: ^0.7.0
-        version: 0.7.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.8.0
+        version: 0.8.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
     devDependencies:
       tailwind-merge:
         specifier: ^3.6.0
@@ -1174,8 +1174,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@jects/jds@0.7.0':
-    resolution: {integrity: sha512-J2ew78fWQnzIYTQLE2JUWW9Yw5pNSzYlF6xV/6eO2M0Xr2NStpAo/GVIZm2McH+eENrvT1F6UeKeCspQVxy/bg==}
+  '@jects/jds@0.8.0':
+    resolution: {integrity: sha512-mjGlNspf/zRoen4NRp4svMb3FanA+09jEACQwJ47jTArrsA7LJu9hmRQnGTMOfiFsxcC0nwjVn1Zoj5nFvhpyA==}
     engines: {node: '>=22.0.0', npm: '>=10.0.0'}
     peerDependencies:
       radix-ui: ^1.6.7
@@ -5471,7 +5471,7 @@ snapshots:
   '@img/sharp-win32-x64@0.35.4':
     optional: true
 
-  '@jects/jds@0.7.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@jects/jds@0.8.0(radix-ui@1.6.7(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3
