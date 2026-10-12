@@ -2848,7 +2848,8 @@
           "REQUESTED",
           "PROCESSING",
           "COMPLETED",
-          "FAILED"
+          "FAILED",
+          "UNKNOWN"
         ]
       },
       "MailDispatchResponse": {
@@ -2874,6 +2875,10 @@
             "format": "int32"
           },
           "failedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unknownCount": {
             "type": "integer",
             "format": "int32"
           }
@@ -4160,6 +4165,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "unknownCount": {
+            "type": "integer",
+            "format": "int32"
+          },
           "requestedAt": {
             "type": "string",
             "format": "date-time"
@@ -4225,7 +4234,8 @@
         "enum": [
           "PENDING",
           "SENT",
-          "FAILED"
+          "FAILED",
+          "UNKNOWN"
         ]
       },
       "MailDispatchTargetResponse": {
