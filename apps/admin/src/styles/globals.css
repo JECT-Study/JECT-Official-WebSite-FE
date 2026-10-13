@@ -3,3 +3,52 @@
 
 @import "tailwindcss";
 @import "@ject/styles";
+
+@layer components {
+  .mail-editor-content {
+    & .selection {
+      background-color: Highlight;
+    }
+
+    /* 번호와 여백은 블록 순서에 따라 달라지므로 문서에는 넣지 않고 CSS로 표시한다. 메일 HTML에는 toMailHtml이 동일한 값을 반영한다. */
+    counter-reset: callout-badge;
+
+    &
+      table[data-numbered="true"]
+      td[data-content]
+      > h2[data-block="callout-title"]:first-child::before {
+      counter-increment: callout-badge;
+      content: counter(callout-badge);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-right: 12px;
+      vertical-align: middle;
+      background-color: #2a4de2;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* 블록의 인라인 margin보다 우선해야 한다. */
+    & > :last-child,
+    & td[data-content] > :last-child {
+      margin-bottom: 0 !important;
+    }
+
+    & > :has(+ p[data-block="caption"]),
+    & td[data-content] > :has(+ p[data-block="caption"]) {
+      margin-bottom: 4px !important;
+    }
+
+    & .ProseMirror-selectednode {
+      @apply outline-2 outline-offset-2 outline-accent-normal;
+    }
+
+    & p.is-editor-empty:first-child::before {
+      @apply pointer-events-none float-left h-0 text-object-assistive;
+      content: attr(data-placeholder);
+    }
+  }
+}
