@@ -46,7 +46,7 @@ export const CalloutTitle = Node.create({
 export const Callout = Node.create({
   name: "callout",
   group: "block",
-  content: "calloutTitle? (paragraph | heading | caption)+",
+  content: "(calloutTitle (paragraph | heading | caption)*) | (paragraph | heading | caption)+",
   isolating: true,
   defining: true,
 
@@ -96,8 +96,7 @@ export const Callout = Node.create({
           $from.index(-1) === callout.childCount - 1;
         if (callout.type.name !== this.name || !isLastEmptyParagraph) return false;
 
-        const minChildCount = callout.firstChild?.type.name === "calloutTitle" ? 2 : 1;
-        if (callout.childCount - 1 < minChildCount) return false;
+        if (callout.childCount < 2) return false;
 
         const calloutEnd = $from.after(-1);
         return editor
@@ -168,10 +167,7 @@ export function insertCallout(editor: Editor) {
     .focus()
     .command(({ tr, state }) => {
       const { schema } = state;
-      const callout = schema.nodes.callout.create(null, [
-        schema.nodes.calloutTitle.create(),
-        schema.nodes.paragraph.create(),
-      ]);
+      const callout = schema.nodes.callout.create(null, schema.nodes.calloutTitle.create());
       tr.replaceSelectionWith(callout);
 
       tr.doc.descendants((node, pos) => {
