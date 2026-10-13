@@ -33,7 +33,7 @@ export const CalloutTitle = Node.create({
   },
 
   addKeyboardShortcuts() {
-    const block = () => this.editor.isActive(this.name);
+    const block = () => !canChangeBlockType(this.editor);
     return {
       "Mod-Alt-0": block,
       "Mod-Alt-1": block,
@@ -151,6 +151,11 @@ function findCallout(editor: Editor) {
     if (node.type.name === "callout") return { node, pos: $from.before(depth) };
   }
   return null;
+}
+
+/** 콜아웃 제목은 다른 블록으로 바꿀 수 없다. 스키마상으로는 허용되므로 명령 전에 확인한다. */
+export function canChangeBlockType(editor: Editor) {
+  return !editor.isActive("calloutTitle");
 }
 
 export function isInCallout(editor: Editor) {
