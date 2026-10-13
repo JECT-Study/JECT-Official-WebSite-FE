@@ -84,6 +84,37 @@ export const Callout = Node.create({
   // 첫 줄 맨 앞의 Backspace는 번호 배지, 콜아웃 제목, 콜아웃 순서로 하나씩 지운다. 콜아웃 제목은 글자를 남기고 문단으로 바꾼다.
   addKeyboardShortcuts() {
     return {
+      // 마지막 빈 문단에서 Enter를 누르면 콜아웃 밖으로 빠져나간다.
+      Enter: ({ editor }) => {
+        const { $from, empty } = editor.state.selection;
+        if (!empty || $from.depth < 2) return false;
+
+        const callout = $from.node(-1);
+        const isLastEmptyParagraph =
+          $from.parent.type.name === "paragraph" &&
+          $from.parent.content.size === 0 &&
+          $from.index(-1) === callout.childCount - 1;
+        if (callout.type.name !== this.name || !isLastEmptyParagraph) return false;
+
+        const minChildCount = callout.firstChild?.type.name === "calloutTitle" ? 2 : 1;
+        if (callout.childCount - 1 < minChildCount) return false;
+
+        const calloutEnd = $from.after(-1);
+        return editor
+          .chain()
+          .command(({ tr, state }) => {
+            tr.delete($from.before(), $from.after());
+            const after = tr.mapping.map(calloutEnd);
+            const next = tr.doc.nodeAt(after);
+            if (next?.type.name !== "paragraph" || next.content.size !== 0) {
+              tr.insert(after, state.schema.nodes.paragraph.create());
+            }
+            tr.setSelection(TextSelection.create(tr.doc, after + 1));
+            return true;
+          })
+          .run();
+      },
+
       Backspace: ({ editor }) => {
         const { $from, empty } = editor.state.selection;
         if (!empty || $from.parentOffset !== 0 || $from.depth < 2) return false;
