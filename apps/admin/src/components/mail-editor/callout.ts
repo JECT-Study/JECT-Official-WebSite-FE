@@ -8,7 +8,7 @@ function hasCalloutBadge(callout: ProseMirrorNode) {
   return callout.attrs.numbered === true && callout.firstChild?.type.name === "calloutTitle";
 }
 
-// 콜아웃 제목은 항상 굵게 표시하며 문단 종류, 굵게, 글자색을 바꿀 수 없다. 단축키가 제목보다 먼저 처리되도록 우선순위를 높인다.
+// 콜아웃 제목은 항상 굵게 표시하며 문단 종류, 굵기, 글자색을 바꿀 수 없다. 단축키가 제목보다 먼저 처리되도록 우선순위를 높인다.
 export const CalloutTitle = Node.create({
   name: "calloutTitle",
   priority: 200,
