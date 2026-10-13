@@ -73,6 +73,12 @@ export function toMailHtml(html: string) {
   const template = parseFragment(html);
   let count = 0;
 
+  // 편집 중 trailingNode가 문서 끝에 두는 빈 문단은 저장하지 않는다.
+  const last = template.content.lastElementChild;
+  if (last?.tagName === "P" && !last.hasAttribute("data-block") && last.childNodes.length === 0) {
+    last.remove();
+  }
+
   template.content.querySelectorAll(CALLOUT_CELL_SELECTOR).forEach((cell) => {
     const children = Array.from(cell.children);
     applySpacing(children);
