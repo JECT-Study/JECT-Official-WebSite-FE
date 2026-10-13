@@ -63,7 +63,9 @@ export function LinkPopover({ editor }: LinkPopoverProps) {
   };
 
   const openLink = () => {
-    window.open(withProtocol(input), "_blank", "noopener,noreferrer");
+    const href = withProtocol(input);
+    if (!editor.can().setLink({ href })) return;
+    window.open(href, "_blank", "noopener,noreferrer");
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
