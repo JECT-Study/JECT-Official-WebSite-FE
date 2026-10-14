@@ -1,5 +1,6 @@
+import { Divider } from "@jects/jds";
+
 import { Logo } from "@/components/common/logo";
-import { Divider } from "@/components/jds";
 import { EXTERNAL_LINKS, JECT_EMAIL } from "@/constants/links";
 import { NAVIGATION_SECTIONS } from "@/constants/navigation";
 
