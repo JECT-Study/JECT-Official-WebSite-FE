@@ -29,6 +29,8 @@ export const ERROR_CODES = {
   "MAIL-17": { name: "INVALID_SUBJECT", httpStatus: 400, message: "메일 제목은 공백을 제외하고 2~40자여야 합니다." },
   "MAIL-18": { name: "INVALID_IDEMPOTENCY_KEY", httpStatus: 400, message: "Idempotency-Key가 올바르지 않습니다." },
   "MAIL-19": { name: "MAIL_SEND_FAILURE", httpStatus: 503, message: "메일 발송에 실패했습니다." },
+  "MAIL-20": { name: "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH", httpStatus: 409, message: "동일한 Idempotency-Key에 다른 요청 본문을 사용할 수 없습니다." },
+  "MAIL-21": { name: "MAIL_SEND_RESULT_UNKNOWN", httpStatus: 503, message: "메일 발송 여부를 확인할 수 없어 운영자 확인이 필요합니다." },
   "GLOBAL-1": { name: "UNSUPPORTED_PARAMETER_TYPE", httpStatus: 400, message: "Unsupported parameter type" },
   "GLOBAL-2": { name: "RESOURCE_NOT_FOUND", httpStatus: 404, message: "Resource not found" },
   "GLOBAL-3": { name: "TEMPLATE_NOT_FOUND", httpStatus: 404, message: "Template file not found" },
@@ -100,6 +102,7 @@ export const ERROR_CODES = {
   "SEMESTER-5": { name: "EXCEEDED_SEMESTER_EVENT_LIMIT", httpStatus: 400, message: "기수별 행사 유형은 최대 10개까지 등록할 수 있습니다." },
   "INVALID_EMAIL_TEMPLATE": { name: "INVALID_EMAIL_TEMPLATE", httpStatus: 400, message: "유효하지 않은 메일 템플릿입니다." },
   "EMAIL_SEND_FAILURE": { name: "EMAIL_SEND_FAILURE", httpStatus: 503, message: "이메일 전송에 실패했습니다." },
+  "EMAIL_SEND_RESULT_UNKNOWN": { name: "EMAIL_SEND_RESULT_UNKNOWN", httpStatus: 503, message: "이메일 발송 결과를 확인할 수 없습니다." },
   "TOO_MANY_EMAIL_REQUESTS": { name: "TOO_MANY_EMAIL_REQUESTS", httpStatus: 429, message: "이메일 전송 요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요." },
 } as const;
 

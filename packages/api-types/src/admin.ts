@@ -1006,7 +1006,7 @@ export interface components {
             };
         };
         /** @enum {string} */
-        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED";
+        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
         MailDispatchResponse: {
             /** Format: int64 */
             dispatchJobId?: number;
@@ -1019,6 +1019,8 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
         };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
@@ -1611,6 +1613,8 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
             /** Format: date-time */
             requestedAt?: string;
             /** Format: date-time */
@@ -1637,7 +1641,7 @@ export interface components {
             empty?: boolean;
         };
         /** @enum {string} */
-        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED";
+        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED" | "UNKNOWN";
         MailDispatchTargetResponse: {
             /** Format: int64 */
             targetId?: number;
