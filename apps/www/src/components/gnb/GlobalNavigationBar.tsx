@@ -63,7 +63,8 @@ export function GlobalNavigationBar() {
     <div className="pointer-events-none fixed inset-0 z-floated">
       <header
         className={cn(
-          "pointer-events-auto flex w-full justify-center px-margin-lg py-margin-sm tablet:py-10 desktop:py-12",
+          // solid 변형의 하단 border를 --gnb-height에 포함하지 않기 위해 box-content를 사용한다.
+          "pointer-events-auto box-content flex h-(--gnb-height) items-center justify-center px-margin-lg",
           variant === "solid" && "border-b border-stroke-subtle bg-surface-shallow"
         )}
       >
