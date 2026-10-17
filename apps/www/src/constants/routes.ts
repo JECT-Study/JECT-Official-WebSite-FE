@@ -25,7 +25,7 @@ export const routeTo = {
   faq: (tabId?: string, questionId?: string) =>
     [ROUTES.faq, tabId, questionId].filter(Boolean).join("/"),
   projectDetail: (id: string) => `${ROUTES.project}/${id}`,
-  applyGuide: (jobFamily: string) => `${ROUTES.applyGuide}/${jobFamily}`,
-  applyFunnel: (jobFamily: string) => `${ROUTES.applyFunnel}/${jobFamily}`,
-  applyContinue: (jobFamily: string) => `${ROUTES.applyContinue}/${jobFamily}`,
+  applyGuide: (recruitId: number) => `${ROUTES.applyGuide}/${recruitId}`,
+  applyFunnel: (recruitId: number) => `${ROUTES.applyFunnel}/${recruitId}`,
+  applyContinue: (recruitId: number) => `${ROUTES.applyContinue}/${recruitId}`,
 } as const;
