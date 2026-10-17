@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { Card, Divider, EmptyState, Tabs } from "@jects/jds";
 
@@ -49,7 +50,7 @@ function toTabParam(type: RecruitTabType) {
   return type.toLowerCase();
 }
 
-function parseTabParam(param: string | undefined): RecruitTabType {
+function parseTabParam(param: string | null): RecruitTabType {
   return TAB_TYPES.find((type) => toTabParam(type) === param) ?? "SEMESTER";
 }
 
@@ -83,17 +84,14 @@ function formatRecruitPeriod(startDate: string, endDate: string): string {
 
 interface RecruitListProps {
   recruitments: ActiveRecruitment[];
-  tabParam?: string;
 }
 
-export function RecruitList({ recruitments, tabParam }: RecruitListProps) {
-  const [tab, setTab] = useState(() => parseTabParam(tabParam));
+export function RecruitList({ recruitments }: RecruitListProps) {
+  const tab = parseTabParam(useSearchParams().get("type"));
 
   const handleTabChange = (value: string) => {
-    const next = parseTabParam(value);
-    setTab(next);
     // 서버 컴포넌트를 다시 요청하지 않도록 router 대신 history API로 URL만 변경한다.
-    window.history.replaceState(null, "", `?type=${toTabParam(next)}`);
+    window.history.replaceState(null, "", `?type=${value}`);
   };
 
   return (
