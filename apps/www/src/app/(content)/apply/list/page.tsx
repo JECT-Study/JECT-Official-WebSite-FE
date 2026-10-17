@@ -7,16 +7,8 @@ export const metadata: Metadata = {
   title: "지원 안내",
 };
 
-export default async function ApplyListPage({ searchParams }: PageProps<"/apply/list">) {
-  const [{ recruitments }, { type }] = await Promise.all([
-    recruitApi.getActiveRecruitments(),
-    searchParams,
-  ]);
+export default async function ApplyListPage() {
+  const { recruitments } = await recruitApi.getActiveRecruitments();
 
-  return (
-    <RecruitList
-      recruitments={recruitments}
-      tabParam={typeof type === "string" ? type : undefined}
-    />
-  );
+  return <RecruitList recruitments={recruitments} />;
 }
