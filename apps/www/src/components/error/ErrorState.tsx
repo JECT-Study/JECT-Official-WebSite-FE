@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 
 import { BlockButton, Icon } from "@jects/jds";
@@ -8,10 +9,10 @@ interface ErrorStateProps {
   /** 줄바꿈 단위로 나눈 제목이다. 좁은 화면에서 이 단위로만 줄을 바꾼다. */
   title: string[];
   description: string[];
-  withHomeLink?: boolean;
+  action?: ReactNode;
 }
 
-function ErrorState({ title, description, withHomeLink = false }: ErrorStateProps) {
+function ErrorState({ title, description, action }: ErrorStateProps) {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center pt-40 pb-40">
       <section className="flex w-full max-w-narrow flex-col items-center px-margin-lg">
@@ -31,11 +32,7 @@ function ErrorState({ title, description, withHomeLink = false }: ErrorStateProp
               ))}
             </div>
           </div>
-          {withHomeLink && (
-            <BlockButton asChild hierarchy="accent" size="lg" suffixIcon="arrow-right">
-              <Link href={ROUTES.main}>메인 페이지로</Link>
-            </BlockButton>
-          )}
+          {action}
         </div>
       </section>
     </div>
@@ -47,7 +44,11 @@ export function NotFoundState() {
     <ErrorState
       title={["페이지를", "찾을 수", "없습니다"]}
       description={["잘못된 주소를 입력했거나, 삭제된 페이지예요."]}
-      withHomeLink
+      action={
+        <BlockButton asChild hierarchy="accent" size="lg" suffixIcon="arrow-right">
+          <Link href={ROUTES.main}>메인 페이지로</Link>
+        </BlockButton>
+      }
     />
   );
 }
@@ -60,7 +61,13 @@ export function ServiceErrorState() {
         "일시적인 오류일 수 있으니, 잠시 후 다시 시도해주세요.",
         "문제가 지속된다면 jectofficial@ject.kr 로 문의해주세요.",
       ]}
-      withHomeLink
+      action={
+        <BlockButton asChild hierarchy="accent" size="lg" suffixIcon="arrow-right">
+          {/* Next.js는 경로가 바뀔 때만 에러 화면을 초기화하므로 메인 페이지에서 발생한 에러는 Link로 벗어날 수 없다.
+              문서를 새로 불러오도록 a를 사용한다. */}
+          <a href={ROUTES.main}>메인 페이지로</a>
+        </BlockButton>
+      }
     />
   );
 }
