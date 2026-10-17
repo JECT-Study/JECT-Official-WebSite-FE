@@ -82,44 +82,6 @@ function formatRecruitPeriod(startDate: string, endDate: string): string {
   return `${start.year}년 ${start.month}월 ${start.day}일 - ${endLabel}`;
 }
 
-interface RecruitListProps {
-  recruitments: ActiveRecruitment[];
-}
-
-export function RecruitList({ recruitments }: RecruitListProps) {
-  const tab = parseTabParam(useSearchParams().get("type"));
-
-  const handleTabChange = (value: string) => {
-    // 서버 컴포넌트를 다시 요청하지 않도록 router 대신 history API로 URL만 변경한다.
-    window.history.replaceState(null, "", `?type=${value}`);
-  };
-
-  return (
-    <Tabs.Root value={toTabParam(tab)} onValueChange={handleTabChange}>
-      <PageHeader
-        title="지원 안내"
-        description="함께 젝트를 만들어갈 새로운 구성원을 찾고 있습니다."
-      >
-        <Tabs.List aria-label="모집 유형">
-          {TAB_TYPES.map((type) => (
-            <Tabs.Trigger key={type} value={toTabParam(type)}>
-              {RECRUIT_TABS[type].label}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-      </PageHeader>
-      {TAB_TYPES.map((type) => (
-        <Tabs.Content key={type} value={toTabParam(type)}>
-          <RecruitTabPanel
-            type={type}
-            recruitments={recruitments.filter((item) => item.recruitType === type)}
-          />
-        </Tabs.Content>
-      ))}
-    </Tabs.Root>
-  );
-}
-
 interface RecruitTabPanelProps {
   type: RecruitTabType;
   recruitments: ActiveRecruitment[];
@@ -157,5 +119,43 @@ function RecruitTabPanel({ type, recruitments }: RecruitTabPanelProps) {
         </Fragment>
       ))}
     </div>
+  );
+}
+
+interface RecruitListProps {
+  recruitments: ActiveRecruitment[];
+}
+
+export function RecruitList({ recruitments }: RecruitListProps) {
+  const tab = parseTabParam(useSearchParams().get("type"));
+
+  const handleTabChange = (value: string) => {
+    // 서버 컴포넌트를 다시 요청하지 않도록 router 대신 history API로 URL만 변경한다.
+    window.history.replaceState(null, "", `?type=${value}`);
+  };
+
+  return (
+    <Tabs.Root value={toTabParam(tab)} onValueChange={handleTabChange}>
+      <PageHeader
+        title="지원 안내"
+        description="함께 젝트를 만들어갈 새로운 구성원을 찾고 있습니다."
+      >
+        <Tabs.List aria-label="모집 유형">
+          {TAB_TYPES.map((type) => (
+            <Tabs.Trigger key={type} value={toTabParam(type)}>
+              {RECRUIT_TABS[type].label}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+      </PageHeader>
+      {TAB_TYPES.map((type) => (
+        <Tabs.Content key={type} value={toTabParam(type)}>
+          <RecruitTabPanel
+            type={type}
+            recruitments={recruitments.filter((item) => item.recruitType === type)}
+          />
+        </Tabs.Content>
+      ))}
+    </Tabs.Root>
   );
 }
