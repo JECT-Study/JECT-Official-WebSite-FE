@@ -12,6 +12,7 @@ import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
 interface RecruitTab {
+  type: RecruitType;
   label: string;
   empty: {
     header: string;
@@ -28,9 +29,10 @@ const TALENT_POOL_EMPTY = {
   href: EXTERNAL_LINKS.talentPool,
 };
 
-// 탭 순서는 키 순서를 따르고, 여기에 없는 모집 유형은 노출하지 않는다.
-const RECRUIT_TABS = {
-  SEMESTER: {
+// 여기에 없는 모집 유형은 노출하지 않는다.
+const TABS = [
+  {
+    type: "SEMESTER",
     label: "동아리원",
     empty: {
       header: "지금은 모집 기간이 아니에요",
@@ -39,20 +41,16 @@ const RECRUIT_TABS = {
       href: EXTERNAL_LINKS.recruitmentAlert,
     },
   },
-  MAKERS: { label: "메이커스", empty: TALENT_POOL_EMPTY },
-  SUPPORTERS: { label: "서포터즈", empty: TALENT_POOL_EMPTY },
-} as const satisfies Partial<Record<RecruitType, RecruitTab>>;
+  { type: "MAKERS", label: "메이커스", empty: TALENT_POOL_EMPTY },
+  { type: "SUPPORTERS", label: "서포터즈", empty: TALENT_POOL_EMPTY },
+] as const satisfies RecruitTab[];
 
-type RecruitTabType = keyof typeof RECRUIT_TABS;
-
-const TAB_TYPES = Object.keys(RECRUIT_TABS) as RecruitTabType[];
-
-function toTabParam(type: RecruitTabType) {
+function toTabParam(type: RecruitType) {
   return type.toLowerCase();
 }
 
-function parseTabParam(param: string | null): RecruitTabType {
-  return TAB_TYPES.find((type) => toTabParam(type) === param) ?? "SEMESTER";
+function parseTabParam(param: string | null): RecruitTab {
+  return TABS.find((tab) => toTabParam(tab.type) === param) ?? TABS[0];
 }
 
 function getJobFamilyName(recruitment: ActiveRecruitment): string {
@@ -66,12 +64,12 @@ function getRecruitTitle(recruitment: ActiveRecruitment): string {
 }
 
 interface RecruitTabPanelProps {
-  type: RecruitTabType;
+  tab: RecruitTab;
   recruitments: ActiveRecruitment[];
 }
 
-function RecruitTabPanel({ type, recruitments }: RecruitTabPanelProps) {
-  const { label, empty } = RECRUIT_TABS[type];
+function RecruitTabPanel({ tab, recruitments }: RecruitTabPanelProps) {
+  const { label, empty } = tab;
 
   if (recruitments.length === 0) {
     return (
@@ -110,7 +108,7 @@ interface RecruitListProps {
 }
 
 export function RecruitList({ recruitments }: RecruitListProps) {
-  const tab = parseTabParam(useSearchParams().get("type"));
+  const selectedTab = parseTabParam(useSearchParams().get("type"));
 
   const handleTabChange = (value: string) => {
     // 서버 컴포넌트를 다시 요청하지 않도록 router 대신 history API로 URL만 변경한다.
@@ -118,24 +116,24 @@ export function RecruitList({ recruitments }: RecruitListProps) {
   };
 
   return (
-    <Tabs.Root value={toTabParam(tab)} onValueChange={handleTabChange}>
+    <Tabs.Root value={toTabParam(selectedTab.type)} onValueChange={handleTabChange}>
       <PageHeader
         title="지원 안내"
         description="함께 젝트를 만들어갈 새로운 구성원을 찾고 있습니다."
       >
         <Tabs.List aria-label="모집 유형">
-          {TAB_TYPES.map((type) => (
-            <Tabs.Trigger key={type} value={toTabParam(type)}>
-              {RECRUIT_TABS[type].label}
+          {TABS.map((tab) => (
+            <Tabs.Trigger key={tab.type} value={toTabParam(tab.type)}>
+              {tab.label}
             </Tabs.Trigger>
           ))}
         </Tabs.List>
       </PageHeader>
-      {TAB_TYPES.map((type) => (
-        <Tabs.Content key={type} value={toTabParam(type)}>
+      {TABS.map((tab) => (
+        <Tabs.Content key={tab.type} value={toTabParam(tab.type)}>
           <RecruitTabPanel
-            type={type}
-            recruitments={recruitments.filter((item) => item.recruitType === type)}
+            tab={tab}
+            recruitments={recruitments.filter((item) => item.recruitType === tab.type)}
           />
         </Tabs.Content>
       ))}
