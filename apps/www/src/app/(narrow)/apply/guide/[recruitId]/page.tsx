@@ -1,21 +1,31 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { recruitApi } from "@/apis/recruit/api";
 import { RecruitContent, RecruitGuide } from "@/components/apply";
+import { getRecruitTitle } from "@/components/apply/format";
 
-export const metadata: Metadata = {
-  title: "지원 안내",
-};
-
-export default async function ApplyGuidePage({ params }: PageProps<"/apply/guide/[recruitId]">) {
-  const recruitId = Number((await params).recruitId);
+const getRecruit = cache(async (recruitIdParam: string) => {
+  const recruitId = Number(recruitIdParam);
 
   if (!Number.isInteger(recruitId) || recruitId <= 0) {
     notFound();
   }
 
-  const recruit = await recruitApi.getRecruit(recruitId);
+  return recruitApi.getRecruit(recruitId);
+});
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/apply/guide/[recruitId]">): Promise<Metadata> {
+  const recruit = await getRecruit((await params).recruitId);
+
+  return { title: getRecruitTitle(recruit) };
+}
+
+export default async function ApplyGuidePage({ params }: PageProps<"/apply/guide/[recruitId]">) {
+  const recruit = await getRecruit((await params).recruitId);
 
   return (
     <RecruitGuide
