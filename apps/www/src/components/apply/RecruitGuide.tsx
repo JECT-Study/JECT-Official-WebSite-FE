@@ -90,7 +90,9 @@ export function RecruitGuide({ recruit, isClosed, information, notice, faqs }: R
       <LocalNavigation
         title="지원 안내"
         nested
-        onBackClick={() => router.push(ROUTES.applyList)}
+        onBackClick={() =>
+          router.push(`${ROUTES.applyList}?type=${recruit.recruitType.toLowerCase()}`)
+        }
         stretched
       />
 
