@@ -47,12 +47,13 @@ interface RecruitFaq {
 
 interface RecruitGuideProps {
   recruit: Recruit;
+  isClosed: boolean;
   information: ReactNode;
   notice: ReactNode;
   faqs: RecruitFaq[];
 }
 
-export function RecruitGuide({ recruit, information, notice, faqs }: RecruitGuideProps) {
+export function RecruitGuide({ recruit, isClosed, information, notice, faqs }: RecruitGuideProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -124,18 +125,26 @@ export function RecruitGuide({ recruit, information, notice, faqs }: RecruitGuid
         </div>
 
         <div className="flex gap-12">
-          <BlockButton asChild variant="outlined" hierarchy="secondary" size="lg">
-            <Link href={routeTo.applyContinue(recruit.recruitId)}>이어서 작성하기</Link>
-          </BlockButton>
-          <BlockButton
-            asChild
-            hierarchy="accent"
-            size="lg"
-            suffixIcon="arrow-right"
-            className="flex-1"
-          >
-            <Link href={routeTo.applyFunnel(recruit.recruitId)}>지원서 작성하기</Link>
-          </BlockButton>
+          {isClosed ? (
+            <BlockButton hierarchy="accent" size="lg" className="flex-1" disabled>
+              모집이 마감되었습니다
+            </BlockButton>
+          ) : (
+            <>
+              <BlockButton asChild variant="outlined" hierarchy="secondary" size="lg">
+                <Link href={routeTo.applyContinue(recruit.recruitId)}>이어서 작성하기</Link>
+              </BlockButton>
+              <BlockButton
+                asChild
+                hierarchy="accent"
+                size="lg"
+                suffixIcon="arrow-right"
+                className="flex-1"
+              >
+                <Link href={routeTo.applyFunnel(recruit.recruitId)}>지원서 작성하기</Link>
+              </BlockButton>
+            </>
+          )}
         </div>
       </section>
 
