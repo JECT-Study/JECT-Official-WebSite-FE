@@ -81,8 +81,12 @@ export function RecruitGuide({ recruit, isClosed, information, notice, faqs }: R
   };
 
   const handleCopyUrl = async () => {
-    await navigator.clipboard.writeText(window.location.href);
-    toastController.basic("URL을 클립보드에 복사했습니다.");
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toastController.basic("URL을 클립보드에 복사했습니다.");
+    } catch {
+      toastController.destructive("URL 복사에 실패했습니다.");
+    }
   };
 
   return (
