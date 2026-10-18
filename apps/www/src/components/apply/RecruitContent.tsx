@@ -15,7 +15,7 @@ const SAFE_HREF = /^(https?:|mailto:)/i;
 
 const PLAIN_TAGS = new Set(["p", "li", "br"]);
 
-const HEADING_CLASS = "font-title font-title-subtle text-object-bolder";
+const HEADING_CLASS = "font-title font-title-subtle text-wrap text-object-bolder";
 
 /** Accordion 제목은 버튼 안에 렌더링되므로 summary 내부 요소를 제외하고 텍스트만 추출한다. */
 function getSummaryText(node: DOMNode): string {
