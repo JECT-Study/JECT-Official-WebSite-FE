@@ -9,6 +9,7 @@ import type { ActiveRecruitment, RecruitType } from "@/apis/recruit/schemas";
 import { PageHeader } from "@/components/layout";
 import { EXTERNAL_LINKS } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
+import { formatDate } from "@/utils/formatDate";
 
 interface RecruitTab {
   label: string;
@@ -64,24 +65,6 @@ function getRecruitTitle(recruitment: ActiveRecruitment): string {
   return `[젝트 ${recruitment.semesterName}] ${getJobFamilyName(recruitment)} ${round}`;
 }
 
-// 서버가 오프셋 없는 LocalDateTime을 보내므로 Date로 바꾸지 않고 날짜 부분만 읽는다.
-function parseDate(dateTime: string) {
-  const [year, month, day] = dateTime.slice(0, 10).split("-").map(Number);
-
-  return { year, month, day };
-}
-
-function formatRecruitPeriod(startDate: string, endDate: string): string {
-  const start = parseDate(startDate);
-  const end = parseDate(endDate);
-  const endLabel =
-    start.year === end.year
-      ? `${end.month}월 ${end.day}일`
-      : `${end.year}년 ${end.month}월 ${end.day}일`;
-
-  return `${start.year}년 ${start.month}월 ${start.day}일 - ${endLabel}`;
-}
-
 interface RecruitTabPanelProps {
   type: RecruitTabType;
   recruitments: ActiveRecruitment[];
@@ -114,7 +97,7 @@ function RecruitTabPanel({ type, recruitments }: RecruitTabPanelProps) {
             title={getRecruitTitle(recruitment)}
             body={recruitment.summary}
             author={label}
-            date={formatRecruitPeriod(recruitment.startDate, recruitment.endDate)}
+            date={`${formatDate(recruitment.startDate)} - ${formatDate(recruitment.endDate)}`}
           />
         </Fragment>
       ))}
