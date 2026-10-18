@@ -15,27 +15,25 @@ interface ErrorStateProps {
 function ErrorState({ title, description, action }: ErrorStateProps) {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center pt-40 pb-40">
-      <section className="flex w-full max-w-narrow flex-col items-center px-margin-lg">
-        <div className="flex w-full flex-col items-center gap-32 pt-margin-xl pb-margin-3xl">
-          <Icon name="circle-alert" size="5xl" className="text-object-boldest" aria-hidden />
-          <div className="flex w-full flex-col items-center gap-16">
-            <h1 className="flex flex-wrap justify-center gap-x-6 gap-y-4 text-center font-title text-title-4 font-title-normal text-object-boldest">
-              {/* flex 안의 공백은 렌더링되지 않으므로 간격은 유지하고 텍스트에만 띄어쓰기를 남긴다. */}
-              {title.map((chunk, index) => (
-                <Fragment key={chunk}>
-                  {index > 0 && " "}
-                  <span className="whitespace-nowrap">{chunk}</span>
-                </Fragment>
-              ))}
-            </h1>
-            <div className="text-center font-body text-body-md font-body-normal text-object-bold">
-              {description.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
+      <section className="flex w-full max-w-narrow flex-col items-center gap-32 px-margin-lg pt-margin-xl pb-margin-3xl">
+        <Icon name="circle-alert" size="5xl" className="text-object-boldest" aria-hidden />
+        <div className="flex w-full flex-col items-center gap-16">
+          <h1 className="flex flex-wrap justify-center gap-x-6 gap-y-4 font-title text-title-4 font-title-normal text-object-boldest">
+            {/* flex 안의 공백은 렌더링되지 않으므로 간격은 유지하고 텍스트에만 띄어쓰기를 남긴다. */}
+            {title.map((chunk, index) => (
+              <Fragment key={chunk}>
+                {index > 0 && " "}
+                <span className="whitespace-nowrap">{chunk}</span>
+              </Fragment>
+            ))}
+          </h1>
+          <div className="text-center font-body text-body-md font-body-normal text-object-bold">
+            {description.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
           </div>
-          {action}
         </div>
+        {action}
       </section>
     </div>
   );
