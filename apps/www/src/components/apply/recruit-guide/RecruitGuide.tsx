@@ -7,8 +7,8 @@ import type { Recruit } from "@/apis/recruit/schemas";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
+import { getRecruitTitle } from "../format";
 import { CopyUrlButton } from "./CopyUrlButton";
-import { getRecruitTitle } from "./format";
 import { RecruitGuideNavigation } from "./RecruitGuideNavigation";
 import { type RecruitFaq, RecruitGuideTabs } from "./RecruitGuideTabs";
 
