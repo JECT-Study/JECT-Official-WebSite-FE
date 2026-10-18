@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 
 import { BlockButton, Icon } from "@jects/jds";
@@ -20,10 +20,12 @@ function ErrorState({ title, description, action }: ErrorStateProps) {
           <Icon name="circle-alert" size="5xl" className="text-object-boldest" aria-hidden />
           <div className="flex w-full flex-col items-center gap-16">
             <h1 className="flex flex-wrap justify-center gap-x-6 gap-y-4 text-center font-title text-title-4 font-title-normal text-object-boldest">
-              {title.map((chunk) => (
-                <span key={chunk} className="whitespace-nowrap">
-                  {chunk}
-                </span>
+              {/* flex 안의 공백은 렌더링되지 않으므로 간격은 유지하고 텍스트에만 띄어쓰기를 남긴다. */}
+              {title.map((chunk, index) => (
+                <Fragment key={chunk}>
+                  {index > 0 && " "}
+                  <span className="whitespace-nowrap">{chunk}</span>
+                </Fragment>
               ))}
             </h1>
             <div className="text-center font-body text-body-md font-body-normal text-object-bold">
