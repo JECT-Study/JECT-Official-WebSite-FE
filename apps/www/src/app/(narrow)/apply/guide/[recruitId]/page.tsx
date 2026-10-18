@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { recruitApi } from "@/apis/recruit/api";
 import { RecruitContent, RecruitGuide } from "@/components/apply";
 import { getRecruitTitle } from "@/components/apply/format";
+import { hasErrorCode } from "@/errors/hasErrorCode";
 
 const getRecruit = cache(async (recruitIdParam: string) => {
   const recruitId = Number(recruitIdParam);
@@ -13,7 +14,15 @@ const getRecruit = cache(async (recruitIdParam: string) => {
     notFound();
   }
 
-  return recruitApi.getRecruit(recruitId);
+  try {
+    return await recruitApi.getRecruit(recruitId);
+  } catch (error) {
+    if (hasErrorCode(error, "RECRUIT-1")) {
+      notFound();
+    }
+
+    throw error;
+  }
 });
 
 export async function generateMetadata({
