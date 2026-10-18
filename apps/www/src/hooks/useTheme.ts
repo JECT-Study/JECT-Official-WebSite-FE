@@ -79,6 +79,11 @@ function getServerSnapshot(): Theme {
   return "light";
 }
 
+/** 루트 레이아웃의 테마 스크립트가 실행되지 않는 화면에서 저장된 테마를 적용한다. */
+export function restoreTheme() {
+  applyTheme(readStoredTheme() ?? readSystemTheme());
+}
+
 function setTheme(next: Theme) {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, next);
