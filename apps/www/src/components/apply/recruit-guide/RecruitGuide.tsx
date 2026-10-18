@@ -30,7 +30,10 @@ export function RecruitGuide({ recruit, isClosed, information, notice, faqs }: R
 
       <section className="flex flex-col gap-32 pt-margin-xl pb-margin-3xl">
         <div className="flex flex-col gap-16">
-          <h1 className="font-title text-title-5 font-title-bold break-keep text-object-boldest">
+          <h1
+            aria-label={title}
+            className="font-title text-title-5 font-title-bold break-keep text-object-boldest"
+          >
             {title.slice(0, lastSpaceIndex + 1)}
             {/* URL 복사 버튼만 다음 줄로 넘어가지 않도록 마지막 단어와 묶는다. */}
             <span className="inline-flex items-center gap-8 whitespace-nowrap">
