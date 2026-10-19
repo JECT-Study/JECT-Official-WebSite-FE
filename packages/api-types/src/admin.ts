@@ -92,7 +92,7 @@ export interface paths {
         post?: never;
         /**
          * 지원서 삭제
-         * @description 전달한 ID에 해당하는 지원서를 삭제합니다.
+         * @description 지원서와 연결된 지원자를 함께 소프트 삭제합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
          */
         delete: operations["deleteApply"];
         options?: never;
@@ -760,7 +760,7 @@ export interface paths {
         post?: never;
         /**
          * 지원서 다수 삭제
-         * @description 선택한 다수의 지원서들을 삭제합니다. 삭제한 수를 반환합니다.
+         * @description 조회된 지원서와 연결된 지원자를 함께 소프트 삭제하고 실제 삭제한 지원서 수를 반환합니다. 중복 ID는 허용하지 않으며 존재하지 않거나 이미 삭제된 지원서는 제외합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
          */
         delete: operations["deleteSubmittedApplies"];
         options?: never;
@@ -1006,7 +1006,7 @@ export interface components {
             };
         };
         /** @enum {string} */
-        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED";
+        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
         MailDispatchResponse: {
             /** Format: int64 */
             dispatchJobId?: number;
@@ -1019,6 +1019,8 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
         };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
@@ -1611,6 +1613,8 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
             /** Format: date-time */
             requestedAt?: string;
             /** Format: date-time */
@@ -1637,7 +1641,7 @@ export interface components {
             empty?: boolean;
         };
         /** @enum {string} */
-        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED";
+        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED" | "UNKNOWN";
         MailDispatchTargetResponse: {
             /** Format: int64 */
             targetId?: number;
