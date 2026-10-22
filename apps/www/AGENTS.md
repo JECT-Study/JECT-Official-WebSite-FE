@@ -55,6 +55,11 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
 - **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
   `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로
   여기서 정합니다. 페이지마다 `max-w-[922px]` 등을 다시 작성하지 않습니다.
+- **페이지 레이아웃**: 본문 너비와 GNB 아래 여백은 라우트 그룹 레이아웃이 정합니다.
+  `max-w-content` 페이지는 `app/(content)/`, `max-w-narrow` 페이지는 `app/(narrow)/` 아래에
+  둡니다. 두 너비 중 하나의 단일 열로 구성되지 않는 페이지는 그룹 밖에 두고 페이지에서
+  레이아웃을 정합니다. 그룹 안의 페이지와 feature에서는 너비나 GNB 높이 여백을 다시 지정하지
+  않습니다. GNB 높이는 `globals.css`의 `--gnb-height`가 단일 출처입니다.
 - **JDS와 서버 컴포넌트**: `Tabs.Root`처럼 dot notation으로 사용하는 컴포넌트와
   `toastController` 같은 컴포넌트가 아닌 값은 서버 컴포넌트에서 사용할 수 없으므로
   `"use client"` 파일 안에서 사용합니다. `@jects/jds/tokens`, `@jects/jds/utils`,

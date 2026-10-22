@@ -7,3 +7,17 @@
   --container-content: 922px;
   --container-narrow: 656px;
 }
+
+@layer base {
+  :root {
+    --gnb-height: 44px;
+
+    @variant tablet {
+      --gnb-height: 46px;
+    }
+
+    @variant desktop {
+      --gnb-height: 56px;
+    }
+  }
+}
