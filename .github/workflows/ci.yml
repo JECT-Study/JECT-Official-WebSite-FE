@@ -132,6 +132,8 @@ jobs:
       - name: Run E2E
         if: steps.changes.outputs.relevant == 'true'
         run: pnpm e2e --filter=@ject/www
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
       # 실패 원인 분석은 이 아티팩트의 trace로 한다 (apps/www/docs/e2e-testing.md 참고).
       - name: Upload report
