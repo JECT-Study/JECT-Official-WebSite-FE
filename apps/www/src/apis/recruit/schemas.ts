@@ -1,6 +1,7 @@
 import type { components } from "@ject/api-types/core";
 import { z } from "zod";
 
+import { localDateTimeSchema } from "@/apis/schemas";
 import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
@@ -42,8 +43,8 @@ const recruitBaseSchema = z.object({
   recruitTypeDetailDescription: z.string(),
   jobFamily: jobFamilySchema,
   jobFamilyDescription: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
+  startDate: localDateTimeSchema,
+  endDate: localDateTimeSchema,
 });
 
 export const activeRecruitmentSchema = recruitBaseSchema.extend({
