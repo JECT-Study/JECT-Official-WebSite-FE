@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import { Card, Divider, EmptyState, Tabs } from "@jects/jds";
 
 import type { ActiveRecruitment, RecruitType } from "@/apis/recruit/schemas";
-import { PageHeader } from "@/components/layout";
 import { EXTERNAL_LINKS } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
@@ -116,19 +115,18 @@ export function RecruitList({ recruitments }: RecruitListProps) {
   };
 
   return (
-    <Tabs.Root value={toTabParam(selectedTab.type)} onValueChange={handleTabChange}>
-      <PageHeader
-        title="지원 안내"
-        description="함께 젝트를 만들어갈 새로운 구성원을 찾고 있습니다."
-      >
-        <Tabs.List aria-label="모집 유형">
-          {TABS.map((tab) => (
-            <Tabs.Trigger key={tab.type} value={toTabParam(tab.type)}>
-              {tab.label}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-      </PageHeader>
+    <Tabs.Root
+      value={toTabParam(selectedTab.type)}
+      onValueChange={handleTabChange}
+      className="flex flex-col gap-48"
+    >
+      <Tabs.List aria-label="모집 유형">
+        {TABS.map((tab) => (
+          <Tabs.Trigger key={tab.type} value={toTabParam(tab.type)}>
+            {tab.label}
+          </Tabs.Trigger>
+        ))}
+      </Tabs.List>
       {TABS.map((tab) => (
         <Tabs.Content key={tab.type} value={toTabParam(tab.type)}>
           <RecruitTabPanel
