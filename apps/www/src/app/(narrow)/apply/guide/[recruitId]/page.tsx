@@ -9,7 +9,6 @@ import { getRecruitTitle } from "@/components/apply/format";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { parseIdParam } from "@/utils/parseIdParam";
 
-// 서버가 오프셋 없는 LocalDateTime을 보내므로 실행 환경의 시간대와 무관하게 한국 시각으로 해석한다.
 function parseKstDateTime(dateTime: string) {
   return new Date(`${dateTime}+09:00`);
 }
