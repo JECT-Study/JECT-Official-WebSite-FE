@@ -84,11 +84,11 @@ export function DataTableBase<TData extends RowData>({ table, className }: DataT
   const rowClick = table.options.meta?.rowClick;
 
   const rows = table.getRowModel().rows.map((row) => {
-    const onRowClick =
-      rowClick && (rowClick.canClick?.(row.original) ?? true) ? rowClick.onRowClick : undefined;
+    const clickDisabled = rowClick?.canClick?.(row.original) === false;
+    const onRowClick = clickDisabled ? undefined : rowClick?.onRowClick;
     const rowProps = {
       selected: row.getIsSelected(),
-      selectionDisabled: !row.getCanSelect(),
+      disabled: clickDisabled,
       onClick: onRowClick && (() => onRowClick(row.original)),
       tabIndex: onRowClick ? 0 : undefined,
       className: onRowClick ? "cursor-pointer" : undefined,
