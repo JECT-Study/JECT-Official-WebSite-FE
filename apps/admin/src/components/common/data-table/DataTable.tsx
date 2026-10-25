@@ -81,9 +81,11 @@ interface DataTableProps<TData extends RowData> {
 
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
   const reorder = table.options.meta?.reorder;
-  const onRowClick = table.options.meta?.onRowClick;
+  const rowClick = table.options.meta?.rowClick;
 
   const rows = table.getRowModel().rows.map((row) => {
+    const onRowClick =
+      rowClick && (rowClick.canClick?.(row.original) ?? true) ? rowClick.onRowClick : undefined;
     const rowProps = {
       selected: row.getIsSelected(),
       selectionDisabled: !row.getCanSelect(),

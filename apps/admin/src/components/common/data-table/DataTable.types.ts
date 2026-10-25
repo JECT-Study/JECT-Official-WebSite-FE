@@ -10,8 +10,12 @@ export interface DataTableReorderOptions<TData> {
    */
   onReorder: (updater: (rows: TData[]) => TData[]) => void;
 }
+export interface DataTableRowClickOptions<TData> {
+  onRowClick: (row: TData) => void;
+  canClick?: (row: TData) => boolean;
+}
 
 export interface DataTableMeta<TData> {
   reorder?: DataTableReorderOptions<TData>;
-  onRowClick?: (row: TData) => void;
+  rowClick?: DataTableRowClickOptions<TData>;
 }
