@@ -12,6 +12,7 @@ export interface DataTableReorderOptions<TData> {
 }
 export interface DataTableRowClickOptions<TData> {
   onRowClick: (row: TData) => void;
+  /** 생략하면 모든 행을 클릭할 수 있다. 체크박스 선택과 드래그는 제한하지 않는다. */
   canClick?: (row: TData) => boolean;
 }
 

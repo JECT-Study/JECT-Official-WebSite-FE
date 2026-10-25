@@ -53,7 +53,7 @@ function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   const meta = cell.column.columnDef.meta;
 
   if (meta?.cellType === "control") {
-    // 체크박스나 드래그 핸들을 누를 때 행 클릭이 함께 실행되지 않게 하고, 커서도 행 클릭 표시를 따르지 않는다.
+    // 컨트롤 셀을 행 클릭 영역에서 제외한다.
     return (
       <DataTableControlCell className="cursor-default" onClick={(event) => event.stopPropagation()}>
         <FlexRender cell={cell} />
