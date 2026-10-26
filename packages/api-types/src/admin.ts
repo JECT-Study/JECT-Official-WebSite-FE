@@ -307,9 +307,54 @@ export interface paths {
         put?: never;
         /**
          * 단체 메일 발송
-         * @description 선택한 제출 지원자에게 메일을 발송하고 대상별 결과를 기록합니다.
+         * @description 선택한 제출 지원자의 발송 의도를 저장합니다. worker 활성화 시 최종 발송을 기다리지 않고
+         *     현재 상태를 반환하므로 작업 상세 조회로 결과를 확인합니다. 비활성 시 즉시 발송합니다.
          */
         post: operations["sendMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 예약 발송 취소
+         * @description 관리자 본인의 예약 발송 작업을 발송 처리가 시작되기 전에 취소합니다.
+         */
+        post: operations["cancelMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/scheduled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 단체 메일 예약
+         * @description 예약 시점에 선택된 대상자와 렌더링된 메일 제목·본문을 snapshot으로 저장합니다.
+         *     scheduledAt은 시간대가 포함된 ISO-8601 형식이며 UTC Instant로 저장합니다. 한국 시간 예시는 2026-10-07T10:00:00+09:00입니다.
+         *     worker 활성화 환경에서 예약 시각 도래 후 자동 실행하며, 서버가 시각을 놓치면 복구 후 처리합니다.
+         *     발송 직전 자격을 다시 확인해 조건을 벗어난 대상만 제외하고 저장된 내용으로 발송합니다.
+         *     생성 응답에 예약 시각은 포함되지 않으므로 기존 작업 상세 조회에서 확인합니다.
+         */
+        post: operations["scheduleMail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -733,7 +778,9 @@ export interface paths {
         };
         /**
          * 단체 메일 수신자별 결과 조회
-         * @description 발송 작업의 수신자별 결과를 상태로 필터링해 조회합니다.
+         * @description 관리자 본인의 발송 작업에서 수신자별 결과와 시도 횟수·다음 재시도 시각·마지막 시도 오류를
+         *     상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.
+         *     Outbox 없는 과거 이력의 재시도 정보는 null입니다.
          */
         get: operations["searchTargets_1"];
         put?: never;
@@ -1006,7 +1053,7 @@ export interface components {
             };
         };
         /** @enum {string} */
-        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
+        MailDispatchJobStatus: "SCHEDULED" | "CANCELLED" | "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
         MailDispatchResponse: {
             /** Format: int64 */
             dispatchJobId?: number;
@@ -1021,6 +1068,25 @@ export interface components {
             failedCount?: number;
             /** Format: int32 */
             unknownCount?: number;
+            /** Format: int32 */
+            excludedCount?: number;
+        };
+        ScheduleMailDispatchRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            /** Format: int64 */
+            scenarioId: number;
+            applyIds: number[];
+            subjectOverride?: string;
+            inputVariables?: {
+                [key: string]: string;
+            };
+            /**
+             * Format: date-time
+             * @description 시간대가 포함된 예약 시각. 한국 시간은 +09:00으로 입력
+             * @example 2026-10-07T10:00:00+09:00
+             */
+            scheduledAt: string;
         };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
@@ -1621,6 +1687,10 @@ export interface components {
             startedAt?: string;
             /** Format: date-time */
             finishedAt?: string;
+            /** Format: date-time */
+            scheduledAt?: string;
+            /** Format: int32 */
+            excludedCount?: number;
         };
         PageMailDispatchJobResponse: {
             /** Format: int64 */
@@ -1641,7 +1711,7 @@ export interface components {
             empty?: boolean;
         };
         /** @enum {string} */
-        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED" | "UNKNOWN";
+        MailDispatchTargetStatus: "CANCELLED" | "PENDING" | "SENT" | "FAILED" | "UNKNOWN" | "EXCLUDED";
         MailDispatchTargetResponse: {
             /** Format: int64 */
             targetId?: number;
@@ -1652,6 +1722,20 @@ export interface components {
             /** Format: date-time */
             sentAt?: string;
             failureReason?: string;
+            /**
+             * Format: int32
+             * @description 기록된 발송 시도 횟수(claim 획득 기준). Outbox 없는 과거 이력은 null
+             */
+            attemptCount?: number;
+            /**
+             * Format: date-time
+             * @description 예약된 다음 재시도 시각. 대기 시각이 없으면 null이며 재발송 허가를 뜻하지 않음
+             */
+            nextAttemptAt?: string;
+            /** @description 가장 최근 저장된 시도 오류 코드. 대기 중 오류는 최종 실패 사유와 구분 */
+            lastAttemptFailureReason?: string;
+            /** @description 예약 발송에서 제외된 경우의 개인정보 없는 사유 코드 */
+            exclusionReason?: string;
         };
         PageMailDispatchTargetResponse: {
             /** Format: int64 */
@@ -2370,6 +2454,54 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["SendMailDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
+    cancelMail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
+    scheduleMail: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleMailDispatchRequest"];
             };
         };
         responses: {

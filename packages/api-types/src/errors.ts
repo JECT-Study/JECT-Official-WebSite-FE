@@ -31,6 +31,8 @@ export const ERROR_CODES = {
   "MAIL-19": { name: "MAIL_SEND_FAILURE", httpStatus: 503, message: "메일 발송에 실패했습니다." },
   "MAIL-20": { name: "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH", httpStatus: 409, message: "동일한 Idempotency-Key에 다른 요청 본문을 사용할 수 없습니다." },
   "MAIL-21": { name: "MAIL_SEND_RESULT_UNKNOWN", httpStatus: 503, message: "메일 발송 여부를 확인할 수 없어 운영자 확인이 필요합니다." },
+  "MAIL-22": { name: "INVALID_SCHEDULED_AT", httpStatus: 400, message: "예약 시각은 현재보다 미래여야 합니다." },
+  "MAIL-23": { name: "DISPATCH_CANCELLATION_NOT_ALLOWED", httpStatus: 409, message: "발송 처리 시작 전의 예약만 취소할 수 있습니다." },
   "GLOBAL-1": { name: "UNSUPPORTED_PARAMETER_TYPE", httpStatus: 400, message: "Unsupported parameter type" },
   "GLOBAL-2": { name: "RESOURCE_NOT_FOUND", httpStatus: 404, message: "Resource not found" },
   "GLOBAL-3": { name: "TEMPLATE_NOT_FOUND", httpStatus: 404, message: "Template file not found" },
