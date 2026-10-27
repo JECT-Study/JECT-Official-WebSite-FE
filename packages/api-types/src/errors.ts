@@ -102,10 +102,10 @@ export const ERROR_CODES = {
   "SEMESTER-3": { name: "NOT_FOUND_SEMESTER_EVENT", httpStatus: 404, message: "기수의 행사를 찾을 수 없습니다." },
   "SEMESTER-4": { name: "DUPLICATED_SEMESTER_EVENT_ID", httpStatus: 400, message: "중복된 행사 ID가 존재합니다." },
   "SEMESTER-5": { name: "EXCEEDED_SEMESTER_EVENT_LIMIT", httpStatus: 400, message: "기수별 행사 유형은 최대 10개까지 등록할 수 있습니다." },
-  "INVALID_EMAIL_TEMPLATE": { name: "INVALID_EMAIL_TEMPLATE", httpStatus: 400, message: "유효하지 않은 메일 템플릿입니다." },
-  "EMAIL_SEND_FAILURE": { name: "EMAIL_SEND_FAILURE", httpStatus: 503, message: "이메일 전송에 실패했습니다." },
-  "EMAIL_SEND_RESULT_UNKNOWN": { name: "EMAIL_SEND_RESULT_UNKNOWN", httpStatus: 503, message: "이메일 발송 결과를 확인할 수 없습니다." },
-  "TOO_MANY_EMAIL_REQUESTS": { name: "TOO_MANY_EMAIL_REQUESTS", httpStatus: 429, message: "이메일 전송 요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요." },
+  "EMAIL-1": { name: "INVALID_EMAIL_TEMPLATE", httpStatus: 400, message: "유효하지 않은 메일 템플릿입니다." },
+  "EMAIL-2": { name: "EMAIL_SEND_FAILURE", httpStatus: 503, message: "이메일 전송에 실패했습니다." },
+  "EMAIL-3": { name: "EMAIL_SEND_RESULT_UNKNOWN", httpStatus: 503, message: "이메일 발송 결과를 확인할 수 없습니다." },
+  "EMAIL-4": { name: "TOO_MANY_EMAIL_REQUESTS", httpStatus: 429, message: "이메일 전송 요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요." },
 } as const;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
