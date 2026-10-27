@@ -22,9 +22,6 @@ import { ERROR_CODES, isErrorCode, type ErrorCode } from "@ject/api-types/errors
 ERROR_CODES["GLOBAL-6"]; // { name: "INVALID_ACCESS_TOKEN", httpStatus: 401, message: "..." }
 ```
 
-코드 형식이 `DOMAIN-N`으로 통일되어 있지 않습니다. `EmailErrorCode`는 코드명을 코드로
-그대로 사용하므로 형식을 가정한 파싱이나 분기를 작성하지 않습니다.
-
 ## 갱신
 
 ```bash
