@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from "next";
 
 import { Footer } from "@/components/footer";
 import { GlobalNavigationBar } from "@/components/gnb";
+import { HideOnMaintenance } from "@/components/layout";
 import { THEME_STORAGE_KEY } from "@/constants/theme";
 
 import { Providers } from "./providers";
@@ -70,9 +71,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <Providers>
-          <GlobalNavigationBar />
+          <HideOnMaintenance>
+            <GlobalNavigationBar />
+          </HideOnMaintenance>
           <main className="min-h-dvh bg-surface-standard">{children}</main>
-          <Footer />
+          <HideOnMaintenance>
+            <Footer />
+          </HideOnMaintenance>
         </Providers>
       </body>
     </html>
