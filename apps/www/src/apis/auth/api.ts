@@ -4,7 +4,7 @@ import { z } from "zod";
 import { httpClient } from "@/apis/httpClient/client";
 import { API_ENDPOINTS } from "@/constants/endpoints";
 
-type EmailTemplate = operations["sendAuthEmail"]["parameters"]["query"]["sendGroupCode"];
+export type EmailTemplate = operations["sendAuthEmail"]["parameters"]["query"]["sendGroupCode"];
 
 export const authApi = {
   isExistMember: (email: string, recruitId: number) =>
