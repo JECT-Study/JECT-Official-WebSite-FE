@@ -52,6 +52,8 @@ jobs:
       - name: Build
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
       # 커밋된 API 타입이 스펙 스냅샷과 일치하는지 확인한다.
       - name: API types up to date
