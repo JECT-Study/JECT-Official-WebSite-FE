@@ -24,6 +24,7 @@ export const authApi = {
   ) =>
     httpClient.post(
       `${API_ENDPOINTS.verifyAuthCode}?${new URLSearchParams({ template })}`,
-      request
+      request,
+      z.boolean()
     ),
 } as const;
