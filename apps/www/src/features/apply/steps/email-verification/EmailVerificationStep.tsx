@@ -111,7 +111,6 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   });
 
   const registerMutation = useRegisterApplicantMutation({
-    onSuccess: onNext,
     onError: (error) => {
       if (hasErrorCode(error, "APPLICANT-2")) {
         setIsExistingMemberDialogOpen(true);
@@ -152,7 +151,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   };
 
   const handleRegister = ({ pin }: EmailVerificationFormValues) => {
-    registerMutation.mutate({ pin, recruitId });
+    registerMutation.mutate({ pin, recruitId }, { onSuccess: onNext });
   };
 
   const deadline = sentAt === null ? null : sentAt + AUTH_CODE_VALID_SECONDS * 1000;
