@@ -9,7 +9,7 @@ import {
   Link as JdsLink,
   TextField,
 } from "@jects/jds";
-import { Controller, useFormContext, useFormState } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import { EXTERNAL_LINKS } from "@/constants/links";
 
@@ -48,49 +48,51 @@ const TERMS: Term[] = [
 
 function PinField() {
   const [isPinVisible, setIsPinVisible] = useState(false);
-  const { control, register, trigger, getFieldState } =
-    useFormContext<EmailVerificationFormValues>();
-  const { errors } = useFormState({ control, name: "pin" });
-
-  const pinField = register("pin", {
-    onChange: () => {
-      if (!getFieldState("pin").isTouched) {
-        void trigger("pin");
-      }
-    },
-  });
+  const { control, trigger } = useFormContext<EmailVerificationFormValues>();
 
   return (
-    <TextField status={errors.pin ? "error" : "default"}>
-      <TextField.Label>PIN 설정</TextField.Label>
-      <TextField.Input
-        type={isPinVisible ? "text" : "password"}
-        inputMode="numeric"
-        maxLength={6}
-        autoComplete="new-password"
-        placeholder="6자리 숫자를 입력해주세요"
-        suffix={
-          <IconButton
-            type="button"
-            icon={isPinVisible ? "eye" : "eye-off"}
-            hierarchy="tertiary"
-            size="sm"
-            aria-label={isPinVisible ? "PIN 숨기기" : "PIN 보기"}
-            onClick={() => setIsPinVisible((visible) => !visible)}
+    <Controller
+      name="pin"
+      control={control}
+      render={({ field, fieldState }) => (
+        <TextField status={fieldState.error ? "error" : "default"}>
+          <TextField.Label>PIN 설정</TextField.Label>
+          <TextField.Input
+            ref={field.ref}
+            name={field.name}
+            type={isPinVisible ? "text" : "password"}
+            inputMode="numeric"
+            maxLength={6}
+            autoComplete="new-password"
+            placeholder="6자리 숫자를 입력해주세요"
+            suffix={
+              <IconButton
+                type="button"
+                icon={isPinVisible ? "eye" : "eye-off"}
+                hierarchy="tertiary"
+                size="sm"
+                aria-label={isPinVisible ? "PIN 숨기기" : "PIN 보기"}
+                onClick={() => setIsPinVisible((visible) => !visible)}
+              />
+            }
+            value={field.value}
+            onBlur={field.onBlur}
+            onChange={(event) => {
+              field.onChange(event.target.value.replace(/\D/g, ""));
+
+              if (!fieldState.isTouched) {
+                void trigger("pin");
+              }
+            }}
           />
-        }
-        {...pinField}
-        onChange={(event) => {
-          event.target.value = event.target.value.replace(/\D/g, "");
-          void pinField.onChange(event);
-        }}
-      />
-      {errors.pin && (
-        <TextField.Footer>
-          <TextField.Helper>{errors.pin.message}</TextField.Helper>
-        </TextField.Footer>
+          {fieldState.error && (
+            <TextField.Footer>
+              <TextField.Helper>{fieldState.error.message}</TextField.Helper>
+            </TextField.Footer>
+          )}
+        </TextField>
       )}
-    </TextField>
+    />
   );
 }
 
