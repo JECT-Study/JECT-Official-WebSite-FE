@@ -10,7 +10,7 @@ interface VerifyAuthCodeVariables extends VerifyAuthCodeRequest {
 }
 
 export function useVerifyAuthCodeMutation(
-  options?: Omit<UseMutationOptions<unknown, Error, VerifyAuthCodeVariables>, "mutationFn">
+  options?: Omit<UseMutationOptions<boolean, Error, VerifyAuthCodeVariables>, "mutationFn">
 ) {
   return useMutation({
     ...options,
