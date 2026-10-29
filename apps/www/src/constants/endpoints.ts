@@ -5,4 +5,5 @@ export const API_ENDPOINTS = {
   sendAuthCode: "/email/send/auth",
   verifyAuthCode: "/auth/code",
   registerApplicant: "/applicants/apply",
+  applyProfile: "/apply/profile",
 } as const;
