@@ -97,7 +97,12 @@ function BodyRow<TData extends RowData>({ row, draggable, rowClick }: BodyRowPro
   const rowProps = {
     selected: row.getIsSelected(),
     disabled: clickDisabled,
-    onClick: onRowClick && (() => onRowClick(row.original)),
+    onClick:
+      onRowClick &&
+      (() => {
+        if (window.getSelection()?.isCollapsed === false) return;
+        onRowClick(row.original);
+      }),
     tabIndex: onRowClick ? 0 : undefined,
     className: onRowClick ? "cursor-pointer" : undefined,
     onKeyDown: onRowClick ? handleKeyDown : undefined,
