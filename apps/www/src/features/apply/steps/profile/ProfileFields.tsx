@@ -99,21 +99,27 @@ function PhoneNumberField() {
   );
 }
 
-interface ProfileSelectFieldProps {
-  name: "careerDetails" | "region" | "experiencePeriod";
+type ProfileSelectName = "careerDetails" | "region" | "experiencePeriod";
+
+interface ProfileSelectOption<T extends string> extends SelectOption {
+  value: T;
+}
+
+interface ProfileSelectFieldProps<T extends ProfileSelectName> {
+  name: T;
   label: string;
   labelSuffix?: ReactNode;
   placeholder: string;
-  options: SelectOption[];
+  options: ProfileSelectOption<ProfileFormValues[T]>[];
 }
 
-function ProfileSelectField({
+function ProfileSelectField<T extends ProfileSelectName>({
   name,
   label,
   labelSuffix,
   placeholder,
   options,
-}: ProfileSelectFieldProps) {
+}: ProfileSelectFieldProps<T>) {
   const { control } = useFormContext<ProfileFormValues>();
 
   return (
