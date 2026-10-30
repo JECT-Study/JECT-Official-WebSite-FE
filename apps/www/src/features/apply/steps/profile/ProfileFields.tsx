@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useId } from "react";
+import { type ReactNode, useId, useState } from "react";
 
 import {
   CheckboxGroup,
@@ -28,13 +28,14 @@ import {
 
 function NameField() {
   const { control } = useFormContext<ProfileFormValues>();
+  const [hasInvalidInput, setHasInvalidInput] = useState(false);
 
   return (
     <Controller
       name="name"
       control={control}
       render={({ field }) => (
-        <TextField>
+        <TextField status={hasInvalidInput ? "error" : "default"}>
           <TextField.Label>이름</TextField.Label>
           <TextField.Input
             ref={field.ref}
@@ -46,7 +47,10 @@ function NameField() {
             value={field.value}
             onBlur={field.onBlur}
             onChange={(event) => {
-              field.onChange(removeNonKorean(event.target.value));
+              const value = removeNonKorean(event.target.value);
+
+              setHasInvalidInput(value !== event.target.value);
+              field.onChange(value);
             }}
           />
           <TextField.Footer>
@@ -61,6 +65,7 @@ function NameField() {
 
 function PhoneNumberField() {
   const { control } = useFormContext<ProfileFormValues>();
+  const [hasInvalidInput, setHasInvalidInput] = useState(false);
 
   return (
     <Controller
@@ -70,7 +75,7 @@ function PhoneNumberField() {
         const error = field.value ? fieldState.error : undefined;
 
         return (
-          <TextField status={error ? "error" : "default"}>
+          <TextField status={error || hasInvalidInput ? "error" : "default"}>
             <TextField.Label>휴대폰 번호</TextField.Label>
             <TextField.Input
               ref={field.ref}
@@ -84,7 +89,10 @@ function PhoneNumberField() {
               value={field.value}
               onBlur={field.onBlur}
               onChange={(event) => {
-                field.onChange(event.target.value.replace(/\D/g, ""));
+                const value = event.target.value.replace(/\D/g, "");
+
+                setHasInvalidInput(value !== event.target.value);
+                field.onChange(value);
               }}
             />
             <TextField.Footer>
