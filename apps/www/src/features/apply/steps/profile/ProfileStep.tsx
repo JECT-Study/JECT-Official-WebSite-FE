@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, toastController } from "@jects/jds";
 import { FormProvider, useForm } from "react-hook-form";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
-import { routeTo } from "@/constants/routes";
-import { hasErrorCode } from "@/errors/hasErrorCode";
+import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useSaveProfileMutation } from "@/hooks/apply/useSaveProfileMutation";
 
@@ -25,7 +24,6 @@ interface ProfileStepProps {
 }
 
 export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: ProfileStepProps) {
-  const router = useRouter();
   const [pendingProfile, setPendingProfile] = useState<ProfileFormValues | null>(null);
   const [isClosedDialogOpen, setIsClosedDialogOpen] = useState(false);
 
@@ -47,7 +45,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
       {
         onSuccess: onNext,
         onError: (error) => {
-          if (hasErrorCode(error, "RECRUIT-1")) {
+          if (isRecruitClosedError(error)) {
             setIsClosedDialogOpen(true);
             return;
           }
@@ -95,26 +93,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
         secondaryAction={{ children: "취소", onClick: () => setPendingProfile(null) }}
       />
 
-      <Dialog
-        open={isClosedDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            router.replace(routeTo.applyGuide(recruitId));
-          }
-        }}
-        header="모집이 마감되었어요"
-        body={
-          <>
-            모집 기간이 종료되어 이 공고에는 지원할 수 없어요.
-            <br />
-            공고 페이지로 이동합니다.
-          </>
-        }
-        primaryAction={{
-          children: "확인",
-          onClick: () => router.replace(routeTo.applyGuide(recruitId)),
-        }}
-      />
+      <RecruitClosedDialog open={isClosedDialogOpen} recruitId={recruitId} />
     </ApplyStepLayout>
   );
 }
