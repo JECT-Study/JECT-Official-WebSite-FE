@@ -4,9 +4,11 @@ import { useSyncExternalStore } from "react";
 
 import { useFunnel } from "@use-funnel/browser";
 
+import type { JobFamily } from "@/apis/recruit/schemas";
+
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
 import { ApplyStepLayout } from "./ApplyStepLayout";
-import { EmailVerificationStep } from "./steps";
+import { EmailVerificationStep, ProfileStep } from "./steps";
 
 const STEP_INDEX = {
   emailVerification: 0,
@@ -17,13 +19,15 @@ const STEP_INDEX = {
 interface ApplyFunnelProps {
   recruitId: number;
   recruitTitle: string;
+  jobFamily: JobFamily;
+  jobFamilyName: string;
 }
 
 function subscribe() {
   return () => {};
 }
 
-function Funnel({ recruitId, recruitTitle }: ApplyFunnelProps) {
+function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunnelProps) {
   const funnel = useFunnel<{
     emailVerification: object;
     profile: object;
@@ -48,8 +52,14 @@ function Funnel({ recruitId, recruitTitle }: ApplyFunnelProps) {
             onNext={() => history.replace("profile", {})}
           />
         )}
-        // TODO: 프로필 작성 단계를 구현하면 교체한다.
-        profile={() => <ApplyStepLayout title="프로필 작성">{null}</ApplyStepLayout>}
+        profile={({ history }) => (
+          <ProfileStep
+            recruitId={recruitId}
+            jobFamily={jobFamily}
+            jobFamilyName={jobFamilyName}
+            onNext={() => history.push("application", {})}
+          />
+        )}
         // TODO: 지원서 작성 단계를 구현하면 교체한다.
         application={() => <ApplyStepLayout title="지원서 작성">{null}</ApplyStepLayout>}
       />

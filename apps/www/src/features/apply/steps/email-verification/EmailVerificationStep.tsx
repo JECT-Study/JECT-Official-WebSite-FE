@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlockButton, Dialog, LabelButton, toastController } from "@jects/jds";
-import { FormProvider, useForm, useFormContext, useFormState } from "react-hook-form";
+import { Dialog, LabelButton, toastController } from "@jects/jds";
+import { FormProvider, useForm } from "react-hook-form";
 
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
 import { useCheckMemberExistsMutation } from "@/hooks/auth/useCheckMemberExistsMutation";
 import { useSendAuthCodeMutation } from "@/hooks/auth/useSendAuthCodeMutation";
@@ -24,28 +25,6 @@ import { emailVerificationFormSchema, type EmailVerificationFormValues } from ".
 
 const AUTH_CODE_VALID_SECONDS = 300;
 const RESEND_COOLDOWN_SECONDS = 180;
-
-interface SubmitButtonProps {
-  disabled: boolean;
-}
-
-function SubmitButton({ disabled }: SubmitButtonProps) {
-  const { control } = useFormContext<EmailVerificationFormValues>();
-  const { isValid } = useFormState({ control });
-
-  return (
-    <BlockButton
-      type="submit"
-      hierarchy="accent"
-      size="md"
-      suffixIcon="arrow-right"
-      className="self-start"
-      disabled={disabled || !isValid}
-    >
-      다음 단계로 진행하기
-    </BlockButton>
-  );
-}
 
 interface EmailVerificationStepProps {
   recruitId: number;
@@ -200,7 +179,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
             {isVerified && <PinSetupFields />}
           </div>
 
-          <SubmitButton disabled={!isVerified || registerMutation.isPending} />
+          <StepSubmitButton disabled={!isVerified || registerMutation.isPending} />
         </form>
       </FormProvider>
 
