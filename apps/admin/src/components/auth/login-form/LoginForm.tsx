@@ -2,7 +2,12 @@ import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BlockButton, IconButton, TextField } from "@jects/jds";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
+import { authApi } from "@/apis/auth/api";
+import { routeTo } from "@/constants/routes";
 
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
 
@@ -16,8 +21,16 @@ export function LoginForm() {
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
   });
+  const navigate = useNavigate();
+  const { mutate, isPending } = useMutation({
+    mutationFn: authApi.login,
+    onSuccess: () => navigate(routeTo.home(), { replace: true }),
+  });
 
-  const onSubmit = (_values: LoginFormValues) => {};
+  const onSubmit = (values: LoginFormValues) => {
+    if (isPending) return;
+    mutate(values);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-28">
