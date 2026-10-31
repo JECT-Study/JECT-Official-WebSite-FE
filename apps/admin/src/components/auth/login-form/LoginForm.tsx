@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BlockButton, IconButton, TextField } from "@jects/jds";
 import { useForm } from "react-hook-form";
@@ -5,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
 
 export function LoginForm() {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const {
     register,
     handleSubmit,
@@ -33,7 +36,7 @@ export function LoginForm() {
           <TextField status={errors.password ? "error" : "default"} className="flex-1">
             <TextField.Label>비밀번호</TextField.Label>
             <TextField.Input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               placeholder="비밀번호를 입력해주세요"
               {...register("password")}
             />
@@ -44,7 +47,13 @@ export function LoginForm() {
             )}
           </TextField>
           <div className="mt-[22px] flex h-[42px] items-center self-start">
-            <IconButton type="button" icon="eye-off" size="lg" hierarchy="tertiary" />
+            <IconButton
+              type="button"
+              icon={isPasswordVisible ? "eye" : "eye-off"}
+              size="lg"
+              hierarchy="tertiary"
+              onClick={() => setIsPasswordVisible((prev) => !prev)}
+            />
           </div>
         </div>
       </div>
