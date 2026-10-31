@@ -7,10 +7,11 @@ import { useFunnel } from "@use-funnel/browser";
 import type { JobFamily } from "@/apis/recruit/schemas";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
+import { ApplyProgress } from "./ApplyProgress";
 import { ApplyStepLayout } from "./ApplyStepLayout";
 import { EmailVerificationStep, ProfileStep } from "./steps";
 
-const STEP_INDEX = {
+const PROGRESS_INDEX = {
   emailVerification: 0,
   profile: 1,
   application: 2,
@@ -39,11 +40,9 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader
-        recruitId={recruitId}
-        recruitTitle={recruitTitle}
-        current={STEP_INDEX[funnel.step]}
-      />
+      <ApplyFunnelHeader recruitId={recruitId} recruitTitle={recruitTitle}>
+        <ApplyProgress current={PROGRESS_INDEX[funnel.step]} />
+      </ApplyFunnelHeader>
       <funnel.Render
         emailVerification={({ history }) => (
           <EmailVerificationStep
