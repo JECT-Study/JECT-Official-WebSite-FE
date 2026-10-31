@@ -33,7 +33,7 @@ export function LoginForm() {
         </TextField>
 
         <div className="flex gap-10">
-          <TextField status={errors.password ? "error" : "default"} className="flex-1">
+          <TextField status={errors.password ? "error" : "default"} className="min-w-0 flex-1">
             <TextField.Label>비밀번호</TextField.Label>
             <TextField.Input
               type={isPasswordVisible ? "text" : "password"}
