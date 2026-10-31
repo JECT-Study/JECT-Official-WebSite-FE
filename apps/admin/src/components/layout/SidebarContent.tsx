@@ -1,15 +1,33 @@
 import { Fragment } from "react";
 
 import { Divider, Icon, LabelButton, Menu } from "@jects/jds";
-import { useLocation } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 
+import { authApi } from "@/apis/auth/api";
+import { queryClient } from "@/apis/queryClient";
 import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
+import { ROUTES } from "@/constants/routes";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
 export function SidebarContent() {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
+  const navigate = useNavigate();
+  const { mutate: logout, isPending } = useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      // 다음에 로그인한 계정에 이전 계정의 캐시가 보이지 않게 비운다.
+      queryClient.clear();
+      navigate(ROUTES.login, { replace: true });
+    },
+  });
+
+  const handleLogout = () => {
+    if (isPending) return;
+    logout();
+  };
 
   return (
     <>
@@ -22,7 +40,7 @@ export function SidebarContent() {
             <Icon name="circle-user-round" size="xs" className="text-object-alternative" />
             <p className="truncate text-label-sm text-object-bolder">계정명</p>
           </div>
-          <LabelButton hierarchy="tertiary" size="sm">
+          <LabelButton hierarchy="tertiary" size="sm" onClick={handleLogout}>
             로그아웃
           </LabelButton>
         </div>
