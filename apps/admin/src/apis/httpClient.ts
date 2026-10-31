@@ -59,9 +59,15 @@ async function request<T>(
     signal: options?.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
   });
 
-  if (response.status === 204) return undefined as T;
+  // 로그아웃은 다른 API와 달리 공통 응답 형식 없이 빈 본문으로 응답한다.
+  const text = await response.text();
 
-  const payload = (await response.json()) as ApiResponse<T>;
+  if (!text) {
+    if (!response.ok) throw new ApiError(String(response.status), response.status, undefined);
+    return undefined as T;
+  }
+
+  const payload = JSON.parse(text) as ApiResponse<T>;
 
   if (!response.ok || payload.status !== "SUCCESS") {
     throw new ApiError(payload.status ?? String(response.status), response.status, payload.data);
