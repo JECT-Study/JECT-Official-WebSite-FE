@@ -16,6 +16,11 @@ export default defineConfig({
   server: {
     // 개발 환경에서 CORS를 피하기 위해 같은 오리진으로 요청한다. 운영에서는 앞단 프록시가
     // 같은 역할을 한다.
-    proxy: apiBaseUrl ? { "/admin": { target: apiBaseUrl, changeOrigin: true } } : undefined,
+    proxy: apiBaseUrl
+      ? {
+          "/admin": { target: apiBaseUrl, changeOrigin: true },
+          "/auth": { target: apiBaseUrl, changeOrigin: true },
+        }
+      : undefined,
   },
 });
