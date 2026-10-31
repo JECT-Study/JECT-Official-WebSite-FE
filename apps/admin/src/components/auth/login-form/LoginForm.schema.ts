@@ -8,10 +8,10 @@ const emailSchema = z
   .max(255, "255자 이하로 입력해주세요.")
   .pipe(z.email("올바른 이메일 형식으로 입력해주세요."));
 
+// 입력한 값을 그대로 제출하도록 trim하지 않고, 공백만 입력한 경우만 빈 값으로 본다.
 const passwordSchema = z
   .string()
-  .trim()
-  .min(1, { message: "비밀번호를 입력해주세요.", abort: true })
+  .refine((value) => value.trim() !== "", { message: "비밀번호를 입력해주세요.", abort: true })
   .min(8, "8자 이상으로 입력해주세요.")
   .max(64, "64자 이하로 입력해주세요.");
 
