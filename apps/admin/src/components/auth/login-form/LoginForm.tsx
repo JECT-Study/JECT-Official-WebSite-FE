@@ -46,6 +46,7 @@ export function LoginForm() {
               </TextField.Footer>
             )}
           </TextField>
+          {/* TODO: JDS 0.8.0 입력 영역 높이(42px)에 맞춘 값이다. 다음 버전으로 올리면 Figma와 같은 36px로 바꾼다. */}
           <div className="mt-[22px] flex h-[42px] items-center self-start">
             <IconButton
               type="button"
