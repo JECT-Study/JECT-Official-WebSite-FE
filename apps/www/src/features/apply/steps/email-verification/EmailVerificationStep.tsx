@@ -17,13 +17,45 @@ import { useSendAuthCodeMutation } from "@/hooks/auth/useSendAuthCodeMutation";
 import { useVerifyAuthCodeMutation } from "@/hooks/auth/useVerifyAuthCodeMutation";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 
-import { AuthCodeField } from "./AuthCodeField";
+import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
 import { EmailField } from "./EmailField";
 import { PinSetupFields } from "./PinSetupFields";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 
 const AUTH_CODE_VALID_SECONDS = 300;
 const RESEND_COOLDOWN_SECONDS = 180;
+
+interface AuthCodeStatusParams {
+  isVerified: boolean;
+  isExpired: boolean;
+  isPending: boolean;
+  isMismatch: boolean;
+}
+
+function getAuthCodeStatus({
+  isVerified,
+  isExpired,
+  isPending,
+  isMismatch,
+}: AuthCodeStatusParams): AuthCodeStatus {
+  if (isVerified) {
+    return "verified";
+  }
+
+  if (isExpired) {
+    return "expired";
+  }
+
+  if (isPending) {
+    return "pending";
+  }
+
+  if (isMismatch) {
+    return "mismatch";
+  }
+
+  return "idle";
+}
 
 interface SubmitButtonProps {
   disabled: boolean;
@@ -155,7 +187,13 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   };
 
   const deadline = sentAt === null ? null : sentAt + AUTH_CODE_VALID_SECONDS * 1000;
-  const isExpired = useIsTimeReached(deadline) && !isVerified;
+  const isExpired = useIsTimeReached(deadline);
+  const authCodeStatus = getAuthCodeStatus({
+    isVerified,
+    isExpired,
+    isPending: verifyMutation.isPending,
+    isMismatch: isAuthCodeMismatch,
+  });
   const canResend = useIsTimeReached(
     sentAt === null ? null : sentAt + RESEND_COOLDOWN_SECONDS * 1000
   );
@@ -180,10 +218,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
               <AuthCodeField
                 deadline={deadline}
                 validSeconds={AUTH_CODE_VALID_SECONDS}
-                isExpired={isExpired}
-                isVerified={isVerified}
-                isMismatch={isAuthCodeMismatch}
-                isPending={verifyMutation.isPending}
+                status={authCodeStatus}
                 onVerify={handleVerify}
                 onChange={() => setIsAuthCodeMismatch(false)}
               />

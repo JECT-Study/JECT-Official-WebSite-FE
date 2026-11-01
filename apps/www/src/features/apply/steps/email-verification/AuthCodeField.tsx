@@ -8,13 +8,25 @@ import { TextFieldWithButton } from "@/components/common/text-field-with-button"
 
 import { authCodeSchema, type EmailVerificationFormValues } from "./schemas";
 
+export type AuthCodeStatus = "idle" | "pending" | "verified" | "expired" | "mismatch";
+
+interface AuthCodeFeedback {
+  status: TextFieldProps["status"];
+  helper: string;
+}
+
+const AUTH_CODE_FEEDBACK: Record<AuthCodeStatus, AuthCodeFeedback> = {
+  idle: { status: "default", helper: "유효 시간 내에 입력해주세요." },
+  pending: { status: "default", helper: "유효 시간 내에 입력해주세요." },
+  verified: { status: "success", helper: "인증에 성공했습니다." },
+  expired: { status: "error", helper: "유효 시간이 만료되었습니다." },
+  mismatch: { status: "error", helper: "인증번호가 올바르지 않습니다." },
+};
+
 interface AuthCodeFieldProps {
   deadline: number;
   validSeconds: number;
-  isExpired: boolean;
-  isVerified: boolean;
-  isMismatch: boolean;
-  isPending: boolean;
+  status: AuthCodeStatus;
   onVerify: () => void;
   onChange: () => void;
 }
@@ -22,10 +34,7 @@ interface AuthCodeFieldProps {
 export function AuthCodeField({
   deadline,
   validSeconds,
-  isExpired,
-  isVerified,
-  isPending,
-  isMismatch,
+  status,
   onVerify,
   onChange,
 }: AuthCodeFieldProps) {
@@ -34,30 +43,19 @@ export function AuthCodeField({
   const { errors } = useFormState({ control, name: "authCode" });
 
   const error = authCode ? errors.authCode : undefined;
-  const isVerifyDisabled =
-    !authCodeSchema.safeParse(authCode).success || isVerified || isExpired || isPending;
+  const isVerified = status === "verified";
+  const canVerify = status === "idle" || status === "mismatch";
+  const isVerifyDisabled = !authCodeSchema.safeParse(authCode).success || !canVerify;
 
-  let status: TextFieldProps["status"] = "default";
-  let helper = "유효 시간 내에 입력해주세요.";
-
-  if (isVerified) {
-    status = "success";
-    helper = "인증에 성공했습니다.";
-  } else if (isExpired) {
-    status = "error";
-    helper = "유효 시간이 만료되었습니다.";
-  } else if (isMismatch) {
-    status = "error";
-    helper = "인증번호가 올바르지 않습니다.";
-  } else if (error?.message) {
-    status = "error";
-    helper = error.message;
-  }
+  const feedback: AuthCodeFeedback =
+    status === "idle" && error?.message
+      ? { status: "error", helper: error.message }
+      : AUTH_CODE_FEEDBACK[status];
 
   return (
     <TextFieldWithButton
       label="인증번호"
-      status={status}
+      status={feedback.status}
       readonly={isVerified}
       button={
         <BlockButton
@@ -72,13 +70,13 @@ export function AuthCodeField({
       }
       footer={
         <>
-          <TextField.Helper>{helper}</TextField.Helper>
+          <TextField.Helper>{feedback.helper}</TextField.Helper>
           {!isVerified && (
             <FieldTimer
               key={deadline}
               deadline={deadline}
               totalSeconds={validSeconds}
-              isError={status === "error"}
+              isError={feedback.status === "error"}
             />
           )}
         </>
