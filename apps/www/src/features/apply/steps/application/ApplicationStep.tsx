@@ -19,7 +19,7 @@ import { useApplicationSuspenseQueries } from "@/hooks/apply/useApplicationSuspe
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
 import { useSubmitApplicationMutation } from "@/hooks/apply/useSubmitApplicationMutation";
 
-import { ApplicationFields } from "./ApplicationFields";
+import { ApplicationField } from "./ApplicationField";
 import {
   type ApplicationFormValues,
   createApplicationSchema,
@@ -115,7 +115,12 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
           onSubmit={form.handleSubmit(setPendingApplication)}
         >
           <div className="flex flex-col gap-24">
-            <ApplicationFields questions={questions} />
+            {questions
+              // 현재 선택형 질문을 사용하지 않으므로 렌더링하지 않는다.
+              .filter((question) => question.inputType !== "SELECT")
+              .map((question) => (
+                <ApplicationField key={question.id} question={question} />
+              ))}
           </div>
           <div className="flex gap-12">
             <BlockButton

@@ -174,7 +174,7 @@ function FieldContent({ question, titleId }: FieldContentProps) {
   }
 }
 
-function ApplicationField({ question }: ApplicationFieldProps) {
+export function ApplicationField({ question }: ApplicationFieldProps) {
   const titleId = useId();
 
   return (
@@ -182,18 +182,5 @@ function ApplicationField({ question }: ApplicationFieldProps) {
       <FieldHeader titleId={titleId} question={question} />
       <FieldContent titleId={titleId} question={question} />
     </div>
-  );
-}
-
-interface ApplicationFieldsProps {
-  questions: Question[];
-}
-
-export function ApplicationFields({ questions }: ApplicationFieldsProps) {
-  return (
-    questions
-      // 현재 선택형 질문을 사용하지 않으므로 렌더링하지 않는다.
-      .filter((question) => question.inputType !== "SELECT")
-      .map((question) => <ApplicationField key={question.id} question={question} />)
   );
 }
