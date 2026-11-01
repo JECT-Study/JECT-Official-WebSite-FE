@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckboxGroup, type CheckboxOption, Link as JdsLink } from "@jects/jds";
-import { Controller, useFormContext } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 
 import { EXTERNAL_LINKS } from "@/constants/links";
 
@@ -40,21 +40,18 @@ const TERMS: Term[] = [
 
 export function TermsField() {
   const { control } = useFormContext<EmailVerificationFormValues>();
+  const {
+    field: { value, onChange },
+  } = useController({ name: "agreedTerms", control });
 
   return (
-    <Controller
-      name="agreedTerms"
-      control={control}
-      render={({ field }) => (
-        <CheckboxGroup
-          size="md"
-          variant="hollow"
-          aria-label="약관 동의"
-          options={TERMS}
-          value={field.value}
-          onChange={field.onChange}
-        />
-      )}
+    <CheckboxGroup
+      size="md"
+      variant="hollow"
+      aria-label="약관 동의"
+      options={TERMS}
+      value={value}
+      onChange={onChange}
     />
   );
 }
