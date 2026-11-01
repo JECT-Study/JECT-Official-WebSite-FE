@@ -28,7 +28,7 @@ export function useApplicationSuspenseQueries(recruitId: number) {
       },
     ],
     combine: ([questions, tempApplication]) => ({
-      questions: [...questions.data.questionResponses].sort((a, b) => a.sequence - b.sequence),
+      questions: questions.data.questionResponses,
       tempApplication: tempApplication.data,
     }),
   });
