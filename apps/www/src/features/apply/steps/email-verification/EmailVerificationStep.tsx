@@ -19,8 +19,9 @@ import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 
 import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
 import { EmailField } from "./EmailField";
-import { PinSetupFields } from "./PinSetupFields";
+import { PinField } from "./PinField";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
+import { TermsField } from "./TermsField";
 
 const AUTH_CODE_VALID_SECONDS = 300;
 const RESEND_COOLDOWN_SECONDS = 180;
@@ -232,7 +233,12 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
               </LabelButton>
             )}
 
-            {isVerified && <PinSetupFields />}
+            {isVerified && (
+              <>
+                <PinField />
+                <TermsField />
+              </>
+            )}
           </div>
 
           <SubmitButton disabled={!isVerified || registerMutation.isPending} />
