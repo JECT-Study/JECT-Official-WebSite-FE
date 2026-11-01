@@ -14,7 +14,12 @@ import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useSaveProfileMutation } from "@/hooks/apply/useSaveProfileMutation";
 
-import { ProfileFields } from "./ProfileFields";
+import { ExperiencePeriodTooltip } from "./ExperiencePeriodTooltip";
+import { InterestedDomainsField } from "./InterestedDomainsField";
+import { NameField } from "./NameField";
+import { CAREER_DETAILS_OPTIONS, EXPERIENCE_PERIOD_OPTIONS, REGION_OPTIONS } from "./options";
+import { PhoneNumberField } from "./PhoneNumberField";
+import { ProfileSelectField } from "./ProfileSelectField";
 import { profileFormSchema, type ProfileFormValues } from "./schemas";
 
 interface ProfileStepProps {
@@ -70,7 +75,28 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
           onSubmit={form.handleSubmit(setPendingProfile)}
         >
           <div className="flex flex-col gap-24">
-            <ProfileFields />
+            <NameField />
+            <PhoneNumberField />
+            <ProfileSelectField
+              name="careerDetails"
+              label="지원자 신분"
+              placeholder="현재 신분을 선택해주세요"
+              options={CAREER_DETAILS_OPTIONS}
+            />
+            <ProfileSelectField
+              name="region"
+              label="거주 지역"
+              placeholder="현재 거주하는 지역을 선택해주세요"
+              options={REGION_OPTIONS}
+            />
+            <ProfileSelectField
+              name="experiencePeriod"
+              label="직무 관련 경험 기간"
+              labelSuffix={<ExperiencePeriodTooltip />}
+              placeholder="직무 관련 경험 기간을 선택해주세요"
+              options={EXPERIENCE_PERIOD_OPTIONS}
+            />
+            <InterestedDomainsField />
           </div>
           <StepSubmitButton disabled={saveMutation.isPending} />
         </form>
