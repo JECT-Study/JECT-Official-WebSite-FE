@@ -12,7 +12,7 @@ import {
 } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { visuallyHidden } from "@jects/jds/utils";
-import { Controller, useFormContext } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 
 import {
   CAREER_DETAILS_OPTIONS,
@@ -29,82 +29,73 @@ import {
 
 function NameField() {
   const { control } = useFormContext<ProfileFormValues>();
+  const {
+    field: { ref, name, value, onBlur, onChange },
+  } = useController({ name: "name", control });
   const [hasInvalidInput, setHasInvalidInput] = useState(false);
 
   return (
-    <Controller
-      name="name"
-      control={control}
-      render={({ field }) => (
-        <TextField status={hasInvalidInput ? "error" : "default"}>
-          <TextField.Label>이름</TextField.Label>
-          <TextField.Input
-            ref={field.ref}
-            name={field.name}
-            required
-            maxLength={MAX_NAME_LENGTH}
-            autoComplete="name"
-            placeholder="김젝트"
-            value={field.value}
-            onBlur={field.onBlur}
-            onChange={(event) => {
-              const value = removeNonKorean(event.target.value);
+    <TextField status={hasInvalidInput ? "error" : "default"}>
+      <TextField.Label>이름</TextField.Label>
+      <TextField.Input
+        ref={ref}
+        name={name}
+        required
+        maxLength={MAX_NAME_LENGTH}
+        autoComplete="name"
+        placeholder="김젝트"
+        value={value}
+        onBlur={onBlur}
+        onChange={(event) => {
+          const nextValue = removeNonKorean(event.target.value);
 
-              setHasInvalidInput(value !== event.target.value);
-              field.onChange(value);
-            }}
-          />
-          <TextField.Footer>
-            <TextField.Helper>한글만 입력할 수 있어요.</TextField.Helper>
-            <TextField.Counter />
-          </TextField.Footer>
-        </TextField>
-      )}
-    />
+          setHasInvalidInput(nextValue !== event.target.value);
+          onChange(nextValue);
+        }}
+      />
+      <TextField.Footer>
+        <TextField.Helper>한글만 입력할 수 있어요.</TextField.Helper>
+        <TextField.Counter />
+      </TextField.Footer>
+    </TextField>
   );
 }
 
 function PhoneNumberField() {
   const { control } = useFormContext<ProfileFormValues>();
+  const {
+    field: { ref, name, value, onBlur, onChange },
+    fieldState,
+  } = useController({ name: "phoneNumber", control });
   const [hasInvalidInput, setHasInvalidInput] = useState(false);
 
+  const error = value ? fieldState.error : undefined;
+
   return (
-    <Controller
-      name="phoneNumber"
-      control={control}
-      render={({ field, fieldState }) => {
-        const error = field.value ? fieldState.error : undefined;
+    <TextField status={error || hasInvalidInput ? "error" : "default"}>
+      <TextField.Label>휴대폰 번호</TextField.Label>
+      <TextField.Input
+        ref={ref}
+        name={name}
+        required
+        type="tel"
+        inputMode="numeric"
+        maxLength={11}
+        autoComplete="tel-national"
+        placeholder="01012345678"
+        value={value}
+        onBlur={onBlur}
+        onChange={(event) => {
+          const nextValue = event.target.value.replace(/\D/g, "");
 
-        return (
-          <TextField status={error || hasInvalidInput ? "error" : "default"}>
-            <TextField.Label>휴대폰 번호</TextField.Label>
-            <TextField.Input
-              ref={field.ref}
-              name={field.name}
-              required
-              type="tel"
-              inputMode="numeric"
-              maxLength={11}
-              autoComplete="tel-national"
-              placeholder="01012345678"
-              value={field.value}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                const value = event.target.value.replace(/\D/g, "");
-
-                setHasInvalidInput(value !== event.target.value);
-                field.onChange(value);
-              }}
-            />
-            <TextField.Footer>
-              <TextField.Helper>
-                {error?.message ?? "'-' 없이 숫자만 입력해주세요."}
-              </TextField.Helper>
-            </TextField.Footer>
-          </TextField>
-        );
-      }}
-    />
+          setHasInvalidInput(nextValue !== event.target.value);
+          onChange(nextValue);
+        }}
+      />
+      <TextField.Footer>
+        <TextField.Helper>{error?.message ?? "'-' 없이 숫자만 입력해주세요."}</TextField.Helper>
+      </TextField.Footer>
+    </TextField>
   );
 }
 
@@ -130,27 +121,24 @@ function ProfileSelectField<T extends ProfileSelectName>({
   options,
 }: ProfileSelectFieldProps<T>) {
   const { control } = useFormContext<ProfileFormValues>();
+  const {
+    field: { ref, value, onChange, onBlur },
+  } = useController({ name, control });
 
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field }) => (
-        <SelectField>
-          <SelectField.Label suffix={labelSuffix}>{label}</SelectField.Label>
-          <SelectField.Input
-            ref={field.ref}
-            name={field.name}
-            required
-            options={options}
-            placeholder={placeholder}
-            value={field.value ?? null}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-          />
-        </SelectField>
-      )}
-    />
+    <SelectField>
+      <SelectField.Label suffix={labelSuffix}>{label}</SelectField.Label>
+      <SelectField.Input
+        ref={ref}
+        name={name}
+        required
+        options={options}
+        placeholder={placeholder}
+        value={value ?? null}
+        onChange={onChange}
+        onBlur={onBlur}
+      />
+    </SelectField>
   );
 }
 
@@ -173,46 +161,41 @@ function ExperiencePeriodTooltip() {
 
 function InterestedDomainsField() {
   const { control } = useFormContext<ProfileFormValues>();
+  const {
+    field: { value, onChange },
+  } = useController({ name: "interestedDomains", control });
   const labelId = useId();
   const { isMobile } = useMediaQueryFlags();
 
-  return (
-    <Controller
-      name="interestedDomains"
-      control={control}
-      render={({ field }) => {
-        const isFull = field.value.length >= MAX_INTERESTED_DOMAINS;
+  const isFull = value.length >= MAX_INTERESTED_DOMAINS;
 
-        return (
-          <div className="flex flex-col gap-12">
-            <span
-              id={labelId}
-              className="flex items-start gap-2 font-label text-label-sm font-label-normal text-object-neutral"
-            >
-              관심 도메인 (최대 {MAX_INTERESTED_DOMAINS}개)
-              <span aria-hidden className="-mt-2 text-feedback-notifying-static-inverse-bold">
-                *
-              </span>
-              <span className={visuallyHidden}>필수</span>
-            </span>
-            <CheckboxGroup
-              size="md"
-              variant="outlined"
-              layout="grid"
-              stretched
-              columns={isMobile ? 2 : 3}
-              aria-labelledby={labelId}
-              options={INTERESTED_DOMAIN_OPTIONS.map((option) => ({
-                ...option,
-                disabled: isFull && !field.value.includes(option.value),
-              }))}
-              value={field.value}
-              onChange={field.onChange}
-            />
-          </div>
-        );
-      }}
-    />
+  return (
+    <div className="flex flex-col gap-12">
+      <span
+        id={labelId}
+        className="flex items-start gap-2 font-label text-label-sm font-label-normal text-object-neutral"
+      >
+        관심 도메인 (최대 {MAX_INTERESTED_DOMAINS}개)
+        <span aria-hidden className="-mt-2 text-feedback-notifying-static-inverse-bold">
+          *
+        </span>
+        <span className={visuallyHidden}>필수</span>
+      </span>
+      <CheckboxGroup
+        size="md"
+        variant="outlined"
+        layout="grid"
+        stretched
+        columns={isMobile ? 2 : 3}
+        aria-labelledby={labelId}
+        options={INTERESTED_DOMAIN_OPTIONS.map((option) => ({
+          ...option,
+          disabled: isFull && !value.includes(option.value),
+        }))}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
   );
 }
 
