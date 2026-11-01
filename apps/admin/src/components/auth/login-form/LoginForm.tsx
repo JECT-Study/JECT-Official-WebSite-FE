@@ -24,7 +24,12 @@ export function LoginForm() {
       <div className="flex flex-col gap-20">
         <TextField status={errors.email ? "error" : "default"}>
           <TextField.Label>이메일</TextField.Label>
-          <TextField.Input type="email" placeholder="name@ject.com" {...register("email")} />
+          <TextField.Input
+            type="email"
+            autoComplete="username"
+            placeholder="name@ject.com"
+            {...register("email")}
+          />
           {errors.email && (
             <TextField.Footer>
               <TextField.Helper>{errors.email.message}</TextField.Helper>
@@ -37,6 +42,7 @@ export function LoginForm() {
             <TextField.Label>비밀번호</TextField.Label>
             <TextField.Input
               type={isPasswordVisible ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="비밀번호를 입력해주세요"
               {...register("password")}
             />
