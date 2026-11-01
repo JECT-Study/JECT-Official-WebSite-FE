@@ -10,6 +10,4 @@ export const authApi = {
   login: (body: LoginRequest) => httpClient.post<void>(API_ENDPOINTS.login, body),
 
   logout: () => httpClient.post<void>(API_ENDPOINTS.logout),
-
-  refresh: () => httpClient.post<void>(API_ENDPOINTS.refresh),
 } as const;

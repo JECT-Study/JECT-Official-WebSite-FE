@@ -1,6 +1,15 @@
 import type { z } from "zod";
 
+import { API_ENDPOINTS } from "@/constants/endpoints";
+import {
+  redirectToLogin,
+  REFRESH_REQUIRED_ERROR_CODES,
+  RELOGIN_REQUIRED_ERROR_CODES,
+} from "@/errors/auth";
+
 const REQUEST_TIMEOUT_MS = 30_000;
+
+let refreshing: Promise<void> | null = null;
 
 export interface ApiResponse<T> {
   status: string;
@@ -34,12 +43,29 @@ function resolveBody(body: unknown) {
   return { body: JSON.stringify(body), contentType: "application/json" };
 }
 
+// 여러 요청이 동시에 토큰 만료로 실패해도 refresh는 한 번만 보내고, 모두 같은 결과를 기다린다.
+function refreshAccessToken() {
+  refreshing ??= request<void>(
+    API_ENDPOINTS.refresh,
+    "POST",
+    undefined,
+    undefined,
+    undefined,
+    false
+  ).finally(() => {
+    refreshing = null;
+  });
+
+  return refreshing;
+}
+
 async function request<T>(
   endpoint: string,
   method: string,
   body?: unknown,
   schema?: z.ZodType<T>,
-  options?: RequestInit
+  options?: RequestInit,
+  allowRefresh = true
 ): Promise<T> {
   const resolved = resolveBody(body);
   const headers = new Headers(options?.headers);
@@ -70,6 +96,18 @@ async function request<T>(
   const payload = JSON.parse(text) as ApiResponse<T>;
 
   if (!response.ok || payload.status !== "SUCCESS") {
+    if (REFRESH_REQUIRED_ERROR_CODES.has(payload.status) && allowRefresh) {
+      await refreshAccessToken();
+      return request(endpoint, method, body, schema, options, false);
+    }
+
+    if (
+      REFRESH_REQUIRED_ERROR_CODES.has(payload.status) ||
+      RELOGIN_REQUIRED_ERROR_CODES.has(payload.status)
+    ) {
+      redirectToLogin();
+    }
+
     throw new ApiError(payload.status ?? String(response.status), response.status, payload.data);
   }
 
