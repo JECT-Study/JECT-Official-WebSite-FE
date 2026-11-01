@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
+import { visuallyHidden } from "@jects/jds/utils";
 import { Controller, useFormContext } from "react-hook-form";
 
 import {
@@ -192,6 +193,7 @@ function InterestedDomainsField() {
               <span aria-hidden className="-mt-2 text-feedback-notifying-static-inverse-bold">
                 *
               </span>
+              <span className={visuallyHidden}>필수</span>
             </span>
             <CheckboxGroup
               size="md"
