@@ -72,7 +72,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff --stat
           elif [ "$(git rev-list --count origin/dev..HEAD)" -gt 0 ] &&
-            [ -z "$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')" ]; then
+            [ -z "$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "PR이 열리지 않은 동기화 커밋이 있어 PR을 다시 엽니다."
           else
@@ -137,7 +137,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          opened=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+          opened=$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')
 
           # 본문은 처음 PR을 열 때만 쓴다. 갱신하면 변경 사항에 직접 적어둔 내용이 지워진다.
           if [ -n "$opened" ]; then
@@ -151,7 +151,7 @@ jobs:
               --body-file "$RUNNER_TEMP/pr-body.md" \
               --label "🔩chore" \
               --label "📦packages"
-            number=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+            number=$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')
           fi
 
           echo "number=$number" >> "$GITHUB_OUTPUT"
