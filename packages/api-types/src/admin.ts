@@ -85,14 +85,14 @@ export interface paths {
          */
         get: operations["findApply"];
         /**
-         * 제출된 지원서 수정
-         * @description 전달한 ID에 해당하는 제출된 지원서의 정보를 수정합니다.
+         * 지원서 수정
+         * @description 수정 가능한 값을 요청 내용으로 교체합니다. 선정 결과는 제출완료만 지정하며, 포트폴리오는 전달한 ID만 삭제합니다.
          */
-        put: operations["editSubmittedApply"];
+        put: operations["editApply"];
         post?: never;
         /**
          * 지원서 삭제
-         * @description 전달한 ID에 해당하는 지원서를 삭제합니다.
+         * @description 지원서와 연결된 지원자를 함께 소프트 삭제합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
          */
         delete: operations["deleteApply"];
         options?: never;
@@ -307,9 +307,54 @@ export interface paths {
         put?: never;
         /**
          * 단체 메일 발송
-         * @description 선택한 제출 지원자에게 메일을 발송하고 대상별 결과를 기록합니다.
+         * @description 선택한 제출 지원자의 발송 의도를 저장합니다. worker 활성화 시 최종 발송을 기다리지 않고
+         *     현재 상태를 반환하므로 작업 상세 조회로 결과를 확인합니다. 비활성 시 즉시 발송합니다.
          */
         post: operations["sendMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 예약 발송 취소
+         * @description 관리자 본인의 예약 발송 작업을 발송 처리가 시작되기 전에 취소합니다.
+         */
+        post: operations["cancelMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/scheduled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 단체 메일 예약
+         * @description 예약 시점에 선택된 대상자와 렌더링된 메일 제목·본문을 snapshot으로 저장합니다.
+         *     scheduledAt은 시간대가 포함된 ISO-8601 형식이며 UTC Instant로 저장합니다. 한국 시간 예시는 2026-10-07T10:00:00+09:00입니다.
+         *     worker 활성화 환경에서 예약 시각 도래 후 자동 실행하며, 서버가 시각을 놓치면 복구 후 처리합니다.
+         *     발송 직전 자격을 다시 확인해 조건을 벗어난 대상만 제외하고 저장된 내용으로 발송합니다.
+         *     생성 응답에 예약 시각은 포함되지 않으므로 기존 작업 상세 조회에서 확인합니다.
+         */
+        post: operations["scheduleMail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -367,7 +412,7 @@ export interface paths {
         put?: never;
         /**
          * 지원자 합격
-         * @description 지원자를 합격 처리하여 구성원으로 승인합니다.
+         * @description 지원서의 선정 결과를 합격으로 지정합니다.
          */
         post: operations["passApply"];
         delete?: never;
@@ -544,6 +589,30 @@ export interface paths {
         patch: operations["editAdminMemberMakers"];
         trace?: never;
     };
+    "/admin/applies/waitlist-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 예비 번호 조정 목록 조회
+         * @description 공고별 예비 합격자 전체를 예비 번호순으로 조회합니다.
+         */
+        get: operations["getWaitlistOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 예비 번호 조정
+         * @description 현재 예비 합격자 전체 ID를 원하는 순서로 변경합니다.
+         */
+        patch: operations["editWaitlistOrder"];
+        trace?: never;
+    };
     "/admin/applies/selection-results": {
         parameters: {
             query?: never;
@@ -559,7 +628,7 @@ export interface paths {
         head?: never;
         /**
          * 지원자 선정 결과 일괄 변경
-         * @description 제출 완료된 지원자들의 선정 결과와 예비 번호를 일괄 변경합니다.
+         * @description 같은 공고의 제출완료 지원자에게 하나의 선정 결과를 적용합니다.
          */
         patch: operations["updateSelectionResults"];
         trace?: never;
@@ -642,6 +711,26 @@ export interface paths {
          * @description 요청한 관리자 계정을 일괄 비활성화합니다. 활성화는 단건 API를 사용합니다.
          */
         patch: operations["deactivateAccounts"];
+        trace?: never;
+    };
+    "/admin/recruits/apply-management": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 지원서 관리용 모집공고 목록 조회
+         * @description 모집 유형과 직군으로 공고를 검색하고 제출 지원서의 선정 결과 통계를 함께 조회합니다.
+         */
+        get: operations["searchApplyManagementRecruits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/admin/mails/targets": {
@@ -733,7 +822,9 @@ export interface paths {
         };
         /**
          * 단체 메일 수신자별 결과 조회
-         * @description 발송 작업의 수신자별 결과를 상태로 필터링해 조회합니다.
+         * @description 관리자 본인의 발송 작업에서 수신자별 결과와 시도 횟수·다음 재시도 시각·마지막 시도 오류를
+         *     상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.
+         *     Outbox 없는 과거 이력의 재시도 정보는 null입니다.
          */
         get: operations["searchTargets_1"];
         put?: never;
@@ -744,7 +835,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/applies": {
+    "/admin/applies/temp-saved": {
         parameters: {
             query?: never;
             header?: never;
@@ -752,17 +843,33 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 지원서 목록 조회
-         * @description 지원서들의 목록을 조회합니다. 모집 공고, 모집 유형, 모집 사유, 기수, 직군, 지원 상태로 필터링할 수 있습니다.
+         * 임시저장 지원서 목록 조회
+         * @description 모집 공고별 임시저장 지원서를 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.
          */
-        get: operations["findApplies"];
+        get: operations["searchTempSavedApplies"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/applies/submitted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
         /**
-         * 지원서 다수 삭제
-         * @description 선택한 다수의 지원서들을 삭제합니다. 삭제한 수를 반환합니다.
+         * 제출완료 지원서 목록 조회
+         * @description 모집 공고별 제출완료 지원서를 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.
          */
-        delete: operations["deleteSubmittedApplies"];
+        get: operations["searchSubmittedApplies"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -788,6 +895,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/applies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 지원서 다수 삭제
+         * @description 조회된 지원서와 연결된 지원자를 함께 소프트 삭제하고 실제 삭제한 지원서 수를 반환합니다. 중복 ID는 허용하지 않으며 존재하지 않거나 이미 삭제된 지원서는 제외합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
+         */
+        delete: operations["deleteSubmittedApplies"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -803,6 +930,7 @@ export interface components {
             content: string;
         };
         RecruitUpdateRequest: {
+            title: string;
             jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
             startDate: string;
@@ -858,23 +986,31 @@ export interface components {
             createdAt?: string;
             customVariables?: components["schemas"]["CustomVariableResponse"][];
         };
-        ApplyPortfolioDto: {
-            fileUrl?: string;
-            fileName?: string;
-            fileSize?: string;
-            sequence?: string;
-        };
-        SubmittedApplyEditRequest: {
+        /** @enum {string} */
+        CareerDetails: "STUDENT" | "EXPECTED_GRADUATE" | "JOB_SEEKER" | "BETWEEN_JOBS" | "EMPLOYEE";
+        EditApplyRequest: {
             name: string;
             phoneNumber: string;
             email: string;
-            jobFamily: components["schemas"]["JobFamily"];
+            careerDetails: components["schemas"]["CareerDetails"];
+            region?: components["schemas"]["Region"];
+            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
+            interestedDomains: string[];
+            selectionResult?: components["schemas"]["SelectionResult"];
+            note?: string;
             answers: {
                 [key: string]: string;
             };
-            portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+            deletePortfolioIds?: number[];
         };
+        /** @enum {string} */
+        ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
+        /** @enum {string} */
+        Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
+        /** @enum {string} */
+        SelectionResult: "UNDECIDED" | "PASSED" | "WAITLISTED" | "FAILED";
         RecruitRegisterRequest: {
+            title: string;
             jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
             startDate: string;
@@ -925,8 +1061,6 @@ export interface components {
         MemberType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
         /** @enum {string} */
         RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
-        /** @enum {string} */
-        CareerDetails: "STUDENT" | "EXPECTED_GRADUATE" | "JOB_SEEKER" | "BETWEEN_JOBS" | "EMPLOYEE";
         CreateMemberSemesterRequest: {
             name: string;
             email: string;
@@ -944,10 +1078,6 @@ export interface components {
             interestedDomains?: string[];
             region?: components["schemas"]["Region"];
         };
-        /** @enum {string} */
-        ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
-        /** @enum {string} */
-        Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
         /** @enum {string} */
         Availability: "UNAVAILABLE" | "CONSIDER_LATER" | "AVAILABLE_BY_TOPIC" | "HIGHLY_AVAILABLE";
         /** @enum {string} */
@@ -1006,7 +1136,7 @@ export interface components {
             };
         };
         /** @enum {string} */
-        MailDispatchJobStatus: "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED";
+        MailDispatchJobStatus: "SCHEDULED" | "CANCELLED" | "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
         MailDispatchResponse: {
             /** Format: int64 */
             dispatchJobId?: number;
@@ -1019,6 +1149,27 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
+            /** Format: int32 */
+            excludedCount?: number;
+        };
+        ScheduleMailDispatchRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            /** Format: int64 */
+            scenarioId: number;
+            applyIds: number[];
+            subjectOverride?: string;
+            inputVariables?: {
+                [key: string]: string;
+            };
+            /**
+             * Format: date-time
+             * @description 시간대가 포함된 예약 시각. 한국 시간은 +09:00으로 입력
+             * @example 2026-10-07T10:00:00+09:00
+             */
+            scheduledAt: string;
         };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
@@ -1253,38 +1404,16 @@ export interface components {
              */
             memo?: string | null;
         };
-        /**
-         * @description 선정 결과
-         * @example PASSED
-         * @enum {string}
-         */
-        SelectionResult: "UNDECIDED" | "PASSED" | "WAITLISTED" | "FAILED";
-        /** @description 지원서별 선정 결과 */
-        SelectionResultItem: {
-            /**
-             * Format: int64
-             * @description 지원서 ID
-             * @example 1
-             */
-            applyId: number;
-            selectionResult: components["schemas"]["SelectionResult"];
-            /**
-             * Format: int32
-             * @description 예비 번호. 예비 합격일 때만 입력
-             * @example 1
-             */
-            waitlistNumber?: number | null;
-        };
-        /** @description 지원서 선정 결과 일괄 변경 요청 */
-        SelectionResultUpdateRequest: {
-            /**
-             * Format: int64
-             * @description 모집 공고 ID
-             * @example 1
-             */
+        EditWaitlistOrderRequest: {
+            /** Format: int64 */
             recruitId: number;
-            /** @description 지원서별 선정 결과 */
-            selectionResults: components["schemas"]["SelectionResultItem"][];
+            applyIds: number[];
+        };
+        UpdateSelectionResultsRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            applyIds: number[];
+            selectionResult: components["schemas"]["SelectionResult"];
         };
         /** @description 관리자 계정 정보 수정 요청 */
         AdminAccountUpdateRequest: {
@@ -1329,6 +1458,51 @@ export interface components {
         SemesterEventsResponse: {
             type?: components["schemas"]["SemesterEventType"];
             events?: components["schemas"]["SemesterEventResponse"][];
+        };
+        /** @enum {string} */
+        ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
+        /** @enum {string} */
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
+        ApplyManagementRecruitResponse: {
+            /** Format: int64 */
+            recruitId?: number;
+            title?: string;
+            /** Format: int64 */
+            semesterId?: number;
+            semesterName?: string;
+            recruitType?: components["schemas"]["RecruitType"];
+            jobFamily?: components["schemas"]["JobFamily"];
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** Format: int64 */
+            submittedApplyCount?: number;
+            /** Format: int64 */
+            passedCount?: number;
+            /** Format: int64 */
+            failedCount?: number;
+            /** Format: int64 */
+            waitlistedCount?: number;
+        };
+        ApplyManagementRecruitsResponse: {
+            recruitTypeCounts?: components["schemas"]["RecruitTypeCountResponse"][];
+            recruits?: components["schemas"]["CursorPageResponseApplyManagementRecruitResponse"];
+        };
+        CursorPageResponseApplyManagementRecruitResponse: {
+            content?: components["schemas"]["ApplyManagementRecruitResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        RecruitTypeCountResponse: {
+            recruitType?: components["schemas"]["RecruitType"];
+            /** Format: int64 */
+            count?: number;
         };
         CursorPageResponseMemberSupportersListResponse: {
             content?: components["schemas"]["MemberSupportersListResponse"][];
@@ -1543,6 +1717,11 @@ export interface components {
              */
             recruitId?: number;
             /**
+             * @description 모집 공고 제목
+             * @example 젝트 6기 백엔드 개발자 모집
+             */
+            title?: string;
+            /**
              * Format: int64
              * @description 기수 ID
              * @example 2
@@ -1587,12 +1766,6 @@ export interface components {
              */
             createdAt?: string;
         };
-        /**
-         * @description 모집 유형
-         * @example SEMESTER
-         * @enum {string}
-         */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
         MailDispatchJobResponse: {
             /** Format: int64 */
             dispatchJobId?: number;
@@ -1611,12 +1784,18 @@ export interface components {
             successCount?: number;
             /** Format: int32 */
             failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
             /** Format: date-time */
             requestedAt?: string;
             /** Format: date-time */
             startedAt?: string;
             /** Format: date-time */
             finishedAt?: string;
+            /** Format: date-time */
+            scheduledAt?: string;
+            /** Format: int32 */
+            excludedCount?: number;
         };
         PageMailDispatchJobResponse: {
             /** Format: int64 */
@@ -1637,7 +1816,7 @@ export interface components {
             empty?: boolean;
         };
         /** @enum {string} */
-        MailDispatchTargetStatus: "PENDING" | "SENT" | "FAILED";
+        MailDispatchTargetStatus: "CANCELLED" | "PENDING" | "SENT" | "FAILED" | "UNKNOWN" | "EXCLUDED";
         MailDispatchTargetResponse: {
             /** Format: int64 */
             targetId?: number;
@@ -1648,6 +1827,20 @@ export interface components {
             /** Format: date-time */
             sentAt?: string;
             failureReason?: string;
+            /**
+             * Format: int32
+             * @description 기록된 발송 시도 횟수(claim 획득 기준). Outbox 없는 과거 이력은 null
+             */
+            attemptCount?: number;
+            /**
+             * Format: date-time
+             * @description 예약된 다음 재시도 시각. 대기 시각이 없으면 null이며 재발송 허가를 뜻하지 않음
+             */
+            nextAttemptAt?: string;
+            /** @description 가장 최근 저장된 시도 오류 코드. 대기 중 오류는 최종 실패 사유와 구분 */
+            lastAttemptFailureReason?: string;
+            /** @description 예약 발송에서 제외된 경우의 개인정보 없는 사유 코드 */
+            exclusionReason?: string;
         };
         PageMailDispatchTargetResponse: {
             /** Format: int64 */
@@ -1667,37 +1860,6 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
-        /** @enum {string} */
-        ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
-        AdminApplyResponse: {
-            /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            email?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            careerDetails?: string;
-            recruitType?: string;
-            note?: string;
-        };
-        PageAdminApplyResponse: {
-            /** Format: int64 */
-            totalElements?: number;
-            /** Format: int32 */
-            totalPages?: number;
-            first?: boolean;
-            last?: boolean;
-            /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["AdminApplyResponse"][];
-            /** Format: int32 */
-            number?: number;
-            sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
-            empty?: boolean;
-        };
         AdminApplyDetailResponse: {
             /** Format: int64 */
             applyId?: number;
@@ -1707,6 +1869,9 @@ export interface components {
             jobFamily?: components["schemas"]["JobFamily"];
             careerDetails?: string;
             recruitType?: string;
+            selectionResult?: components["schemas"]["SelectionResult"];
+            /** Format: int32 */
+            waitlistNumber?: number;
             note?: string;
             region?: string;
             experiencePeriod?: string;
@@ -1715,6 +1880,87 @@ export interface components {
                 [key: string]: string;
             };
             portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+        };
+        ApplyPortfolioDto: {
+            fileUrl?: string;
+            fileName?: string;
+            fileSize?: string;
+            sequence?: string;
+        };
+        WaitlistOrderResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+            /** Format: int32 */
+            waitlistNumber?: number;
+        };
+        WaitlistOrdersResponse: {
+            /** Format: int32 */
+            totalCount?: number;
+            content?: components["schemas"]["WaitlistOrderResponse"][];
+        };
+        TempSavedApplySearchCondition: {
+            /** Format: int64 */
+            recruitId: number;
+            careerDetails?: components["schemas"]["CareerDetails"][];
+            /** Format: int64 */
+            cursor?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int32 */
+            sizeOrDefault?: number;
+        };
+        CursorPageResponseTempSavedApplyResponse: {
+            content?: components["schemas"]["TempSavedApplyResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        TempSavedApplyResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+        };
+        SubmittedApplySearchCondition: {
+            /** Format: int64 */
+            recruitId: number;
+            careerDetails?: components["schemas"]["CareerDetails"][];
+            selectionResults?: components["schemas"]["SelectionResult"][];
+            /** Format: int64 */
+            cursor?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int32 */
+            sizeOrDefault?: number;
+        };
+        CursorPageResponseSubmittedApplyResponse: {
+            content?: components["schemas"]["SubmittedApplyResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        SubmittedApplyResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+            selectionResult?: components["schemas"]["SelectionResult"];
+            /** Format: int32 */
+            waitlistNumber?: number;
+            note?: string;
         };
         /** @enum {string} */
         MemberStatus: "ACTIVE" | "LOCKED";
@@ -1915,7 +2161,7 @@ export interface operations {
             };
         };
     };
-    editSubmittedApply: {
+    editApply: {
         parameters: {
             query?: never;
             header?: never;
@@ -1926,7 +2172,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SubmittedApplyEditRequest"];
+                "application/json": components["schemas"]["EditApplyRequest"];
             };
         };
         responses: {
@@ -2380,6 +2626,54 @@ export interface operations {
             };
         };
     };
+    cancelMail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
+    scheduleMail: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleMailDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
     sendManualTemplatedEmail: {
         parameters: {
             query?: never;
@@ -2442,9 +2736,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "*/*": number;
-                };
+                content?: never;
             };
         };
     };
@@ -2758,7 +3050,29 @@ export interface operations {
             };
         };
     };
-    updateSelectionResults: {
+    getWaitlistOrders: {
+        parameters: {
+            query: {
+                recruitId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WaitlistOrdersResponse"];
+                };
+            };
+        };
+    };
+    editWaitlistOrder: {
         parameters: {
             query?: never;
             header?: never;
@@ -2767,7 +3081,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SelectionResultUpdateRequest"];
+                "application/json": components["schemas"]["EditWaitlistOrderRequest"];
             };
         };
         responses: {
@@ -2779,6 +3093,28 @@ export interface operations {
                 content: {
                     "*/*": number;
                 };
+            };
+        };
+    };
+    updateSelectionResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSelectionResultsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2873,6 +3209,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    searchApplyManagementRecruits: {
+        parameters: {
+            query: {
+                status: components["schemas"]["ApplyStatus"];
+                recruitType: components["schemas"]["RecruitType"];
+                jobFamilies?: components["schemas"]["JobFamily"][];
+                cursor?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApplyManagementRecruitsResponse"];
+                };
             };
         };
     };
@@ -2996,16 +3358,10 @@ export interface operations {
             };
         };
     };
-    findApplies: {
+    searchTempSavedApplies: {
         parameters: {
             query: {
-                applyStatus?: components["schemas"]["ApplyStatus"];
-                semesterId?: number;
-                jobFamily?: components["schemas"]["JobFamily"];
-                recruitType?: components["schemas"]["RecruitType"];
-                recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-                recruitId?: number;
-                pageable: components["schemas"]["Pageable"];
+                condition: components["schemas"]["TempSavedApplySearchCondition"];
             };
             header?: never;
             path?: never;
@@ -3019,8 +3375,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageAdminApplyResponse"];
+                    "*/*": components["schemas"]["CursorPageResponseTempSavedApplyResponse"];
                 };
+            };
+        };
+    };
+    searchSubmittedApplies: {
+        parameters: {
+            query: {
+                condition: components["schemas"]["SubmittedApplySearchCondition"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CursorPageResponseSubmittedApplyResponse"];
+                };
+            };
+        };
+    };
+    deleteEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                semesterId: number;
+                semesterEventId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3045,27 +3444,6 @@ export interface operations {
                 content: {
                     "*/*": number;
                 };
-            };
-        };
-    };
-    deleteEvent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                semesterId: number;
-                semesterEventId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

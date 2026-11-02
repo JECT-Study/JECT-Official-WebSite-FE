@@ -9,6 +9,7 @@ import LoginPage from "@/pages/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export const router = createBrowserRouter([
+  { path: ROUTES.login, element: <LoginPage /> },
   {
     path: ROUTES.login,
     element: (

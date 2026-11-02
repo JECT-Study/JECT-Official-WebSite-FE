@@ -289,9 +289,9 @@
         "tags": [
           "Admin Apply"
         ],
-        "summary": "제출된 지원서 수정",
-        "description": "전달한 ID에 해당하는 제출된 지원서의 정보를 수정합니다.",
-        "operationId": "editSubmittedApply",
+        "summary": "지원서 수정",
+        "description": "수정 가능한 값을 요청 내용으로 교체합니다. 선정 결과는 제출완료만 지정하며, 포트폴리오는 전달한 ID만 삭제합니다.",
+        "operationId": "editApply",
         "parameters": [
           {
             "name": "applyId",
@@ -307,7 +307,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmittedApplyEditRequest"
+                "$ref": "#/components/schemas/EditApplyRequest"
               }
             }
           },
@@ -324,7 +324,7 @@
           "Admin Apply"
         ],
         "summary": "지원서 삭제",
-        "description": "전달한 ID에 해당하는 지원서를 삭제합니다.",
+        "description": "지원서와 연결된 지원자를 함께 소프트 삭제합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.",
         "operationId": "deleteApply",
         "parameters": [
           {
@@ -955,7 +955,7 @@
           "AdminMailDispatch"
         ],
         "summary": "단체 메일 발송",
-        "description": "선택한 제출 지원자에게 메일을 발송하고 대상별 결과를 기록합니다.",
+        "description": "선택한 제출 지원자의 발송 의도를 저장합니다. worker 활성화 시 최종 발송을 기다리지 않고\n현재 상태를 반환하므로 작업 상세 조회로 결과를 확인합니다. 비활성 시 즉시 발송합니다.\n",
         "operationId": "sendMail",
         "parameters": [
           {
@@ -972,6 +972,81 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SendMailDispatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailDispatchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/mails/dispatches/{dispatchJobId}/cancel": {
+      "post": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "예약 발송 취소",
+        "description": "관리자 본인의 예약 발송 작업을 발송 처리가 시작되기 전에 취소합니다.",
+        "operationId": "cancelMail",
+        "parameters": [
+          {
+            "name": "dispatchJobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailDispatchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/mails/dispatches/scheduled": {
+      "post": {
+        "tags": [
+          "AdminMailDispatch"
+        ],
+        "summary": "단체 메일 예약",
+        "description": "예약 시점에 선택된 대상자와 렌더링된 메일 제목·본문을 snapshot으로 저장합니다.\nscheduledAt은 시간대가 포함된 ISO-8601 형식이며 UTC Instant로 저장합니다. 한국 시간 예시는 2026-10-07T10:00:00+09:00입니다.\nworker 활성화 환경에서 예약 시각 도래 후 자동 실행하며, 서버가 시각을 놓치면 복구 후 처리합니다.\n발송 직전 자격을 다시 확인해 조건을 벗어난 대상만 제외하고 저장된 내용으로 발송합니다.\n생성 응답에 예약 시각은 포함되지 않으므로 기존 작업 상세 조회에서 확인합니다.\n",
+        "operationId": "scheduleMail",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleMailDispatchRequest"
               }
             }
           },
@@ -1047,7 +1122,7 @@
           "Apply Pass"
         ],
         "summary": "지원자 합격",
-        "description": "지원자를 합격 처리하여 구성원으로 승인합니다.",
+        "description": "지원서의 선정 결과를 합격으로 지정합니다.",
         "operationId": "passApply",
         "requestBody": {
           "content": {
@@ -1061,15 +1136,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
+            "description": "OK"
           }
         }
       }
@@ -1507,19 +1574,50 @@
         }
       }
     },
-    "/admin/applies/selection-results": {
+    "/admin/applies/waitlist-orders": {
+      "get": {
+        "tags": [
+          "Admin Apply"
+        ],
+        "summary": "예비 번호 조정 목록 조회",
+        "description": "공고별 예비 합격자 전체를 예비 번호순으로 조회합니다.",
+        "operationId": "getWaitlistOrders",
+        "parameters": [
+          {
+            "name": "recruitId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaitlistOrdersResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "patch": {
         "tags": [
           "Admin Apply"
         ],
-        "summary": "지원자 선정 결과 일괄 변경",
-        "description": "제출 완료된 지원자들의 선정 결과와 예비 번호를 일괄 변경합니다.",
-        "operationId": "updateSelectionResults",
+        "summary": "예비 번호 조정",
+        "description": "현재 예비 합격자 전체 ID를 원하는 순서로 변경합니다.",
+        "operationId": "editWaitlistOrder",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SelectionResultUpdateRequest"
+                "$ref": "#/components/schemas/EditWaitlistOrderRequest"
               }
             }
           },
@@ -1536,6 +1634,31 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/admin/applies/selection-results": {
+      "patch": {
+        "tags": [
+          "Admin Apply"
+        ],
+        "summary": "지원자 선정 결과 일괄 변경",
+        "description": "같은 공고의 제출완료 지원자에게 하나의 선정 결과를 적용합니다.",
+        "operationId": "updateSelectionResults",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSelectionResultsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1672,6 +1795,78 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/recruits/apply-management": {
+      "get": {
+        "tags": [
+          "Admin Recruit"
+        ],
+        "summary": "지원서 관리용 모집공고 목록 조회",
+        "description": "모집 유형과 직군으로 공고를 검색하고 제출 지원서의 선정 결과 통계를 함께 조회합니다.",
+        "operationId": "searchApplyManagementRecruits",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ApplyStatus"
+            }
+          },
+          {
+            "name": "recruitType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RecruitType"
+            }
+          },
+          {
+            "name": "jobFamilies",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/JobFamily"
+              }
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplyManagementRecruitsResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1823,7 +2018,7 @@
           "AdminMailDispatch"
         ],
         "summary": "단체 메일 수신자별 결과 조회",
-        "description": "발송 작업의 수신자별 결과를 상태로 필터링해 조회합니다.",
+        "description": "관리자 본인의 발송 작업에서 수신자별 결과와 시도 횟수·다음 재시도 시각·마지막 시도 오류를\n상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.\nOutbox 없는 과거 이력의 재시도 정보는 null입니다.\n",
         "operationId": "searchTargets_1",
         "parameters": [
           {
@@ -1866,71 +2061,21 @@
         }
       }
     },
-    "/admin/applies": {
+    "/admin/applies/temp-saved": {
       "get": {
         "tags": [
           "Admin Apply"
         ],
-        "summary": "지원서 목록 조회",
-        "description": "지원서들의 목록을 조회합니다. 모집 공고, 모집 유형, 모집 사유, 기수, 직군, 지원 상태로 필터링할 수 있습니다.",
-        "operationId": "findApplies",
+        "summary": "임시저장 지원서 목록 조회",
+        "description": "모집 공고별 임시저장 지원서를 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.",
+        "operationId": "searchTempSavedApplies",
         "parameters": [
           {
-            "name": "applyStatus",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/ApplyStatus"
-            }
-          },
-          {
-            "name": "semesterId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "jobFamily",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/JobFamily"
-            }
-          },
-          {
-            "name": "recruitType",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/RecruitType"
-            }
-          },
-          {
-            "name": "recruitTypeDetail",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "$ref": "#/components/schemas/RecruitTypeDetail"
-            }
-          },
-          {
-            "name": "recruitId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "pageable",
+            "name": "condition",
             "in": "query",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Pageable"
+              "$ref": "#/components/schemas/TempSavedApplySearchCondition"
             }
           }
         ],
@@ -1940,38 +2085,39 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageAdminApplyResponse"
+                  "$ref": "#/components/schemas/CursorPageResponseTempSavedApplyResponse"
                 }
               }
             }
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/admin/applies/submitted": {
+      "get": {
         "tags": [
           "Admin Apply"
         ],
-        "summary": "지원서 다수 삭제",
-        "description": "선택한 다수의 지원서들을 삭제합니다. 삭제한 수를 반환합니다.",
-        "operationId": "deleteSubmittedApplies",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SubmittedApplyBulkDeleteRequest"
-              }
+        "summary": "제출완료 지원서 목록 조회",
+        "description": "모집 공고별 제출완료 지원서를 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.",
+        "operationId": "searchSubmittedApplies",
+        "parameters": [
+          {
+            "name": "condition",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SubmittedApplySearchCondition"
             }
-          },
-          "required": true
-        },
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/CursorPageResponseSubmittedApplyResponse"
                 }
               }
             }
@@ -2010,6 +2156,39 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/admin/applies": {
+      "delete": {
+        "tags": [
+          "Admin Apply"
+        ],
+        "summary": "지원서 다수 삭제",
+        "description": "조회된 지원서와 연결된 지원자를 함께 소프트 삭제하고 실제 삭제한 지원서 수를 반환합니다. 중복 ID는 허용하지 않으며 존재하지 않거나 이미 삭제된 지원서는 제외합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.",
+        "operationId": "deleteSubmittedApplies",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmittedApplyBulkDeleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
           }
         }
       }
@@ -2066,10 +2245,16 @@
         "required": [
           "endDate",
           "jobFamily",
-          "startDate"
+          "startDate",
+          "title"
         ],
         "type": "object",
         "properties": {
+          "title": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
           "jobFamily": {
             "$ref": "#/components/schemas/JobFamily"
           },
@@ -2267,35 +2452,29 @@
           }
         }
       },
-      "ApplyPortfolioDto": {
-        "type": "object",
-        "properties": {
-          "fileUrl": {
-            "type": "string"
-          },
-          "fileName": {
-            "type": "string"
-          },
-          "fileSize": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "string"
-          }
-        }
+      "CareerDetails": {
+        "type": "string",
+        "enum": [
+          "STUDENT",
+          "EXPECTED_GRADUATE",
+          "JOB_SEEKER",
+          "BETWEEN_JOBS",
+          "EMPLOYEE"
+        ]
       },
-      "SubmittedApplyEditRequest": {
+      "EditApplyRequest": {
         "required": [
           "answers",
+          "careerDetails",
           "email",
-          "jobFamily",
+          "interestedDomains",
           "name",
           "phoneNumber"
         ],
         "type": "object",
         "properties": {
           "name": {
-            "pattern": "^[가-힣]{1,5}$",
+            "pattern": "^[^\\s]+$",
             "type": "string"
           },
           "phoneNumber": {
@@ -2303,10 +2482,35 @@
             "type": "string"
           },
           "email": {
+            "maxLength": 30,
+            "minLength": 0,
+            "pattern": "^\\S+$",
             "type": "string"
           },
-          "jobFamily": {
-            "$ref": "#/components/schemas/JobFamily"
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Region"
+          },
+          "experiencePeriod": {
+            "$ref": "#/components/schemas/ExperiencePeriod"
+          },
+          "interestedDomains": {
+            "maxItems": 3,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          },
+          "note": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
           },
           "answers": {
             "type": "object",
@@ -2314,22 +2518,71 @@
               "type": "string"
             }
           },
-          "portfolios": {
+          "deletePortfolioIds": {
+            "uniqueItems": true,
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ApplyPortfolioDto"
+              "type": "integer",
+              "format": "int64"
             }
           }
         }
+      },
+      "ExperiencePeriod": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "ONE_TO_TWO",
+          "THREE_TO_FOUR",
+          "FIVE_PLUS"
+        ]
+      },
+      "Region": {
+        "type": "string",
+        "enum": [
+          "SEOUL",
+          "GYEONGGI",
+          "INCHEON",
+          "BUSAN",
+          "DAEGU",
+          "DAEJEON",
+          "GWANGJU",
+          "ULSAN",
+          "SEJONG",
+          "GANGWON",
+          "CHUNGBUK",
+          "CHUNGNAM",
+          "JEONBUK",
+          "JEONNAM",
+          "GYEONGBUK",
+          "GYEONGNAM",
+          "JEJU",
+          "OVERSEAS"
+        ]
+      },
+      "SelectionResult": {
+        "type": "string",
+        "enum": [
+          "UNDECIDED",
+          "PASSED",
+          "WAITLISTED",
+          "FAILED"
+        ]
       },
       "RecruitRegisterRequest": {
         "required": [
           "endDate",
           "jobFamily",
-          "startDate"
+          "startDate",
+          "title"
         ],
         "type": "object",
         "properties": {
+          "title": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
           "jobFamily": {
             "$ref": "#/components/schemas/JobFamily"
           },
@@ -2528,16 +2781,6 @@
           "REFILL"
         ]
       },
-      "CareerDetails": {
-        "type": "string",
-        "enum": [
-          "STUDENT",
-          "EXPECTED_GRADUATE",
-          "JOB_SEEKER",
-          "BETWEEN_JOBS",
-          "EMPLOYEE"
-        ]
-      },
       "CreateMemberSemesterRequest": {
         "required": [
           "activityStatus",
@@ -2606,38 +2849,6 @@
             "$ref": "#/components/schemas/Region"
           }
         }
-      },
-      "ExperiencePeriod": {
-        "type": "string",
-        "enum": [
-          "NONE",
-          "ONE_TO_TWO",
-          "THREE_TO_FOUR",
-          "FIVE_PLUS"
-        ]
-      },
-      "Region": {
-        "type": "string",
-        "enum": [
-          "SEOUL",
-          "GYEONGGI",
-          "INCHEON",
-          "BUSAN",
-          "DAEGU",
-          "DAEJEON",
-          "GWANGJU",
-          "ULSAN",
-          "SEJONG",
-          "GANGWON",
-          "CHUNGBUK",
-          "CHUNGNAM",
-          "JEONBUK",
-          "JEONNAM",
-          "GYEONGBUK",
-          "GYEONGNAM",
-          "JEJU",
-          "OVERSEAS"
-        ]
       },
       "Availability": {
         "type": "string",
@@ -2845,10 +3056,13 @@
       "MailDispatchJobStatus": {
         "type": "string",
         "enum": [
+          "SCHEDULED",
+          "CANCELLED",
           "REQUESTED",
           "PROCESSING",
           "COMPLETED",
-          "FAILED"
+          "FAILED",
+          "UNKNOWN"
         ]
       },
       "MailDispatchResponse": {
@@ -2876,6 +3090,57 @@
           "failedCount": {
             "type": "integer",
             "format": "int32"
+          },
+          "unknownCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "excludedCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ScheduleMailDispatchRequest": {
+        "required": [
+          "applyIds",
+          "recruitId",
+          "scenarioId",
+          "scheduledAt"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "scenarioId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyIds": {
+            "maxItems": 500,
+            "minItems": 0,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "subjectOverride": {
+            "type": "string"
+          },
+          "inputVariables": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "scheduledAt": {
+            "type": "string",
+            "description": "시간대가 포함된 예약 시각. 한국 시간은 +09:00으로 입력",
+            "format": "date-time",
+            "example": "2026-10-07T10:00:00+09:00"
           }
         }
       },
@@ -3335,65 +3600,49 @@
         },
         "description": "메이커스팀 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지"
       },
-      "SelectionResult": {
-        "type": "string",
-        "description": "선정 결과",
-        "example": "PASSED",
-        "enum": [
-          "UNDECIDED",
-          "PASSED",
-          "WAITLISTED",
-          "FAILED"
-        ]
-      },
-      "SelectionResultItem": {
+      "EditWaitlistOrderRequest": {
         "required": [
-          "applyId",
-          "selectionResult"
-        ],
-        "type": "object",
-        "properties": {
-          "applyId": {
-            "type": "integer",
-            "description": "지원서 ID",
-            "format": "int64",
-            "example": 1
-          },
-          "selectionResult": {
-            "$ref": "#/components/schemas/SelectionResult"
-          },
-          "waitlistNumber": {
-            "type": "integer",
-            "description": "예비 번호. 예비 합격일 때만 입력",
-            "format": "int32",
-            "nullable": true,
-            "example": 1
-          }
-        },
-        "description": "지원서별 선정 결과"
-      },
-      "SelectionResultUpdateRequest": {
-        "required": [
-          "recruitId",
-          "selectionResults"
+          "applyIds",
+          "recruitId"
         ],
         "type": "object",
         "properties": {
           "recruitId": {
             "type": "integer",
-            "description": "모집 공고 ID",
-            "format": "int64",
-            "example": 1
+            "format": "int64"
           },
-          "selectionResults": {
+          "applyIds": {
             "type": "array",
-            "description": "지원서별 선정 결과",
             "items": {
-              "$ref": "#/components/schemas/SelectionResultItem"
+              "type": "integer",
+              "format": "int64"
             }
           }
-        },
-        "description": "지원서 선정 결과 일괄 변경 요청"
+        }
+      },
+      "UpdateSelectionResultsRequest": {
+        "required": [
+          "applyIds",
+          "recruitId",
+          "selectionResult"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "applyIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          }
+        }
       },
       "AdminAccountUpdateRequest": {
         "required": [
@@ -3485,6 +3734,124 @@
             "items": {
               "$ref": "#/components/schemas/SemesterEventResponse"
             }
+          }
+        }
+      },
+      "ApplyStatus": {
+        "type": "string",
+        "enum": [
+          "JOINED",
+          "TEMP_SAVED",
+          "SUBMITTED",
+          "REJECTED"
+        ]
+      },
+      "RecruitType": {
+        "type": "string",
+        "enum": [
+          "SEMESTER",
+          "MAKERS",
+          "SUPPORTERS"
+        ]
+      },
+      "ApplyManagementRecruitResponse": {
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "semesterName": {
+            "type": "string"
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "jobFamily": {
+            "$ref": "#/components/schemas/JobFamily"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submittedApplyCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "passedCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "failedCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "waitlistedCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApplyManagementRecruitsResponse": {
+        "type": "object",
+        "properties": {
+          "recruitTypeCounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecruitTypeCountResponse"
+            }
+          },
+          "recruits": {
+            "$ref": "#/components/schemas/CursorPageResponseApplyManagementRecruitResponse"
+          }
+        }
+      },
+      "CursorPageResponseApplyManagementRecruitResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyManagementRecruitResponse"
+            }
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "RecruitTypeCountResponse": {
+        "type": "object",
+        "properties": {
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -4056,6 +4423,11 @@
             "format": "int64",
             "example": 1
           },
+          "title": {
+            "type": "string",
+            "description": "모집 공고 제목",
+            "example": "젝트 6기 백엔드 개발자 모집"
+          },
           "semesterId": {
             "type": "integer",
             "description": "기수 ID",
@@ -4108,20 +4480,6 @@
           }
         }
       },
-      "RecruitType": {
-        "type": "string",
-        "description": "모집 유형",
-        "example": "SEMESTER",
-        "enum": [
-          "SEMESTER",
-          "MAKERS",
-          "SUPPORTERS",
-          "REGULAR",
-          "REGULAR_WAITLIST",
-          "BACKFILL",
-          "MANUAL"
-        ]
-      },
       "MailDispatchJobResponse": {
         "type": "object",
         "properties": {
@@ -4160,6 +4518,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "unknownCount": {
+            "type": "integer",
+            "format": "int32"
+          },
           "requestedAt": {
             "type": "string",
             "format": "date-time"
@@ -4171,6 +4533,14 @@
           "finishedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "excludedCount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -4223,9 +4593,12 @@
       "MailDispatchTargetStatus": {
         "type": "string",
         "enum": [
+          "CANCELLED",
           "PENDING",
           "SENT",
-          "FAILED"
+          "FAILED",
+          "UNKNOWN",
+          "EXCLUDED"
         ]
       },
       "MailDispatchTargetResponse": {
@@ -4251,6 +4624,24 @@
           },
           "failureReason": {
             "type": "string"
+          },
+          "attemptCount": {
+            "type": "integer",
+            "description": "기록된 발송 시도 횟수(claim 획득 기준). Outbox 없는 과거 이력은 null",
+            "format": "int32"
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "description": "예약된 다음 재시도 시각. 대기 시각이 없으면 null이며 재발송 허가를 뜻하지 않음",
+            "format": "date-time"
+          },
+          "lastAttemptFailureReason": {
+            "type": "string",
+            "description": "가장 최근 저장된 시도 오류 코드. 대기 중 오류는 최종 실패 사유와 구분"
+          },
+          "exclusionReason": {
+            "type": "string",
+            "description": "예약 발송에서 제외된 경우의 개인정보 없는 사유 코드"
           }
         }
       },
@@ -4300,91 +4691,6 @@
           }
         }
       },
-      "ApplyStatus": {
-        "type": "string",
-        "enum": [
-          "JOINED",
-          "TEMP_SAVED",
-          "SUBMITTED",
-          "REJECTED"
-        ]
-      },
-      "AdminApplyResponse": {
-        "type": "object",
-        "properties": {
-          "applyId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "jobFamily": {
-            "$ref": "#/components/schemas/JobFamily"
-          },
-          "careerDetails": {
-            "type": "string"
-          },
-          "recruitType": {
-            "type": "string"
-          },
-          "note": {
-            "type": "string"
-          }
-        }
-      },
-      "PageAdminApplyResponse": {
-        "type": "object",
-        "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminApplyResponse"
-            }
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
       "AdminApplyDetailResponse": {
         "type": "object",
         "properties": {
@@ -4409,6 +4715,13 @@
           },
           "recruitType": {
             "type": "string"
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          },
+          "waitlistNumber": {
+            "type": "integer",
+            "format": "int32"
           },
           "note": {
             "type": "string"
@@ -4436,6 +4749,231 @@
             "items": {
               "$ref": "#/components/schemas/ApplyPortfolioDto"
             }
+          }
+        }
+      },
+      "ApplyPortfolioDto": {
+        "type": "object",
+        "properties": {
+          "fileUrl": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "string"
+          }
+        }
+      },
+      "WaitlistOrderResponse": {
+        "type": "object",
+        "properties": {
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "waitlistNumber": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "WaitlistOrdersResponse": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaitlistOrderResponse"
+            }
+          }
+        }
+      },
+      "TempSavedApplySearchCondition": {
+        "required": [
+          "recruitId"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "careerDetails": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CareerDetails"
+            }
+          },
+          "cursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "size": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sizeOrDefault": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CursorPageResponseTempSavedApplyResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TempSavedApplyResponse"
+            }
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TempSavedApplyResponse": {
+        "type": "object",
+        "properties": {
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          }
+        }
+      },
+      "SubmittedApplySearchCondition": {
+        "required": [
+          "recruitId"
+        ],
+        "type": "object",
+        "properties": {
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "careerDetails": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CareerDetails"
+            }
+          },
+          "selectionResults": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectionResult"
+            }
+          },
+          "cursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "size": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sizeOrDefault": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CursorPageResponseSubmittedApplyResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubmittedApplyResponse"
+            }
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "SubmittedApplyResponse": {
+        "type": "object",
+        "properties": {
+          "applyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "careerDetails": {
+            "$ref": "#/components/schemas/CareerDetails"
+          },
+          "selectionResult": {
+            "$ref": "#/components/schemas/SelectionResult"
+          },
+          "waitlistNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string"
           }
         }
       },

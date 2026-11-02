@@ -64,13 +64,20 @@ jobs:
 
       - name: Detect changes
         id: changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "스펙과 에러 코드가 모두 최신입니다."
-          else
+          if ! git diff --quiet; then
+            echo "commit=true" >> "$GITHUB_OUTPUT"
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff --stat
+          elif [ "$(git rev-list --count origin/dev..HEAD)" -gt 0 ] &&
+            [ -z "$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "PR이 열리지 않은 동기화 커밋이 있어 PR을 다시 엽니다."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "스펙과 에러 코드가 모두 최신입니다."
           fi
 
       # GITHUB_TOKEN으로 생성한 PR은 ci.yml을 트리거하지 않아 검사를 여기서 실행한다.
@@ -115,21 +122,22 @@ jobs:
           } > "$RUNNER_TEMP/pr-body.md"
 
       - name: Commit and push
-        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        id: commit
+        if: ${{ !cancelled() && steps.changes.outputs.commit == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add packages/api-types
           git commit -m "chore: 백엔드 API 스펙 동기화 ($(TZ=Asia/Seoul date +%F))"
-          git push origin "$SYNC_BRANCH"
+          git push --no-verify origin "$SYNC_BRANCH"
 
       - name: Open or update draft pull request
         id: pr
-        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' && steps.commit.outcome != 'failure' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          opened=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+          opened=$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')
 
           # 본문은 처음 PR을 열 때만 쓴다. 갱신하면 변경 사항에 직접 적어둔 내용이 지워진다.
           if [ -n "$opened" ]; then
@@ -143,13 +151,13 @@ jobs:
               --body-file "$RUNNER_TEMP/pr-body.md" \
               --label "🔩chore" \
               --label "📦packages"
-            number=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')
+            number=$(gh pr list --head "$SYNC_BRANCH" --base "$BASE_BRANCH" --state open --json number,isCrossRepository --jq '.[] | select(.isCrossRepository | not) | .number')
           fi
 
           echo "number=$number" >> "$GITHUB_OUTPUT"
 
       - name: Comment check result
-        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' && steps.pr.outputs.number != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}

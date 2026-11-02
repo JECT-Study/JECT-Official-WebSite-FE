@@ -1,12 +1,16 @@
+import type { KeyboardEvent } from "react";
+
 import {
   type Cell,
   FlexRender,
   type Header,
   type ReactTable,
+  type Row,
   type RowData,
 } from "@tanstack/react-table";
 
 import type { DataTableFeatures } from "./DataTable.features";
+import type { DataTableRowClickOptions } from "./DataTable.types";
 import {
   DataTableBody,
   DataTableCell,
@@ -49,8 +53,9 @@ function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   const meta = cell.column.columnDef.meta;
 
   if (meta?.cellType === "control") {
+    // 컨트롤 셀을 행 클릭 영역에서 제외한다.
     return (
-      <DataTableControlCell>
+      <DataTableControlCell className="cursor-default" onClick={(event) => event.stopPropagation()}>
         <FlexRender cell={cell} />
       </DataTableControlCell>
     );
@@ -71,6 +76,43 @@ function BodyCell<TData extends RowData>({ cell }: BodyCellProps<TData>) {
   );
 }
 
+interface BodyRowProps<TData extends RowData> {
+  row: Row<DataTableFeatures<TData>, TData>;
+  draggable: boolean;
+  rowClick?: DataTableRowClickOptions<TData>;
+}
+
+function BodyRow<TData extends RowData>({ row, draggable, rowClick }: BodyRowProps<TData>) {
+  const clickDisabled = rowClick?.canClick?.(row.original) === false;
+  const onRowClick = clickDisabled ? undefined : rowClick?.onRowClick;
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTableRowElement>) => {
+    // 체크박스나 드래그 핸들에서 올라온 키는 무시한다.
+    if (event.target !== event.currentTarget) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onRowClick?.(row.original);
+  };
+
+  const rowProps = {
+    selected: row.getIsSelected(),
+    disabled: clickDisabled,
+    onClick:
+      onRowClick &&
+      (() => {
+        if (window.getSelection()?.isCollapsed === false) return;
+        onRowClick(row.original);
+      }),
+    tabIndex: onRowClick ? 0 : undefined,
+    className: onRowClick ? "cursor-pointer" : undefined,
+    onKeyDown: onRowClick ? handleKeyDown : undefined,
+    // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
+    children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
+  };
+
+  return draggable ? <DraggableRow id={row.id} {...rowProps} /> : <DataTableRow {...rowProps} />;
+}
+
 interface DataTableProps<TData extends RowData> {
   table: ReactTable<DataTableFeatures<TData>, TData>;
   className?: string;
@@ -78,21 +120,13 @@ interface DataTableProps<TData extends RowData> {
 
 export function DataTableBase<TData extends RowData>({ table, className }: DataTableProps<TData>) {
   const reorder = table.options.meta?.reorder;
+  const rowClick = table.options.meta?.rowClick;
 
-  const rows = table.getRowModel().rows.map((row) => {
-    const rowProps = {
-      selected: row.getIsSelected(),
-      selectionDisabled: !row.getCanSelect(),
-      // 열 숨기기 기능을 등록하지 않아 getAllCells를 쓴다. 등록하면 getVisibleCells로 바꾼다.
-      children: row.getAllCells().map((cell) => <BodyCell key={cell.id} cell={cell} />),
-    };
-
-    return reorder ? (
-      <DraggableRow key={row.id} id={row.id} {...rowProps} />
-    ) : (
-      <DataTableRow key={row.id} {...rowProps} />
-    );
-  });
+  const rows = table
+    .getRowModel()
+    .rows.map((row) => (
+      <BodyRow key={row.id} row={row} draggable={reorder !== undefined} rowClick={rowClick} />
+    ));
 
   return (
     <DataTableRoot className={className}>

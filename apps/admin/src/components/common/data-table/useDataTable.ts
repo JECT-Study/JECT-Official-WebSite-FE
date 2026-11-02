@@ -14,12 +14,12 @@ import {
   createDataTableFeatures,
   type DataTableColumnDef,
 } from "./DataTable.features";
-import type { DataTableReorderOptions } from "./DataTable.types";
+import type { DataTableReorderOptions, DataTableRowClickOptions } from "./DataTable.types";
 
 interface DataTableSelectionOptions<TData> {
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
-  /** 지정하지 않으면 모든 행을 선택할 수 있다. false를 반환한 행은 선택 불가 스타일로 그린다. */
+  /** 생략하면 모든 행을 선택할 수 있다. false를 반환하면 해당 행의 체크박스를 비활성화한다. */
   canSelect?: (row: TData) => boolean;
 }
 
@@ -27,12 +27,14 @@ interface UseDataTableOptions<TData extends RowData> {
   data: TData[];
   /** 렌더마다 새로 만들면 표 모델이 매번 다시 계산되므로 모듈 최상단이나 useMemo로 고정한다. */
   columns: DataTableColumnDef<TData>[];
-  /** 선택 상태의 키로 쓰인다. 행 순서를 쓰면 데이터가 바뀔 때 다른 행이 선택된다. */
+  /** 행마다 고유하고 순서가 바뀌어도 유지되는 id를 반환한다. */
   getRowId: (row: TData) => string;
   /** 지정하면 체크박스 열이 앞에 붙는다. */
   selection?: DataTableSelectionOptions<TData>;
   /** 지정하면 드래그 핸들 열이 체크박스 열보다 앞에 붙는다. */
   reorder?: DataTableReorderOptions<TData>;
+  /** 지정하면 행 클릭과 Enter/Space 조작을 지원한다. */
+  rowClick?: DataTableRowClickOptions<TData>;
 }
 
 const EMPTY_SELECTION: RowSelectionState = {};
@@ -43,6 +45,7 @@ export function useDataTable<TData extends RowData>({
   getRowId,
   selection,
   reorder,
+  rowClick,
 }: UseDataTableOptions<TData>) {
   const [features] = useState(createDataTableFeatures<TData>);
   const hasSelection = selection !== undefined;
@@ -87,6 +90,6 @@ export function useDataTable<TData extends RowData>({
     enableRowSelection: canSelect ? (row) => canSelect(row.original) : undefined,
     state: { rowSelection: tableSelection },
     onRowSelectionChange,
-    meta: { reorder },
+    meta: { reorder, rowClick },
   });
 }

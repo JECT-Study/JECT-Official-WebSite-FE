@@ -606,6 +606,7 @@ export interface components {
         RecruitResponse: {
             /** Format: int64 */
             recruitId?: number;
+            title?: string;
             /** Format: int64 */
             semesterId?: number;
             semesterName?: string;
@@ -624,12 +625,13 @@ export interface components {
             faqs?: components["schemas"]["RecruitFaqResponse"][];
         };
         /** @enum {string} */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
         /** @enum {string} */
         RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         ActiveRecruitmentResponse: {
             /** Format: int64 */
             recruitId?: number;
+            title?: string;
             /** Format: int64 */
             semesterId?: number;
             semesterName?: string;
