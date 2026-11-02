@@ -1,11 +1,7 @@
 import type { z } from "zod";
 
 import { API_ENDPOINTS } from "@/constants/endpoints";
-import {
-  redirectToLogin,
-  REFRESH_REQUIRED_ERROR_CODES,
-  RELOGIN_REQUIRED_ERROR_CODES,
-} from "@/errors/auth";
+import { handleAuthFailure, isRefreshRequired } from "@/errors/auth";
 
 const REQUEST_TIMEOUT_MS = 30_000;
 
@@ -96,17 +92,12 @@ async function request<T>(
   const payload = JSON.parse(text) as ApiResponse<T>;
 
   if (!response.ok || payload.status !== "SUCCESS") {
-    if (REFRESH_REQUIRED_ERROR_CODES.has(payload.status) && allowRefresh) {
+    if (isRefreshRequired(payload.status) && allowRefresh) {
       await refreshAccessToken();
       return request(endpoint, method, body, schema, options, false);
     }
 
-    if (
-      REFRESH_REQUIRED_ERROR_CODES.has(payload.status) ||
-      RELOGIN_REQUIRED_ERROR_CODES.has(payload.status)
-    ) {
-      redirectToLogin();
-    }
+    handleAuthFailure(payload.status);
 
     throw new ApiError(payload.status ?? String(response.status), response.status, payload.data);
   }
