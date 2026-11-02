@@ -1,6 +1,6 @@
 import type { ErrorCode } from "@ject/api-types/errors";
 
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, routeTo } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const REFRESH_REQUIRED_ERROR_CODES: ReadonlySet<string> = new Set<ErrorCode>(["GLOBAL-6"]);
@@ -17,5 +17,6 @@ export function handleAuthFailure(status: string) {
 
   useAuthStore.getState().setIsLoggedIn(false);
 
-  if (window.location.pathname !== ROUTES.login) window.location.replace(ROUTES.login);
+  const { pathname, search } = window.location;
+  if (pathname !== ROUTES.login) window.location.replace(routeTo.login(pathname + search));
 }

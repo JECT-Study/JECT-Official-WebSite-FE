@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-import { ROUTES } from "@/constants/routes";
+import { routeTo } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 interface ProtectedRouteProps {
@@ -11,8 +11,9 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const { pathname, search } = useLocation();
 
-  if (!isLoggedIn) return <Navigate to={ROUTES.login} replace />;
+  if (!isLoggedIn) return <Navigate to={routeTo.login(pathname + search)} replace />;
 
   return children;
 }
