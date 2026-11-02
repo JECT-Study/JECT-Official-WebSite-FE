@@ -1377,6 +1377,9 @@
             "type": "integer",
             "format": "int64"
           },
+          "title": {
+            "type": "string"
+          },
           "semesterId": {
             "type": "integer",
             "format": "int64"
@@ -1429,11 +1432,7 @@
         "enum": [
           "SEMESTER",
           "MAKERS",
-          "SUPPORTERS",
-          "REGULAR",
-          "REGULAR_WAITLIST",
-          "BACKFILL",
-          "MANUAL"
+          "SUPPORTERS"
         ]
       },
       "RecruitTypeDetail": {
@@ -1450,6 +1449,9 @@
           "recruitId": {
             "type": "integer",
             "format": "int64"
+          },
+          "title": {
+            "type": "string"
           },
           "semesterId": {
             "type": "integer",
