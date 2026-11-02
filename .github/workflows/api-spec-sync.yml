@@ -149,7 +149,7 @@ jobs:
           echo "number=$number" >> "$GITHUB_OUTPUT"
 
       - name: Comment check result
-        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' && steps.pr.outputs.number != '' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
