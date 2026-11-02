@@ -64,13 +64,20 @@ jobs:
 
       - name: Detect changes
         id: changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "스펙과 에러 코드가 모두 최신입니다."
-          else
+          if ! git diff --quiet; then
+            echo "commit=true" >> "$GITHUB_OUTPUT"
             echo "changed=true" >> "$GITHUB_OUTPUT"
             git diff --stat
+          elif [ "$(git rev-list --count origin/dev..HEAD)" -gt 0 ] &&
+            [ -z "$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[].number')" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "PR이 열리지 않은 동기화 커밋이 있어 PR을 다시 엽니다."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "스펙과 에러 코드가 모두 최신입니다."
           fi
 
       # GITHUB_TOKEN으로 생성한 PR은 ci.yml을 트리거하지 않아 검사를 여기서 실행한다.
@@ -115,7 +122,7 @@ jobs:
           } > "$RUNNER_TEMP/pr-body.md"
 
       - name: Commit and push
-        if: ${{ !cancelled() && steps.changes.outputs.changed == 'true' }}
+        if: ${{ !cancelled() && steps.changes.outputs.commit == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
