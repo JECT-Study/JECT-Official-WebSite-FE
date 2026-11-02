@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { authApi } from "@/apis/auth/api";
 import { ApiError } from "@/apis/httpClient";
 import { routeTo } from "@/constants/routes";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
 
@@ -49,7 +50,10 @@ export function LoginForm() {
   const { toast } = useToast();
   const { mutate, isPending } = useMutation({
     mutationFn: authApi.login,
-    onSuccess: () => navigate(routeTo.home(), { replace: true }),
+    onSuccess: () => {
+      useAuthStore.getState().setIsLoggedIn(true);
+      navigate(routeTo.home(), { replace: true });
+    },
     onError: (error) => {
       const code = error instanceof ApiError && isErrorCode(error.status) ? error.status : null;
       const { title, description } =

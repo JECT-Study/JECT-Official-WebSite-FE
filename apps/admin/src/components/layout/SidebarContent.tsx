@@ -8,6 +8,7 @@ import { authApi } from "@/apis/auth/api";
 import { queryClient } from "@/apis/queryClient";
 import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
@@ -20,6 +21,7 @@ export function SidebarContent() {
     onSuccess: () => {
       // 다음에 로그인한 계정에 이전 계정의 캐시가 보이지 않게 비운다.
       queryClient.clear();
+      useAuthStore.getState().setIsLoggedIn(false);
       navigate(ROUTES.login, { replace: true });
     },
   });
