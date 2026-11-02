@@ -18,15 +18,9 @@ export const jobFamilySchema = z.enum([
   "ER",
 ]) satisfies z.ZodType<Schemas["JobFamily"]>;
 
-export const recruitTypeSchema = z.enum([
-  "SEMESTER",
-  "MAKERS",
-  "SUPPORTERS",
-  "REGULAR",
-  "REGULAR_WAITLIST",
-  "BACKFILL",
-  "MANUAL",
-]) satisfies z.ZodType<Schemas["RecruitType"]>;
+export const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies z.ZodType<
+  Schemas["RecruitType"]
+>;
 
 export const recruitTypeDetailSchema = z.enum(["REGULAR", "NEW", "REFILL"]) satisfies z.ZodType<
   Schemas["RecruitTypeDetail"]
