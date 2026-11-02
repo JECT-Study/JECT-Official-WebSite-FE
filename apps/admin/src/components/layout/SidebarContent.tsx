@@ -2,10 +2,9 @@ import { Fragment } from "react";
 
 import { Divider, Icon, LabelButton, Menu } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { authApi } from "@/apis/auth/api";
-import { queryClient } from "@/apis/queryClient";
 import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -15,14 +14,12 @@ import { SidebarLinkItem } from "./SidebarLinkItem";
 export function SidebarContent() {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
-  const navigate = useNavigate();
   const { mutate: logout, isPending } = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      // 다음에 로그인한 계정에 이전 계정의 캐시가 보이지 않게 비운다.
-      queryClient.clear();
       useAuthStore.getState().setIsLoggedIn(false);
-      navigate(ROUTES.login, { replace: true });
+      // 라우터로 이동하면 ProtectedRoute나 GuestRoute가 먼저 반응해 다른 경로로 보낸다.
+      window.location.replace(ROUTES.login);
     },
   });
 

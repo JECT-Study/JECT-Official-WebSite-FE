@@ -5,11 +5,9 @@ import { type ErrorCode, isErrorCode } from "@ject/api-types/errors";
 import { BlockButton, IconButton, TextField, useToast } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 import { authApi } from "@/apis/auth/api";
 import { ApiError } from "@/apis/httpClient";
-import { routeTo } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
@@ -46,14 +44,10 @@ export function LoginForm() {
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
   });
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { mutate, isPending } = useMutation({
     mutationFn: authApi.login,
-    onSuccess: () => {
-      useAuthStore.getState().setIsLoggedIn(true);
-      navigate(routeTo.home(), { replace: true });
-    },
+    onSuccess: () => useAuthStore.getState().setIsLoggedIn(true),
     onError: (error) => {
       const code = error instanceof ApiError && isErrorCode(error.status) ? error.status : null;
       const { title, description } =
