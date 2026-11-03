@@ -107,7 +107,7 @@ export function LoginForm() {
         </div>
       </div>
 
-      <BlockButton type="submit" size="lg">
+      <BlockButton type="submit" size="lg" disabled={isPending}>
         로그인
       </BlockButton>
     </form>

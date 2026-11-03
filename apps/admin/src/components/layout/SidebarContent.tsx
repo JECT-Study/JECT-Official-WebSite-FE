@@ -39,7 +39,7 @@ export function SidebarContent() {
             <Icon name="circle-user-round" size="xs" className="text-object-alternative" />
             <p className="truncate text-label-sm text-object-bolder">계정명</p>
           </div>
-          <LabelButton hierarchy="tertiary" size="sm" onClick={handleLogout}>
+          <LabelButton hierarchy="tertiary" size="sm" disabled={isPending} onClick={handleLogout}>
             로그아웃
           </LabelButton>
         </div>
