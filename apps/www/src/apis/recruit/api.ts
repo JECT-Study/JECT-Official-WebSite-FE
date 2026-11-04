@@ -1,19 +1,12 @@
 import { httpClient } from "@/apis/httpClient/server";
+import { API_ENDPOINTS } from "@/constants/endpoints";
 
 import { activeRecruitmentsSchema, recruitSchema } from "./schemas";
 
 export const recruitApi = {
-  getActiveRecruitments: async () => {
-    const { data } = await httpClient.GET("/recruits/active");
+  getActiveRecruitments: () =>
+    httpClient.get(API_ENDPOINTS.activeRecruits, activeRecruitmentsSchema),
 
-    return activeRecruitmentsSchema.parse(data);
-  },
-
-  getRecruit: async (recruitId: number) => {
-    const { data } = await httpClient.GET("/recruits/{recruitId}", {
-      params: { path: { recruitId } },
-    });
-
-    return recruitSchema.parse(data);
-  },
+  getRecruit: (recruitId: number) =>
+    httpClient.get(API_ENDPOINTS.recruit(recruitId), recruitSchema),
 } as const;
