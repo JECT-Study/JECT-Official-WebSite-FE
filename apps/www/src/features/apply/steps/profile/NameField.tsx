@@ -37,7 +37,9 @@ export function NameField() {
         }}
       />
       <TextField.Footer>
-        <TextField.Helper>{error?.message ?? "한글만 입력할 수 있어요."}</TextField.Helper>
+        <TextField.Helper>
+          {error && !hasInvalidInput ? error.message : "한글만 입력할 수 있어요."}
+        </TextField.Helper>
         <TextField.Counter />
       </TextField.Footer>
     </TextField>

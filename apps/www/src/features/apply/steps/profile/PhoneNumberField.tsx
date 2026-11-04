@@ -39,7 +39,9 @@ export function PhoneNumberField() {
         }}
       />
       <TextField.Footer>
-        <TextField.Helper>{error?.message ?? "'-' 없이 숫자만 입력해주세요."}</TextField.Helper>
+        <TextField.Helper>
+          {error && !hasInvalidInput ? error.message : "'-' 없이 숫자만 입력해주세요."}
+        </TextField.Helper>
       </TextField.Footer>
     </TextField>
   );
