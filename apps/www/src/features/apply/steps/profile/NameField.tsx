@@ -11,11 +11,14 @@ export function NameField() {
   const { control } = useFormContext<ProfileFormValues>();
   const {
     field: { ref, name, value, onBlur, onChange },
+    fieldState,
   } = useController({ name: "name", control });
   const [hasInvalidInput, setHasInvalidInput] = useState(false);
 
+  const error = value ? fieldState.error : undefined;
+
   return (
-    <TextField status={hasInvalidInput ? "error" : "default"}>
+    <TextField status={error || hasInvalidInput ? "error" : "default"}>
       <TextField.Label>이름</TextField.Label>
       <TextField.Input
         ref={ref}
@@ -34,7 +37,7 @@ export function NameField() {
         }}
       />
       <TextField.Footer>
-        <TextField.Helper>한글만 입력할 수 있어요.</TextField.Helper>
+        <TextField.Helper>{error?.message ?? "한글만 입력할 수 있어요."}</TextField.Helper>
         <TextField.Counter />
       </TextField.Footer>
     </TextField>

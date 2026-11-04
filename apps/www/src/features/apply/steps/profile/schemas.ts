@@ -21,7 +21,7 @@ export const nameSchema = z
   .string()
   .min(1)
   .max(MAX_NAME_LENGTH)
-  .regex(new RegExp(`^[${KOREAN_CHARACTERS}]+$`));
+  .regex(/^[가-힣]+$/, "자음이나 모음만 입력할 수 없어요.");
 
 export const phoneNumberSchema = z
   .string()
