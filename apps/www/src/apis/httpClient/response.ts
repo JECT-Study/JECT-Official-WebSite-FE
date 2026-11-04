@@ -1,4 +1,4 @@
-import type { Middleware } from "openapi-fetch";
+import type { z } from "zod";
 
 export interface ApiResponse<T> {
   status: string;
@@ -6,6 +6,7 @@ export interface ApiResponse<T> {
   timestamp?: string;
 }
 
+/** 실패 응답은 `data`에 사람이 읽는 메시지가 담긴다. 화면에 그대로 노출하지 않는다. */
 export class ApiError extends Error {
   readonly status: string;
   readonly httpStatus: number;
@@ -20,22 +21,16 @@ export class ApiError extends Error {
   }
 }
 
-export const unwrapApiResponse: Middleware = {
-  async onResponse({ response }) {
-    if (response.status === 204) {
-      return undefined;
-    }
+export async function parseApiResponse<T>(response: Response, schema?: z.ZodType<T>): Promise<T> {
+  if (response.status === 204) {
+    return undefined as T;
+  }
 
-    const body = (await response.json()) as ApiResponse<unknown>;
+  const body = (await response.json()) as ApiResponse<T>;
 
-    if (!response.ok || body.status !== "SUCCESS") {
-      throw new ApiError(body.status ?? String(response.status), response.status, body.data);
-    }
+  if (!response.ok || body.status !== "SUCCESS") {
+    throw new ApiError(body.status ?? String(response.status), response.status, body.data);
+  }
 
-    return new Response(JSON.stringify(body.data), {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
-  },
-};
+  return schema ? schema.parse(body.data) : body.data;
+}
