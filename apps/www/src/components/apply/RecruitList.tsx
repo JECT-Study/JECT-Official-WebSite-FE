@@ -10,6 +10,8 @@ import { EXTERNAL_LINKS } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
+import { getRecruitTitle } from "./format";
+
 interface RecruitTab {
   type: RecruitType;
   label: string;
@@ -50,16 +52,6 @@ function toTabParam(type: RecruitType) {
 
 function parseTabParam(param: string | null): RecruitTab {
   return TABS.find((tab) => toTabParam(tab.type) === param) ?? TABS[0];
-}
-
-function getJobFamilyName(recruitment: ActiveRecruitment): string {
-  return recruitment.jobFamilyDescription.replace(/\s*\([A-Z]+\)$/, "");
-}
-
-function getRecruitTitle(recruitment: ActiveRecruitment): string {
-  const round = recruitment.recruitTypeDetail === "REGULAR" ? "모집" : "추가 모집";
-
-  return `[젝트 ${recruitment.semesterName}] ${getJobFamilyName(recruitment)} ${round}`;
 }
 
 interface RecruitTabPanelProps {
