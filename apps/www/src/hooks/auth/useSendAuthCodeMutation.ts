@@ -16,7 +16,7 @@ export function useSendAuthCodeMutation(
     ...options,
     mutationFn: ({ email, template }) => authApi.sendAuthCode(email, template),
     onError: (error, ...rest) => {
-      if (hasErrorCode(error, "TOO_MANY_EMAIL_REQUESTS")) {
+      if (hasErrorCode(error, "EMAIL-4")) {
         toastController.destructive("인증번호 발송 제한", {
           description: "잠시 후 다시 시도해주세요.",
         });
