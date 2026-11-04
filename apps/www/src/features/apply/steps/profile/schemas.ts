@@ -9,9 +9,7 @@ import {
 
 export const MAX_NAME_LENGTH = 5;
 
-const KOREAN_CHARACTERS = "ㄱ-ㅎㅏ-ㅣ가-힣";
-
-const NON_KOREAN_PATTERN = new RegExp(`[^${KOREAN_CHARACTERS}]`, "g");
+const NON_KOREAN_PATTERN = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 
 export function removeNonKorean(value: string) {
   return value.replace(NON_KOREAN_PATTERN, "");
