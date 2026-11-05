@@ -44,7 +44,9 @@ export default function RecruitCard({
   return (
     <Card.Root variant="plate" className="overflow-hidden">
       <div className="flex flex-col gap-12 border-b border-stroke-subtle p-margin-sm">
-        <Card.Title className="text-title-1 font-title-subtle">{title}</Card.Title>
+        <Card.Title className="text-title-1 font-title-subtle break-keep whitespace-normal">
+          {title}
+        </Card.Title>
         <div className="flex flex-wrap items-center gap-8">
           {jobFamily && (
             <ContentBadge
@@ -62,11 +64,13 @@ export default function RecruitCard({
           )}
         </div>
       </div>
-      <div className="flex flex-wrap gap-x-24 gap-y-8 bg-surface-standard px-margin-sm pt-margin-xs pb-margin-sm">
+      <div className="flex flex-col gap-x-24 gap-y-8 bg-surface-standard px-margin-sm pt-margin-xs pb-margin-sm desktop:flex-row desktop:flex-wrap">
         {metaItems.map(({ label, value }) => (
-          <div key={label} className="flex items-center gap-8 text-label-sm">
-            <span className="font-label-normal text-object-neutral">{label}</span>
-            <Divider orientation="vertical" className="h-12 self-center" />
+          <div key={label} className="flex items-center gap-12 text-label-sm desktop:gap-8">
+            <span className="w-72 shrink-0 font-label-normal text-object-neutral desktop:w-auto">
+              {label}
+            </span>
+            <Divider orientation="vertical" className="h-12 self-center max-desktop:hidden" />
             <span className="font-label-bold text-object-bolder">{value}</span>
           </div>
         ))}
