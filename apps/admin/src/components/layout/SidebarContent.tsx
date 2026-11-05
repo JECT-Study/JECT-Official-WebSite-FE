@@ -1,15 +1,36 @@
 import { Fragment } from "react";
 
-import { Divider, Icon, LabelButton, Menu } from "@jects/jds";
+import { Divider, Icon, LabelButton, Menu, useToast } from "@jects/jds";
+import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 
+import { authApi } from "@/apis/auth/api";
 import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
+import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
 export function SidebarContent() {
   const { pathname } = useLocation();
   const activeLink = findActiveLink(pathname);
+  const { toast } = useToast();
+  const { mutate: logout, isPending } = useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      useAuthStore.getState().setIsLoggedIn(false);
+      // 라우터로 이동하면 ProtectedRoute나 GuestRoute가 먼저 반응해 다른 경로로 보낸다.
+      window.location.replace(ROUTES.login);
+    },
+    onError: () => {
+      toast.destructive("로그아웃에 실패했어요", { description: "잠시 후 다시 시도해주세요." });
+    },
+  });
+
+  const handleLogout = () => {
+    if (isPending) return;
+    logout();
+  };
 
   return (
     <>
@@ -22,7 +43,7 @@ export function SidebarContent() {
             <Icon name="circle-user-round" size="xs" className="text-object-alternative" />
             <p className="truncate text-label-sm text-object-bolder">계정명</p>
           </div>
-          <LabelButton hierarchy="tertiary" size="sm">
+          <LabelButton hierarchy="tertiary" size="sm" disabled={isPending} onClick={handleLogout}>
             로그아웃
           </LabelButton>
         </div>

@@ -1,6 +1,11 @@
 import type { z } from "zod";
 
+import { API_ENDPOINTS } from "@/constants/endpoints";
+import { handleAuthFailure, isRefreshRequired } from "@/errors/auth";
+
 const REQUEST_TIMEOUT_MS = 30_000;
+
+let refreshing: Promise<void> | null = null;
 
 export interface ApiResponse<T> {
   status: string;
@@ -34,12 +39,29 @@ function resolveBody(body: unknown) {
   return { body: JSON.stringify(body), contentType: "application/json" };
 }
 
+// 여러 요청이 동시에 토큰 만료로 실패해도 refresh는 한 번만 보내고, 모두 같은 결과를 기다린다.
+function refreshAccessToken() {
+  refreshing ??= request<void>(
+    API_ENDPOINTS.refresh,
+    "POST",
+    undefined,
+    undefined,
+    undefined,
+    false
+  ).finally(() => {
+    refreshing = null;
+  });
+
+  return refreshing;
+}
+
 async function request<T>(
   endpoint: string,
   method: string,
   body?: unknown,
   schema?: z.ZodType<T>,
-  options?: RequestInit
+  options?: RequestInit,
+  allowRefresh = true
 ): Promise<T> {
   const resolved = resolveBody(body);
   const headers = new Headers(options?.headers);
@@ -59,11 +81,24 @@ async function request<T>(
     signal: options?.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
   });
 
-  if (response.status === 204) return undefined as T;
+  // 로그아웃은 다른 API와 달리 공통 응답 형식 없이 빈 본문으로 응답한다.
+  const text = await response.text();
 
-  const payload = (await response.json()) as ApiResponse<T>;
+  if (!text) {
+    if (!response.ok) throw new ApiError(String(response.status), response.status, undefined);
+    return undefined as T;
+  }
+
+  const payload = JSON.parse(text) as ApiResponse<T>;
 
   if (!response.ok || payload.status !== "SUCCESS") {
+    if (isRefreshRequired(payload.status) && allowRefresh) {
+      await refreshAccessToken();
+      return request(endpoint, method, body, schema, options, false);
+    }
+
+    handleAuthFailure(payload.status);
+
     throw new ApiError(payload.status ?? String(response.status), response.status, payload.data);
   }
 
