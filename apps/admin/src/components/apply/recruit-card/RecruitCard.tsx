@@ -1,24 +1,10 @@
 import type { components } from "@ject/api-types/admin";
-import { Card, ContentBadge, Divider, type ThemeVariant } from "@jects/jds";
+import { Card, ContentBadge, Divider } from "@jects/jds";
 
+import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { parseDate } from "@/utils/date";
 
-type JobFamily = components["schemas"]["JobFamily"];
 type RecruitCardProps = components["schemas"]["ApplyManagementRecruitResponse"];
-
-interface JobFamilyBadge {
-  label: string;
-  color: ThemeVariant;
-}
-
-// 시안에 없는 직군은 라벨과 색이 정해지면 추가한다.
-const JOB_FAMILY_BADGES: Partial<Record<JobFamily, JobFamilyBadge>> = {
-  FE: { label: "프론트엔드 개발자", color: "green" },
-  BE: { label: "백엔드 개발자", color: "sky" },
-  APP: { label: "앱 개발자", color: "indigo" },
-  PM: { label: "프로덕트 매니저", color: "orange" },
-  PD: { label: "프로덕트 디자이너", color: "purple" },
-};
 
 function formatPeriod(startDate: string, endDate: string): string {
   const start = parseDate(startDate);

@@ -1,6 +1,9 @@
-import type { components } from "@ject/api-types/admin";
-import { BlockButton, Tabs } from "@jects/jds";
+import { useState } from "react";
 
+import type { components } from "@ject/api-types/admin";
+import { Tabs } from "@jects/jds";
+
+import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
 
 type ApplyManagementRecruitsResponse = components["schemas"]["ApplyManagementRecruitsResponse"];
@@ -92,14 +95,38 @@ const DATA: ApplyManagementRecruitsResponse = {
   },
 };
 
-// API 연동 전까지 시안의 값을 임시로 사용한다.
 const RECRUIT_TABS = [
-  { type: "SEMESTER", label: "일반 구성원" },
-  { type: "MAKERS", label: "메이커스 팀" },
-  { type: "SUPPORTERS", label: "운영 서포터즈" },
+  {
+    type: "SEMESTER",
+    label: "일반 구성원",
+    jobFamilies: ["FE", "BE", "APP", "PM", "PD"],
+    filterWidth: "200px",
+  },
+  {
+    type: "MAKERS",
+    label: "메이커스 팀",
+    jobFamilies: ["FE", "BE", "APP", "PM", "PD"],
+    filterWidth: "200px",
+  },
+  {
+    type: "SUPPORTERS",
+    label: "운영 서포터즈",
+    jobFamilies: ["OPS", "INFRA", "BX", "ER"],
+    filterWidth: "140px",
+  },
 ] as const;
 
 export default function SubmittedAppliesPage() {
+  const [recruitType, setRecruitType] = useState<string>(RECRUIT_TABS[0].type);
+  const [jobFamilies, setJobFamilies] = useState<string[]>([]);
+
+  const selectedTab = RECRUIT_TABS.find(({ type }) => type === recruitType) ?? RECRUIT_TABS[0];
+
+  const handleTabChange = (type: string) => {
+    setRecruitType(type);
+    setJobFamilies([]);
+  };
+
   const recruitTypeCounts = DATA.recruitTypeCounts ?? [];
   const totalCount = recruitTypeCounts.reduce((sum, { count = 0 }) => sum + count, 0);
 
@@ -113,7 +140,8 @@ export default function SubmittedAppliesPage() {
         <p className="text-label-md font-label-normal text-object-bold">{totalCount}개의 항목</p>
       </div>
       <Tabs.Root
-        defaultValue={RECRUIT_TABS[0].type}
+        value={selectedTab.type}
+        onValueChange={handleTabChange}
         className="flex flex-col gap-16 px-margin-lg py-16 desktop:px-margin-xl"
       >
         <Tabs.List className="border-b-0">
@@ -124,9 +152,12 @@ export default function SubmittedAppliesPage() {
           ))}
         </Tabs.List>
         <div className="border-b border-stroke-alpha-subtle py-10">
-          <BlockButton hierarchy="secondary" size="xs" variant="hollow" prefixIcon="plus">
-            필터 추가
-          </BlockButton>
+          <JobFamilyFilterButton
+            jobFamilies={selectedTab.jobFamilies}
+            width={selectedTab.filterWidth}
+            value={jobFamilies}
+            onChange={setJobFamilies}
+          />
         </div>
         <div className="flex flex-col gap-12">
           {DATA.recruits?.content?.map((recruit) => (
