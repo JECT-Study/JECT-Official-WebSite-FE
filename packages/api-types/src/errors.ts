@@ -70,7 +70,6 @@ export const ERROR_CODES = {
   "APPLY-15": { name: "NOT_FOUND_PORTFOLIO", httpStatus: 404, message: "해당 지원서의 포트폴리오를 찾을 수 없습니다." },
   "APPLY-16": { name: "SELECTION_RESULT_REQUIRED", httpStatus: 400, message: "제출완료 지원서의 선정 결과를 지정해주세요." },
   "APPLY-17": { name: "INVALID_WAITLIST_ORDER", httpStatus: 400, message: "현재 예비 합격자 전체를 빠짐없이 한 번씩 지정해주세요." },
-  "APPLY-18": { name: "DIFFERENT_RECRUIT_NOT_ALLOWED", httpStatus: 400, message: "같은 모집 공고의 지원서만 선택할 수 있습니다." },
   "AUTH-1": { name: "INVALID_AUTH_CODE", httpStatus: 401, message: "인증 번호가 유효하지 않습니다." },
   "AUTH-2": { name: "NOT_FOUND_AUTH_CODE", httpStatus: 401, message: "인증 번호를 찾을 수 없습니다." },
   "AUTH-3": { name: "INVALID_REFRESH_TOKEN", httpStatus: 401, message: "유효하지 않은 리프레시 토큰입니다." },

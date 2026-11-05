@@ -515,6 +515,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dev/testbot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 테스트봇 지원정보 삭제
+         * @description testbot@ject.kr의 지원정보를 삭제합니다.
+         */
+        delete: operations["deleteTestbot"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1474,6 +1494,24 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["ApplicantProfileResponse"];
                 };
+            };
+        };
+    };
+    deleteTestbot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

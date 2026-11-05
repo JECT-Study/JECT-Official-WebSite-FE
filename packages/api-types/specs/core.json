@@ -1076,6 +1076,21 @@
           }
         }
       }
+    },
+    "/dev/testbot": {
+      "delete": {
+        "tags": [
+          "dev-auth-controller"
+        ],
+        "summary": "테스트봇 지원정보 삭제",
+        "description": "testbot@ject.kr의 지원정보를 삭제합니다.",
+        "operationId": "deleteTestbot",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {

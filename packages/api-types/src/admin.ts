@@ -401,26 +401,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/apply/pass": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 지원자 합격
-         * @description 지원서의 선정 결과를 합격으로 지정합니다.
-         */
-        post: operations["passApply"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/admin/accounts": {
         parameters: {
             query?: never;
@@ -1187,9 +1167,6 @@ export interface components {
                 [key: string]: string;
             };
         };
-        ApplyPassRequest: {
-            applyIds?: number[];
-        };
         /** @description 관리자 계정 생성 요청 */
         AdminAccountCreateRequest: {
             /**
@@ -1218,6 +1195,10 @@ export interface components {
         AdminLoginRequest: {
             email: string;
             password: string;
+        };
+        AdminLoginResponse: {
+            name?: string;
+            isAdmin?: boolean;
         };
         /** @description 운영 서포터즈 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지 */
         UpdateMemberSupportersRequest: {
@@ -2718,28 +2699,6 @@ export interface operations {
             };
         };
     };
-    passApply: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ApplyPassRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     findAccounts: {
         parameters: {
             query: {
@@ -2823,7 +2782,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": components["schemas"]["AdminLoginResponse"];
                 };
             };
         };
