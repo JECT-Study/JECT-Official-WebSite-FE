@@ -21,10 +21,6 @@
       "description": "관리자 계정 관리 API"
     },
     {
-      "name": "Apply Pass",
-      "description": "지원자 합격 API"
-    },
-    {
       "name": "AdminMemberSemester",
       "description": "일반 구성원 API"
     },
@@ -1116,31 +1112,6 @@
         }
       }
     },
-    "/admin/apply/pass": {
-      "post": {
-        "tags": [
-          "Apply Pass"
-        ],
-        "summary": "지원자 합격",
-        "description": "지원서의 선정 결과를 합격으로 지정합니다.",
-        "operationId": "passApply",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApplyPassRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/admin/accounts": {
       "get": {
         "tags": [
@@ -1257,7 +1228,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/AdminLoginResponse"
                 }
               }
             }
@@ -3189,18 +3160,6 @@
           }
         }
       },
-      "ApplyPassRequest": {
-        "type": "object",
-        "properties": {
-          "applyIds": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
       "AdminAccountCreateRequest": {
         "required": [
           "email",
@@ -3267,6 +3226,17 @@
           },
           "password": {
             "type": "string"
+          }
+        }
+      },
+      "AdminLoginResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "isAdmin": {
+            "type": "boolean"
           }
         }
       },
