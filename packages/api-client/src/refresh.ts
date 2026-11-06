@@ -11,7 +11,11 @@ const REFRESH_REQUIRED_ERROR_CODES: ReadonlySet<string> = new Set<ErrorCode>(["G
 const RELOGIN_REQUIRED_ERROR_CODES: ReadonlySet<string> = new Set<ErrorCode>(["AUTH-3", "AUTH-4"]);
 
 export interface RefreshMiddlewareOptions {
-  /** 토큰을 재발급할 수 없을 때 호출한다. 호출 후에도 요청은 `ApiError`로 실패한다. */
+  /**
+   * 재발급이 거부되어 다시 로그인이 필요할 때 호출한다.
+   * 재발급 요청의 네트워크 오류와 5xx 응답에서는 호출하지 않는다.
+   * 어떤 경우든 원래 요청은 `ApiError`로 실패한다.
+   */
   onRefreshFailure?: () => void;
 }
 
@@ -78,7 +82,10 @@ export function createRefreshMiddleware({
       const refreshResponse = await refresh(options.baseUrl);
 
       if (!refreshResponse?.ok || (await readStatus(refreshResponse)) !== "SUCCESS") {
-        onRefreshFailure?.();
+        if (refreshResponse && refreshResponse.status < 500) {
+          onRefreshFailure?.();
+        }
+
         return refreshResponse?.clone();
       }
 
