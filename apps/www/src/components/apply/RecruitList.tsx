@@ -12,8 +12,7 @@ import { formatDate } from "@/utils/formatDate";
 
 import { getRecruitTitle } from "./format";
 
-interface RecruitTab {
-  type: RecruitType;
+interface RecruitTabDetail {
   label: string;
   empty: {
     header: string;
@@ -23,6 +22,10 @@ interface RecruitTab {
   };
 }
 
+interface RecruitTab extends RecruitTabDetail {
+  type: RecruitType;
+}
+
 const TALENT_POOL_EMPTY = {
   header: "지금은 모집 중인 공고가 없어요",
   body: "인재풀 등록을 희망하시면 버튼을 눌러 신청해 주세요.",
@@ -30,10 +33,8 @@ const TALENT_POOL_EMPTY = {
   href: EXTERNAL_LINKS.talentPool,
 };
 
-// 여기에 없는 모집 유형은 노출하지 않는다.
-const TABS = [
-  {
-    type: "SEMESTER",
+const TAB_DETAILS = {
+  SEMESTER: {
     label: "동아리원",
     empty: {
       header: "지금은 모집 기간이 아니에요",
@@ -42,9 +43,14 @@ const TABS = [
       href: EXTERNAL_LINKS.recruitmentAlert,
     },
   },
-  { type: "MAKERS", label: "메이커스", empty: TALENT_POOL_EMPTY },
-  { type: "SUPPORTERS", label: "서포터즈", empty: TALENT_POOL_EMPTY },
-] as const satisfies RecruitTab[];
+  MAKERS: { label: "메이커스", empty: TALENT_POOL_EMPTY },
+  SUPPORTERS: { label: "서포터즈", empty: TALENT_POOL_EMPTY },
+} satisfies Record<RecruitType, RecruitTabDetail>;
+
+const TABS: RecruitTab[] = (Object.keys(TAB_DETAILS) as RecruitType[]).map((type) => ({
+  type,
+  ...TAB_DETAILS[type],
+}));
 
 function toTabParam(type: RecruitType) {
   return type.toLowerCase();
