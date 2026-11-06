@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { RecruitContent, RecruitGuide } from "@/components/apply";
-import { getRecruitTitle } from "@/components/apply/format";
 import { getRecruit } from "@/components/apply/getRecruit";
 
 export async function generateMetadata({
@@ -9,7 +8,7 @@ export async function generateMetadata({
 }: PageProps<"/apply/guide/[recruitId]">): Promise<Metadata> {
   const { recruit } = await getRecruit((await params).recruitId);
 
-  return { title: getRecruitTitle(recruit) };
+  return { title: recruit.title };
 }
 
 export default async function ApplyGuidePage({ params }: PageProps<"/apply/guide/[recruitId]">) {
