@@ -26,10 +26,10 @@ export const unwrapApiResponse: Middleware = {
       return undefined;
     }
 
-    const body = (await response.json()) as ApiResponse<unknown>;
+    const body = (await response.json().catch(() => undefined)) as ApiResponse<unknown> | undefined;
 
-    if (!response.ok || body.status !== "SUCCESS") {
-      throw new ApiError(body.status ?? String(response.status), response.status, body.data);
+    if (!response.ok || body?.status !== "SUCCESS") {
+      throw new ApiError(body?.status ?? String(response.status), response.status, body?.data);
     }
 
     return new Response(JSON.stringify(body.data), {
