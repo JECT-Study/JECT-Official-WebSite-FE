@@ -4,7 +4,7 @@ import type { paths } from "@ject/api-types/admin";
 import { ROUTES, routeTo } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 
-function handleAuthFailure() {
+function handleRefreshFailure() {
   useAuthStore.getState().setIsLoggedIn(false);
 
   const { pathname, search } = window.location;
@@ -14,4 +14,4 @@ function handleAuthFailure() {
 
 export const httpClient = createApiClient<paths>({ baseUrl: "", credentials: "include" });
 
-httpClient.use(createRefreshMiddleware({ onRefreshFailure: handleAuthFailure }));
+httpClient.use(createRefreshMiddleware({ onRefreshFailure: handleRefreshFailure }));

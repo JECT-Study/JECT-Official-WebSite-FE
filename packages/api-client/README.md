@@ -48,7 +48,7 @@ return recruitSchema.parse(data);
 ```ts
 import { createApiClient, createRefreshMiddleware } from "@ject/api-client";
 
-httpClient.use(createRefreshMiddleware({ onRefreshFailure: handleAuthFailure }));
+httpClient.use(createRefreshMiddleware({ onRefreshFailure: handleRefreshFailure }));
 ```
 
 - **재발급과 재시도**: 응답이 `GLOBAL-6`이면 `/auth/refresh`로 재발급을 요청하고, 원래 요청을
