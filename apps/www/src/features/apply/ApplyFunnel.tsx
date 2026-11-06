@@ -1,16 +1,16 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { Suspense, useSyncExternalStore } from "react";
 
 import { useFunnel } from "@use-funnel/browser";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
-import { ApplyStepLayout } from "./ApplyStepLayout";
-import { EmailVerificationStep, ProfileStep } from "./steps";
+import { ApplyProgress } from "./ApplyProgress";
+import { ApplicationStep, CompleteStep, EmailVerificationStep, ProfileStep } from "./steps";
 
-const STEP_INDEX = {
+const PROGRESS_INDEX = {
   emailVerification: 0,
   profile: 1,
   application: 2,
@@ -32,6 +32,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
     emailVerification: object;
     profile: object;
     application: object;
+    complete: object;
   }>({
     id: "apply-funnel",
     initial: { step: "emailVerification", context: {} },
@@ -39,11 +40,9 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader
-        recruitId={recruitId}
-        recruitTitle={recruitTitle}
-        current={STEP_INDEX[funnel.step]}
-      />
+      <ApplyFunnelHeader recruitId={recruitId} recruitTitle={recruitTitle}>
+        {funnel.step !== "complete" && <ApplyProgress current={PROGRESS_INDEX[funnel.step]} />}
+      </ApplyFunnelHeader>
       <funnel.Render
         emailVerification={({ history }) => (
           <EmailVerificationStep
@@ -60,8 +59,16 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
             onNext={() => history.push("application", {})}
           />
         )}
-        // TODO: 지원서 작성 단계를 구현하면 교체한다.
-        application={() => <ApplyStepLayout title="지원서 작성">{null}</ApplyStepLayout>}
+        application={({ history }) => (
+          <Suspense fallback={null}>
+            <ApplicationStep
+              recruitId={recruitId}
+              // 제출 후 뒤로 가기로 지원서 작성 단계에 돌아오지 않게 한다.
+              onNext={() => history.replace("complete", {})}
+            />
+          </Suspense>
+        )}
+        complete={() => <CompleteStep />}
       />
     </div>
   );

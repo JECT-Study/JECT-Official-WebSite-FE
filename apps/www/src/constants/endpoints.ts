@@ -6,4 +6,8 @@ export const API_ENDPOINTS = {
   verifyAuthCode: "/auth/code",
   registerApplicant: "/applicants/apply",
   applyProfile: "/apply/profile",
+  applyQuestions: "/apply/questions",
+  applyTemp: "/apply/temp",
+  applySubmit: "/apply/submit",
+  uploadPortfolios: "/upload/portfolios",
 } as const;
