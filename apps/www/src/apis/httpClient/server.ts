@@ -2,12 +2,10 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
+import { createApiClient, type Middleware } from "@ject/api-client";
 import type { paths } from "@ject/api-types/core";
-import createClient, { type Middleware } from "openapi-fetch";
 
 import { SERVER_BASE_URL } from "./constants";
-import { fetchWithTimeout } from "./request";
-import { unwrapApiResponse } from "./response";
 
 const forwardCookies: Middleware = {
   async onRequest({ request }) {
@@ -21,9 +19,6 @@ const forwardCookies: Middleware = {
   },
 };
 
-export const httpClient = createClient<paths>({
-  baseUrl: SERVER_BASE_URL,
-  fetch: fetchWithTimeout,
-});
+export const httpClient = createApiClient<paths>({ baseUrl: SERVER_BASE_URL });
 
-httpClient.use(forwardCookies, unwrapApiResponse);
+httpClient.use(forwardCookies);

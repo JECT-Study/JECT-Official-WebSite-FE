@@ -1,4 +1,4 @@
-import { REQUEST_TIMEOUT_MS } from "./constants";
+const REQUEST_TIMEOUT_MS = 30_000;
 
 function withTimeout(signal: AbortSignal): AbortSignal {
   const timeout = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
