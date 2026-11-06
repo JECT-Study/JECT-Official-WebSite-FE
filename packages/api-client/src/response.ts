@@ -20,13 +20,21 @@ export class ApiError extends Error {
   }
 }
 
+function parseBody(text: string) {
+  try {
+    return JSON.parse(text) as ApiResponse<unknown>;
+  } catch {
+    return undefined;
+  }
+}
+
 export const unwrapApiResponse: Middleware = {
   async onResponse({ response }) {
     if (response.status === 204) {
       return undefined;
     }
 
-    const body = (await response.json().catch(() => undefined)) as ApiResponse<unknown> | undefined;
+    const body = parseBody(await response.text());
 
     if (!response.ok || body?.status !== "SUCCESS") {
       throw new ApiError(body?.status ?? String(response.status), response.status, body?.data);
