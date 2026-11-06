@@ -232,6 +232,9 @@ importers:
 
   packages/api-client:
     dependencies:
+      '@ject/api-types':
+        specifier: workspace:*
+        version: link:../api-types
       openapi-fetch:
         specifier: ^0.17.0
         version: 0.17.0
