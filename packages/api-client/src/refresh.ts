@@ -15,9 +15,7 @@ export interface RefreshMiddlewareOptions {
   onRefreshFailure?: () => void;
 }
 
-async function readErrorCode(response: Response) {
-  if (response.ok) return undefined;
-
+async function readStatus(response: Response) {
   try {
     const body = (await response.clone().json()) as ApiResponse<unknown>;
 
@@ -27,16 +25,17 @@ async function readErrorCode(response: Response) {
   }
 }
 
+async function readErrorCode(response: Response) {
+  return response.ok ? undefined : readStatus(response);
+}
+
 async function requestRefresh(baseUrl = "") {
   try {
-    const response = await fetchWithTimeout(
+    return await fetchWithTimeout(
       new Request(`${baseUrl}${REFRESH_PATH}`, { method: "POST", credentials: "include" })
     );
-    const body = (await response.json()) as ApiResponse<unknown>;
-
-    return response.ok && body.status === "SUCCESS";
   } catch {
-    return false;
+    return undefined;
   }
 }
 
@@ -45,7 +44,7 @@ export function createRefreshMiddleware({
 }: RefreshMiddlewareOptions = {}): Middleware {
   // 응답을 받은 뒤에는 요청 본문을 다시 읽을 수 없으므로, 재시도에 사용할 사본을 요청마다 보관한다.
   const requestCopies = new Map<string, Request>();
-  let refreshing: Promise<boolean> | null = null;
+  let refreshing: Promise<Response | undefined> | null = null;
 
   // 여러 요청이 동시에 토큰 만료로 실패해도 재발급은 한 번만 요청하고 모두 같은 결과를 기다린다.
   function refresh(baseUrl?: string) {
@@ -76,9 +75,11 @@ export function createRefreshMiddleware({
         return undefined;
       }
 
-      if (!(await refresh(options.baseUrl))) {
+      const refreshResponse = await refresh(options.baseUrl);
+
+      if (!refreshResponse?.ok || (await readStatus(refreshResponse)) !== "SUCCESS") {
         onRefreshFailure?.();
-        return undefined;
+        return refreshResponse?.clone();
       }
 
       const retried = await fetchWithTimeout(requestCopy);
