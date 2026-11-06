@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { getRecruitTitle } from "@/components/apply/format";
+import { getJobFamilyName, getRecruitTitle } from "@/components/apply/format";
 import { getRecruit } from "@/components/apply/getRecruit";
 import { routeTo } from "@/constants/routes";
 import { ApplyFunnel } from "@/features/apply/ApplyFunnel";
@@ -21,5 +21,12 @@ export default async function ApplyFunnelPage({ params }: PageProps<"/apply/funn
     redirect(routeTo.applyGuide(recruit.recruitId));
   }
 
-  return <ApplyFunnel recruitId={recruit.recruitId} recruitTitle={getRecruitTitle(recruit)} />;
+  return (
+    <ApplyFunnel
+      recruitId={recruit.recruitId}
+      recruitTitle={getRecruitTitle(recruit)}
+      jobFamily={recruit.jobFamily}
+      jobFamilyName={getJobFamilyName(recruit)}
+    />
+  );
 }
