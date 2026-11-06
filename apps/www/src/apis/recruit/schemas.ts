@@ -29,6 +29,7 @@ export const recruitTypeDetailSchema = z.enum(["REGULAR", "NEW", "REFILL"]) sati
 
 const recruitBaseSchema = z.object({
   recruitId: z.number(),
+  title: z.string(),
   semesterId: z.number(),
   semesterName: z.string(),
   recruitType: recruitTypeSchema,

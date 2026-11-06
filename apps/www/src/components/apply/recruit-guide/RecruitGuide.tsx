@@ -7,7 +7,6 @@ import type { Recruit } from "@/apis/recruit/schemas";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
-import { getRecruitTitle } from "../format";
 import { CopyUrlButton } from "./CopyUrlButton";
 import { RecruitGuideNavigation } from "./RecruitGuideNavigation";
 import { type RecruitFaq, RecruitGuideTabs } from "./RecruitGuideTabs";
@@ -21,7 +20,7 @@ interface RecruitGuideProps {
 }
 
 export function RecruitGuide({ recruit, isClosed, information, notice, faqs }: RecruitGuideProps) {
-  const title = getRecruitTitle(recruit);
+  const { title } = recruit;
   const lastSpaceIndex = title.lastIndexOf(" ");
 
   return (

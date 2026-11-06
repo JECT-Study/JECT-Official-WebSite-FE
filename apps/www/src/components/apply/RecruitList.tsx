@@ -10,8 +10,6 @@ import { EXTERNAL_LINKS } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
-import { getRecruitTitle } from "./format";
-
 interface RecruitTabDetail {
   label: string;
   empty: {
@@ -89,7 +87,7 @@ function RecruitTabPanel({ tab, recruitments }: RecruitTabPanelProps) {
           <Card.Preset.Post.Link
             layout="horizontal"
             href={routeTo.applyGuide(recruitment.recruitId)}
-            title={getRecruitTitle(recruitment)}
+            title={recruitment.title}
             body={recruitment.summary}
             author={label}
             date={`${formatDate(recruitment.startDate)} - ${formatDate(recruitment.endDate)}`}
