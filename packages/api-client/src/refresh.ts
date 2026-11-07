@@ -81,7 +81,7 @@ export function createRefreshMiddleware({
 
       const refreshResponse = await refresh(options.baseUrl);
 
-      if (!refreshResponse?.ok || (await readStatus(refreshResponse)) !== "SUCCESS") {
+      if (!refreshResponse?.ok) {
         if (refreshResponse && refreshResponse.status < 500) {
           onRefreshFailure?.();
         }
