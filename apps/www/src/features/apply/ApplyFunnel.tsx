@@ -40,7 +40,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader recruitId={recruitId} recruitTitle={recruitTitle}>
+      <ApplyFunnelHeader recruitId={recruitId} navigationTitle={recruitTitle}>
         {funnel.step !== "complete" && <ApplyProgress current={PROGRESS_INDEX[funnel.step]} />}
       </ApplyFunnelHeader>
       <funnel.Render
