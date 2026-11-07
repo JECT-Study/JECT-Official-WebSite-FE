@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@ject/api-client": "workspace:*",
     "@ject/api-types": "workspace:*",
     "@ject/styles": "workspace:*",
     "@jects/jds": "^0.8.0",

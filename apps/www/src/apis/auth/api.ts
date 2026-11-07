@@ -2,29 +2,33 @@ import type { components, operations } from "@ject/api-types/core";
 import { z } from "zod";
 
 import { httpClient } from "@/apis/httpClient/client";
-import { API_ENDPOINTS } from "@/constants/endpoints";
 
 export type EmailTemplate = operations["sendAuthEmail"]["parameters"]["query"]["sendGroupCode"];
 
 export const authApi = {
-  isExistMember: (email: string, recruitId: number) =>
-    httpClient.get(
-      `${API_ENDPOINTS.memberExists}?${new URLSearchParams({ email, recruitId: String(recruitId) })}`,
-      z.boolean()
-    ),
+  isExistMember: async (email: string, recruitId: number) => {
+    const { data } = await httpClient.GET("/auth/login/exist", {
+      params: { query: { email, recruitId } },
+    });
 
-  sendAuthCode: (email: string, template: EmailTemplate) =>
-    httpClient.post(
-      `${API_ENDPOINTS.sendAuthCode}?${new URLSearchParams({ email, sendGroupCode: template })}`
-    ),
+    return z.boolean().parse(data);
+  },
 
-  verifyAuthCode: (
+  sendAuthCode: async (email: string, template: EmailTemplate) => {
+    await httpClient.POST("/email/send/auth", {
+      params: { query: { email, sendGroupCode: template } },
+    });
+  },
+
+  verifyAuthCode: async (
     request: components["schemas"]["VerifyAuthCodeRequest"],
     template: EmailTemplate
-  ) =>
-    httpClient.post(
-      `${API_ENDPOINTS.verifyAuthCode}?${new URLSearchParams({ template })}`,
-      request,
-      z.boolean()
-    ),
+  ) => {
+    const { data } = await httpClient.POST("/auth/code", {
+      params: { query: { template } },
+      body: request,
+    });
+
+    return z.boolean().parse(data);
+  },
 } as const;

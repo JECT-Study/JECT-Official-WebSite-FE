@@ -49,8 +49,8 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
 - **httpClient**: `src/apis/httpClient/`에 서버용과 클라이언트용을 나눠 둡니다. 서버용이
   `next/headers`의 `cookies()`를 가져오기 때문에 한 파일로 합칠 수 없습니다. 서버
   컴포넌트에서는 `@/apis/httpClient/server`를, 클라이언트 컴포넌트와 훅에서는
-  `@/apis/httpClient/client`를 가져옵니다. 헤더 병합과 응답 처리는 같은 디렉토리의
-  `request.ts`, `response.ts`를 양쪽이 공유합니다.
+  `@/apis/httpClient/client`를 가져옵니다. 두 클라이언트 모두 `@ject/api-client`의
+  `createApiClient`로 만들며, 타임아웃과 응답 처리는 이 패키지가 담당합니다.
   `server.ts`는 `import "server-only"`로 클라이언트 번들 유입을 빌드 단계에서 막습니다.
 - **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
   `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로

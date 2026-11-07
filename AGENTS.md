@@ -21,6 +21,7 @@ apps/
 └── admin/          백오피스 (Vite SPA, react-router)
 packages/
 ├── config/         ESLint, tsconfig 베이스
+├── api-client/     openapi-fetch 기반 API 클라이언트
 ├── api-types/      OpenAPI 스펙에서 생성한 타입
 └── styles/         JDS 스타일 진입점과 Tailwind 테마 매핑
 ```

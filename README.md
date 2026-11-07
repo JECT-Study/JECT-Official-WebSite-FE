@@ -9,13 +9,14 @@
 
 ## 구성
 
-| 워크스페이스         | 패키지            | 설명                          |
-| -------------------- | ----------------- | ----------------------------- |
-| `apps/www`           | `@ject/www`       | 공식 홈페이지 (Next.js 16)    |
-| `apps/admin`         | `@ject/admin`     | 백오피스 (Vite SPA)           |
-| `packages/config`    | `@ject/config`    | 공유 ESLint, tsconfig 설정    |
-| `packages/api-types` | `@ject/api-types` | OpenAPI 스펙에서 생성한 타입  |
-| `packages/styles`    | `@ject/styles`    | JDS 스타일 진입점과 테마 매핑 |
+| 워크스페이스          | 패키지             | 설명                              |
+| --------------------- | ------------------ | --------------------------------- |
+| `apps/www`            | `@ject/www`        | 공식 홈페이지 (Next.js 16)        |
+| `apps/admin`          | `@ject/admin`      | 백오피스 (Vite SPA)               |
+| `packages/config`     | `@ject/config`     | 공유 ESLint, tsconfig 설정        |
+| `packages/api-client` | `@ject/api-client` | openapi-fetch 기반 API 클라이언트 |
+| `packages/api-types`  | `@ject/api-types`  | OpenAPI 스펙에서 생성한 타입      |
+| `packages/styles`     | `@ject/styles`     | JDS 스타일 진입점과 테마 매핑     |
 
 ## 기술 스택
 
@@ -96,6 +97,7 @@ pnpm e2e --filter=@ject/www
 - [apps/www/AGENTS.md](./apps/www/AGENTS.md): 공식 홈페이지
 - [apps/admin/AGENTS.md](./apps/admin/AGENTS.md): 백오피스
 - [apps/www/docs/e2e-testing.md](./apps/www/docs/e2e-testing.md): E2E 테스트
+- [packages/api-client/README.md](./packages/api-client/README.md): API 클라이언트와 미들웨어
 - [packages/api-types/README.md](./packages/api-types/README.md): API 타입과 에러 코드 생성
 - [packages/styles/README.md](./packages/styles/README.md): 디자인 토큰과 Tailwind 매핑
 - [docs/radix-usage.md](./docs/radix-usage.md): Radix 직접 사용과 JDS 교체
