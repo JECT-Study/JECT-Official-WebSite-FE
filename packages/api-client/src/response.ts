@@ -21,10 +21,14 @@ export class ApiError extends Error {
 }
 
 function toDataResponse(data: unknown, response: Response) {
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("content-encoding");
+
   return new Response(JSON.stringify(data ?? null), {
     status: response.status,
     statusText: response.statusText,
-    headers: response.headers,
+    headers,
   });
 }
 
