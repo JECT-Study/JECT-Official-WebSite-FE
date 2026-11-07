@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ApiError } from "@ject/api-client";
 import { type ErrorCode, isErrorCode } from "@ject/api-types/errors";
 import { BlockButton, IconButton, TextField, useToast } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
 import { authApi } from "@/apis/auth/api";
-import { ApiError } from "@/apis/httpClient";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
