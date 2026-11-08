@@ -34,13 +34,13 @@ export function MemberSection() {
             )),
           },
           {
-            value: "makers1",
+            value: "makers-1",
             label: "메이커스 1팀",
             className: MAKERS_GRID,
             content: MAKERS_1.map((maker) => <MakerCard key={maker.name} maker={maker} />),
           },
           {
-            value: "makers2",
+            value: "makers-2",
             label: "메이커스 2팀",
             className: MAKERS_GRID,
             content: MAKERS_2.map((maker) => <MakerCard key={maker.name} maker={maker} />),
