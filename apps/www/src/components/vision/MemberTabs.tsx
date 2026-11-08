@@ -16,7 +16,7 @@ export function MemberTabs({ tabs }: { tabs: MemberTab[] }) {
     <Tabs.Root defaultValue={tabs[0]?.value} className="flex flex-col gap-24">
       <Tabs.List aria-label="구성원">
         {tabs.map(({ value, label }) => (
-          <Tabs.Trigger key={value} value={value}>
+          <Tabs.Trigger key={value} value={value} className="max-tablet:flex-1">
             {label}
           </Tabs.Trigger>
         ))}
