@@ -11,7 +11,7 @@ export const ROUTE_CONTRACT: RouteContract[] = [
   { path: "/", migrated: true },
   { path: "/vision", migrated: false },
   { path: "/activity", migrated: false },
-  { path: "/curriculum", migrated: false },
+  { path: "/curriculum", migrated: true },
   { path: "/mini-study", migrated: false },
   { path: "/team-projects", migrated: false },
   { path: "/faq", migrated: false },
