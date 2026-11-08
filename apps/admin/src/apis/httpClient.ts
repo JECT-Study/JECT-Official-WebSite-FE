@@ -1,4 +1,5 @@
-import { createApiClient, createRefreshMiddleware } from "@ject/api-client";
+import { createApiClient } from "@ject/api-client";
+import { createRefreshMiddleware } from "@ject/api-client/auth";
 import type { paths } from "@ject/api-types/admin";
 
 import { ROUTES, routeTo } from "@/constants/routes";

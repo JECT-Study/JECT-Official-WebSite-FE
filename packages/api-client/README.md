@@ -38,15 +38,15 @@ return recruitSchema.parse(data);
 실패 응답의 `data`가 담기며 화면에 그대로 노출하지 않습니다.
 
 에러 코드별 처리는 이 패키지에 두지 않고 각 앱 `src/errors/`에 작성합니다. 코드는
-`@ject/api-types/errors`의 `ErrorCode` 타입으로 좁혀 비교합니다. 두 앱에서 동작이 같은
-토큰 재발급만 이 패키지가 처리합니다.
+`@ject/api-types/errors`의 `ErrorCode` 타입으로 좁혀 비교합니다. 두 앱이 공유하는 백엔드
+인증 계약인 토큰 재발급만 `@ject/api-client/auth`가 처리합니다.
 
 ## 토큰 재발급
 
-로그인이 필요한 앱은 `createRefreshMiddleware`를 추가합니다.
+로그인이 필요한 앱은 `@ject/api-client/auth`의 `createRefreshMiddleware`를 추가합니다.
 
 ```ts
-import { createApiClient, createRefreshMiddleware } from "@ject/api-client";
+import { createRefreshMiddleware } from "@ject/api-client/auth";
 
 httpClient.use(createRefreshMiddleware({ onRefreshFailure: handleRefreshFailure }));
 ```
