@@ -18,7 +18,7 @@ export function MakerCard({ maker }: { maker: Maker }) {
   const RoleIcon = ROLE_ICON[maker.role];
 
   return (
-    <div className="flex items-start gap-20 overflow-hidden rounded-4 border border-stroke-subtle bg-surface-shallow p-margin-sm">
+    <div className="flex items-start gap-20 rounded-4 border border-stroke-subtle bg-surface-shallow p-margin-sm">
       <Image
         src={maker.image}
         alt={`${maker.name} 프로필`}

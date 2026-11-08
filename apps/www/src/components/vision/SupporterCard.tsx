@@ -29,7 +29,7 @@ function RoleBadge({ role }: { role: SupporterRole }) {
 
 export function SupporterCard({ supporter }: { supporter: Supporter }) {
   return (
-    <div className="flex flex-col gap-20 overflow-hidden rounded-4 border border-stroke-subtle bg-surface-shallow p-margin-sm">
+    <div className="flex flex-col gap-20 rounded-4 border border-stroke-subtle bg-surface-shallow p-margin-sm">
       <Image
         src={supporter.image}
         alt={`${supporter.name} 프로필`}
