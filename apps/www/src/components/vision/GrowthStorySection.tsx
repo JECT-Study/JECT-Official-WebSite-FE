@@ -1,4 +1,4 @@
-import { Phrases } from "./Phrases";
+import { Phrases } from "@/components/common/phrases";
 
 export function GrowthStorySection() {
   return (
