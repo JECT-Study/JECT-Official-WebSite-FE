@@ -151,7 +151,7 @@ export function GlobalNavigationBar() {
               <Link href={ROUTES.applyList}>지원하기</Link>
             </BlockButton>
 
-            <Sidebar triggerClassName={heroTextClass} />
+            <Sidebar triggerColor={isOnHero ? "var(--color-semantic-system-white)" : undefined} />
           </div>
         </nav>
       </header>

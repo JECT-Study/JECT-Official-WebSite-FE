@@ -6,15 +6,14 @@ import { Divider, IconButton, Menu } from "@jects/jds";
 import { Dialog, VisuallyHidden } from "radix-ui";
 
 import { NAVIGATION_SECTIONS } from "@/constants/navigation";
-import { cn } from "@/utils/cn";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
 interface SidebarProps {
-  triggerClassName?: string;
+  triggerColor?: string;
 }
 
-export function Sidebar({ triggerClassName }: SidebarProps) {
+export function Sidebar({ triggerColor }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const close = () => setIsOpen(false);
@@ -23,11 +22,13 @@ export function Sidebar({ triggerClassName }: SidebarProps) {
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger asChild>
         <IconButton
-          hierarchy="primary"
+          {...(triggerColor
+            ? { hierarchy: "accent", accentColor: { normal: triggerColor } }
+            : { hierarchy: "primary" })}
           icon="menu"
           size="lg"
           aria-label="메뉴 열기"
-          className={cn("tablet:hidden", triggerClassName)}
+          className="tablet:hidden"
         />
       </Dialog.Trigger>
       <Dialog.Portal>
