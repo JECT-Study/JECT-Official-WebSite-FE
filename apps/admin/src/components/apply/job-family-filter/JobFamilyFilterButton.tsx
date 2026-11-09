@@ -7,8 +7,8 @@ import { JOB_FAMILY_BADGES, type JobFamily } from "@/constants/jobFamily";
 interface JobFamilyFilterButtonProps {
   jobFamilies: readonly JobFamily[];
   width: string;
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: JobFamily[];
+  onChange: (value: JobFamily[]) => void;
 }
 
 export default function JobFamilyFilterButton({
@@ -35,7 +35,9 @@ export default function JobFamilyFilterButton({
               label: JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily,
             }))}
             value={value}
-            onChange={onChange}
+            onChange={(selected) =>
+              onChange(jobFamilies.filter((jobFamily) => selected.includes(jobFamily)))
+            }
           />
         </Popover.Content>
       </Popover.Portal>

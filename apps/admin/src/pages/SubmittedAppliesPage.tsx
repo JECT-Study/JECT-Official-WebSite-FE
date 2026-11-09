@@ -2,98 +2,18 @@ import { useState } from "react";
 
 import type { components } from "@ject/api-types/admin";
 import { Tabs } from "@jects/jds";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
+import { recruitApi } from "@/apis/recruit/api";
+import { recruitQueryKeys } from "@/apis/recruit/queryKeys";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
+import type { JobFamily } from "@/constants/jobFamily";
 
-type ApplyManagementRecruitsResponse = components["schemas"]["ApplyManagementRecruitsResponse"];
 type RecruitType = components["schemas"]["RecruitType"];
 
-// status=SUBMITTED, recruitType=SEMESTER 요청의 응답을 가정한 임시 값이다.
-const DATA: ApplyManagementRecruitsResponse = {
-  recruitTypeCounts: [
-    { recruitType: "SEMESTER", count: 5 },
-    { recruitType: "MAKERS", count: 2 },
-    { recruitType: "SUPPORTERS", count: 2 },
-  ],
-  recruits: {
-    content: [
-      {
-        recruitId: 1,
-        title: "젝트 5기 프론트엔드 개발자(FE) 모집",
-        semesterId: 5,
-        semesterName: "5기",
-        recruitType: "SEMESTER",
-        jobFamily: "FE",
-        startDate: "2026-04-11T00:00:00",
-        endDate: "2026-04-18T23:59:59",
-        submittedApplyCount: 127,
-        passedCount: 30,
-        failedCount: 90,
-        waitlistedCount: 7,
-      },
-      {
-        recruitId: 2,
-        title: "젝트 5기 백엔드 개발자(BE) 모집",
-        semesterId: 5,
-        semesterName: "5기",
-        recruitType: "SEMESTER",
-        jobFamily: "BE",
-        startDate: "2026-04-11T00:00:00",
-        endDate: "2026-04-18T23:59:59",
-        submittedApplyCount: 108,
-        passedCount: 25,
-        failedCount: 78,
-        waitlistedCount: 5,
-      },
-      {
-        recruitId: 3,
-        title: "젝트 5기 앱 개발자(AE) 모집",
-        semesterId: 5,
-        semesterName: "5기",
-        recruitType: "SEMESTER",
-        jobFamily: "APP",
-        startDate: "2026-04-11T00:00:00",
-        endDate: "2026-04-18T23:59:59",
-        submittedApplyCount: 108,
-        passedCount: 20,
-        failedCount: 84,
-        waitlistedCount: 4,
-      },
-      {
-        recruitId: 4,
-        title: "젝트 5기 프로덕트 매니저(PM) 모집",
-        semesterId: 5,
-        semesterName: "5기",
-        recruitType: "SEMESTER",
-        jobFamily: "PM",
-        startDate: "2026-04-11T00:00:00",
-        endDate: "2026-04-18T23:59:59",
-        submittedApplyCount: 34,
-        passedCount: 8,
-        failedCount: 24,
-        waitlistedCount: 2,
-      },
-      {
-        recruitId: 5,
-        title: "젝트 5기 프로덕트 디자이너(PD) 모집",
-        semesterId: 5,
-        semesterName: "5기",
-        recruitType: "SEMESTER",
-        jobFamily: "PD",
-        startDate: "2026-04-11T00:00:00",
-        endDate: "2026-04-18T23:59:59",
-        submittedApplyCount: 34,
-        passedCount: 8,
-        failedCount: 23,
-        waitlistedCount: 3,
-      },
-    ],
-    size: 20,
-    hasNext: false,
-    totalCount: 5,
-  },
-};
+// TODO: 무한 스크롤을 구현하기 전까지 허용된 최대 개수로 한 번에 받는다.
+const PAGE_SIZE = 100;
 
 const RECRUIT_TABS = [
   {
@@ -117,18 +37,27 @@ const RECRUIT_TABS = [
 ] as const;
 
 export default function SubmittedAppliesPage() {
-  const [recruitType, setRecruitType] = useState<string>(RECRUIT_TABS[0].type);
-  const [jobFamilies, setJobFamilies] = useState<string[]>([]);
+  const [recruitType, setRecruitType] = useState<RecruitType>(RECRUIT_TABS[0].type);
+  const [jobFamilies, setJobFamilies] = useState<JobFamily[]>([]);
 
   const selectedTab = RECRUIT_TABS.find(({ type }) => type === recruitType) ?? RECRUIT_TABS[0];
 
-  const handleTabChange = (type: string) => {
-    setRecruitType(type);
+  const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
+  const { data, isError } = useQuery({
+    queryKey: recruitQueryKeys.applyManagementRecruits(query),
+    queryFn: () => recruitApi.getApplyManagementRecruits(query),
+    placeholderData: keepPreviousData,
+  });
+
+  const handleTabChange = (value: string) => {
+    const tab = RECRUIT_TABS.find(({ type }) => type === value);
+    if (!tab) return;
+    setRecruitType(tab.type);
     setJobFamilies([]);
   };
 
-  const recruitTypeCounts = DATA.recruitTypeCounts ?? [];
-  const totalCount = recruitTypeCounts.reduce((sum, { count = 0 }) => sum + count, 0);
+  const recruitTypeCounts = data?.recruitTypeCounts ?? [];
+  const totalCount = recruitTypeCounts.reduce((sum, { count }) => sum + count, 0);
 
   const getRecruitTypeCount = (type: RecruitType) =>
     recruitTypeCounts.find(({ recruitType }) => recruitType === type)?.count ?? 0;
@@ -160,7 +89,12 @@ export default function SubmittedAppliesPage() {
           />
         </div>
         <div className="flex flex-col gap-12">
-          {DATA.recruits?.content?.map((recruit) => (
+          {isError && (
+            <p className="text-label-md font-label-normal text-object-neutral">
+              공고 목록을 불러오지 못했습니다.
+            </p>
+          )}
+          {data?.recruits.content.map((recruit) => (
             <RecruitCard key={recruit.recruitId} {...recruit} />
           ))}
         </div>

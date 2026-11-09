@@ -5,8 +5,11 @@ import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
 
-// TODO: 응답의 시간대 표기를 확인한 뒤 형식을 하나로 좁힌다. local 옵션은 Z로 끝나는 값도 허용한다.
-const dateTimeSchema = z.iso.datetime({ local: true });
+const dateTimeSchema = z.iso
+  // 서버는 시간대 표기가 없는 LocalDateTime을 반환한다.
+  .datetime({ local: true })
+  // local 옵션은 Z로 끝나는 값도 허용하므로 별도로 처리한다.
+  .refine((value) => !value.endsWith("Z"));
 
 const jobFamilySchema = z.enum([
   "PM",
@@ -27,7 +30,7 @@ const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies
 
 const applyManagementRecruitSchema = z.object({
   recruitId: z.number(),
-  title: z.string(),
+  title: z.string().nullable(),
   semesterId: z.number(),
   semesterName: z.string(),
   recruitType: recruitTypeSchema,
@@ -38,7 +41,7 @@ const applyManagementRecruitSchema = z.object({
   passedCount: z.number(),
   failedCount: z.number(),
   waitlistedCount: z.number(),
-}) satisfies z.ZodType<Schemas["ApplyManagementRecruitResponse"]>;
+}) satisfies z.ZodType<NullableFields<Schemas["ApplyManagementRecruitResponse"]>>;
 
 const recruitTypeCountSchema = z.object({
   recruitType: recruitTypeSchema,
@@ -47,6 +50,7 @@ const recruitTypeCountSchema = z.object({
 
 export const applyManagementRecruitsSchema = z.object({
   recruitTypeCounts: z.array(recruitTypeCountSchema),
+  // content 항목의 타입은 applyManagementRecruitSchema의 satisfies에서 검사하므로 여기서는 제외한다.
   recruits: z.object({
     content: z.array(applyManagementRecruitSchema),
     size: z.number(),
@@ -54,9 +58,8 @@ export const applyManagementRecruitsSchema = z.object({
     nextCursor: z.number().nullish(),
     totalCount: z.number(),
   }) satisfies z.ZodType<
-    NullableFields<Schemas["CursorPageResponseApplyManagementRecruitResponse"]>
+    NullableFields<Omit<Schemas["CursorPageResponseApplyManagementRecruitResponse"], "content">>
   >,
 });
 
 export type ApplyManagementRecruit = z.infer<typeof applyManagementRecruitSchema>;
-export type ApplyManagementRecruits = z.infer<typeof applyManagementRecruitsSchema>;

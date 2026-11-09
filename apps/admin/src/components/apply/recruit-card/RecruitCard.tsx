@@ -1,10 +1,10 @@
-import type { components } from "@ject/api-types/admin";
 import { Card, ContentBadge, Divider } from "@jects/jds";
 
+import type { ApplyManagementRecruit } from "@/apis/recruit/schemas";
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { parseDate } from "@/utils/date";
 
-type RecruitCardProps = components["schemas"]["ApplyManagementRecruitResponse"];
+type RecruitCardProps = ApplyManagementRecruit;
 
 function formatPeriod(startDate: string, endDate: string): string {
   const start = parseDate(startDate);
@@ -27,16 +27,17 @@ function getDeadlineLabel(endDate: string, now = new Date()): string {
 
 export default function RecruitCard({
   title,
+  semesterName,
   jobFamily,
   startDate,
   endDate,
-  submittedApplyCount = 0,
-  passedCount = 0,
-  failedCount = 0,
-  waitlistedCount = 0,
+  submittedApplyCount,
+  passedCount,
+  failedCount,
+  waitlistedCount,
 }: RecruitCardProps) {
   const metaItems = [
-    { label: "모집 기간", value: startDate && endDate ? formatPeriod(startDate, endDate) : "-" },
+    { label: "모집 기간", value: formatPeriod(startDate, endDate) },
     { label: "지원서", value: submittedApplyCount },
     { label: "합/불/예비", value: `${passedCount}/${failedCount}/${waitlistedCount}` },
   ];
@@ -45,23 +46,17 @@ export default function RecruitCard({
     <Card.Root variant="plate" className="overflow-hidden">
       <div className="flex flex-col gap-12 border-b border-stroke-subtle p-margin-sm">
         <Card.Title className="text-title-1 font-title-subtle break-keep whitespace-normal">
-          {title}
+          {/* 제목이 없는 공고는 제목이 있는 공고와 같은 형식으로 만들어 표시한다. */}
+          {title ??
+            `[젝트 ${semesterName}] ${JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily} 모집`}
         </Card.Title>
         <div className="flex flex-wrap items-center gap-8">
-          {jobFamily && (
-            <ContentBadge
-              variant={JOB_FAMILY_BADGES[jobFamily]?.color}
-              badgeStyle="alpha"
-              size="xs"
-            >
-              {JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily}
-            </ContentBadge>
-          )}
-          {endDate && (
-            <ContentBadge hierarchy="tertiary" badgeStyle="alpha" size="xs">
-              {getDeadlineLabel(endDate)}
-            </ContentBadge>
-          )}
+          <ContentBadge variant={JOB_FAMILY_BADGES[jobFamily]?.color} badgeStyle="alpha" size="xs">
+            {JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily}
+          </ContentBadge>
+          <ContentBadge hierarchy="tertiary" badgeStyle="alpha" size="xs">
+            {getDeadlineLabel(endDate)}
+          </ContentBadge>
         </div>
       </div>
       <div className="flex flex-col gap-x-24 gap-y-8 bg-surface-standard px-margin-sm pt-margin-xs pb-margin-sm desktop:flex-row desktop:flex-wrap">
