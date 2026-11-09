@@ -9,6 +9,8 @@ import { SERVER_BASE_URL } from "./constants";
 
 const forwardCookies: Middleware = {
   async onRequest({ request }) {
+    if (request.credentials === "omit") return request;
+
     const cookieHeader = (await cookies()).toString();
 
     if (cookieHeader) {
