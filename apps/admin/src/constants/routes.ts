@@ -2,6 +2,7 @@ export const ROUTES = {
   home: "/",
   login: "/login",
   submittedApplies: "/applies/submitted",
+  submittedRecruitApplies: "/applies/submitted/:recruitId",
   draftApplies: "/applies/drafts",
   members: "/members",
   makerMembers: "/members/makers",
@@ -15,4 +16,5 @@ export const ROUTES = {
 export const routeTo = {
   home: () => ROUTES.home,
   login: (redirectPath: string) => `${ROUTES.login}?redirect=${encodeURIComponent(redirectPath)}`,
+  submittedRecruitApplies: (recruitId: number) => `${ROUTES.submittedApplies}/${recruitId}`,
 } as const;

@@ -1,7 +1,9 @@
 import { Card, ContentBadge, Divider } from "@jects/jds";
+import { useLinkClickHandler } from "react-router-dom";
 
 import type { ApplyManagementRecruit } from "@/apis/recruit/schemas";
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
+import { routeTo } from "@/constants/routes";
 import { parseDate } from "@/utils/date";
 
 type RecruitCardProps = ApplyManagementRecruit;
@@ -26,6 +28,7 @@ function getDeadlineLabel(endDate: string, now = new Date()): string {
 }
 
 export default function RecruitCard({
+  recruitId,
   title,
   semesterName,
   jobFamily,
@@ -36,6 +39,10 @@ export default function RecruitCard({
   failedCount,
   waitlistedCount,
 }: RecruitCardProps) {
+  const to = routeTo.submittedRecruitApplies(recruitId);
+  // TODO: JDS Card.Overlay가 라우팅 컴포넌트를 지원하면 react-router의 Link로 교체한다.
+  const handleClick = useLinkClickHandler(to);
+
   const metaItems = [
     { label: "모집 기간", value: formatPeriod(startDate, endDate) },
     { label: "지원서", value: submittedApplyCount },
@@ -43,7 +50,7 @@ export default function RecruitCard({
   ];
 
   return (
-    <Card.Root variant="plate" className="overflow-hidden">
+    <Card.Root variant="plate" interactive className="overflow-hidden">
       <div className="flex flex-col gap-12 border-b border-stroke-subtle p-margin-sm">
         <Card.Title className="text-title-1 font-title-subtle break-keep whitespace-normal">
           {/* 제목이 없는 공고는 제목이 있는 공고와 같은 형식으로 만들어 표시한다. */}
@@ -70,6 +77,7 @@ export default function RecruitCard({
           </div>
         ))}
       </div>
+      <Card.Overlay href={to} onClick={handleClick} />
     </Card.Root>
   );
 }
