@@ -63,7 +63,7 @@ export function RecruitGuideTabs({ information, notice, faqs }: RecruitGuideTabs
     <Tabs.Root value={tab} onValueChange={handleTabChange} className="flex flex-col gap-48">
       <Tabs.List aria-label="공고 내용">
         {TABS.map(({ value, label }) => (
-          <Tabs.Trigger key={value} value={value}>
+          <Tabs.Trigger key={value} value={value} className="max-tablet:flex-1">
             {label}
           </Tabs.Trigger>
         ))}
