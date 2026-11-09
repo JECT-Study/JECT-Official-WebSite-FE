@@ -38,6 +38,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.4.0
         version: 5.7.1(react-hook-form@7.85.0(react@19.2.8))(zod@4.4.3)
+      '@ject/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@ject/api-types':
         specifier: workspace:*
         version: link:../../packages/api-types
@@ -232,6 +235,9 @@ importers:
 
   packages/api-client:
     dependencies:
+      '@ject/api-types':
+        specifier: workspace:*
+        version: link:../api-types
       openapi-fetch:
         specifier: ^0.17.0
         version: 0.17.0

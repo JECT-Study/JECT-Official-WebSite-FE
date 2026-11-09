@@ -20,6 +20,18 @@ export class ApiError extends Error {
   }
 }
 
+function toDataResponse(data: unknown, response: Response) {
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("content-encoding");
+
+  return new Response(JSON.stringify(data ?? null), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function parseBody(text: string) {
   try {
     return JSON.parse(text) as ApiResponse<unknown>;
@@ -34,16 +46,18 @@ export const unwrapApiResponse: Middleware = {
       return undefined;
     }
 
-    const body = parseBody(await response.text());
+    const text = await response.text();
+
+    if (response.ok && !text) {
+      return toDataResponse(null, response);
+    }
+
+    const body = parseBody(text);
 
     if (!response.ok || body?.status !== "SUCCESS") {
       throw new ApiError(body?.status ?? String(response.status), response.status, body?.data);
     }
 
-    return new Response(JSON.stringify(body.data), {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
+    return toDataResponse(body.data, response);
   },
 };
