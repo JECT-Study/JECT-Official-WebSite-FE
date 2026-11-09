@@ -1,12 +1,15 @@
 import type { components } from "@ject/api-types/admin";
 
 import { httpClient } from "@/apis/httpClient";
-import { API_ENDPOINTS } from "@/constants/endpoints";
 
 type LoginRequest = components["schemas"]["AdminLoginRequest"];
 
 export const authApi = {
-  login: (body: LoginRequest) => httpClient.post<void>(API_ENDPOINTS.login, body),
+  login: async (body: LoginRequest) => {
+    await httpClient.POST("/admin-auth/login", { body });
+  },
 
-  logout: () => httpClient.post<void>(API_ENDPOINTS.logout),
+  logout: async () => {
+    await httpClient.POST("/admin-auth/logout");
+  },
 } as const;
