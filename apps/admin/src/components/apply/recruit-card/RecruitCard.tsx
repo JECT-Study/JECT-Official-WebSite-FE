@@ -16,15 +16,16 @@ function formatPeriod(startDate: string, endDate: string): string {
   return `${start.year}. ${start.month}. ${start.day}. - ${endYear}${end.month}. ${end.day}.`;
 }
 
-function getDeadlineLabel(endDate: string, now = new Date()): string {
-  const end = new Date(endDate);
-  if (end < now) return "모집 마감";
+function getDeadlineLabel(endDate: string): string {
+  const now = new Date();
 
-  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const daysLeft = (endDay.getTime() - today.getTime()) / 86_400_000;
+  // 서버 날짜는 오프셋 없는 한국 시각이므로 +09:00을 붙여 해석한다.
+  if (new Date(`${endDate}+09:00`) < now) return "모집 마감";
 
-  return daysLeft === 0 ? "마감 D-Day" : `마감 D-${daysLeft}`;
+  const endDayStart = new Date(`${endDate.slice(0, 10)}T00:00:00+09:00`);
+  const daysLeft = Math.ceil((endDayStart.getTime() - now.getTime()) / 86_400_000);
+
+  return daysLeft <= 0 ? "마감 D-Day" : `마감 D-${daysLeft}`;
 }
 
 export default function RecruitCard({
