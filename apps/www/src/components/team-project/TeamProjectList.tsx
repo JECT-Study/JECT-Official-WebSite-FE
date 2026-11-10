@@ -52,15 +52,21 @@ export function TeamProjectList({ summary, initialPage }: TeamProjectListProps) 
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORY);
   const category = selectedCategory === ALL_CATEGORY ? null : selectedCategory;
 
-  const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
-    queryKey: projectQueryKeys.list(category),
-    queryFn: ({ pageParam }) => projectApi.getProjects(category, pageParam),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
-    initialData: category === null ? { pages: [initialPage], pageParams: [0] } : undefined,
-    throwOnError: (_, query) => query.state.data === undefined,
+  const { data, isPending, hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage } =
+    useInfiniteQuery({
+      queryKey: projectQueryKeys.list(category),
+      queryFn: ({ pageParam }) => projectApi.getProjects(category, pageParam),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+      initialData: category === null ? { pages: [initialPage], pageParams: [0] } : undefined,
+      throwOnError: (_, query) => query.state.data === undefined,
+    });
+  const targetRef = useInfiniteScroll({
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
   });
-  const targetRef = useInfiniteScroll({ hasNextPage, isFetchingNextPage, fetchNextPage });
 
   const projects = data?.pages.flatMap((page) => page.content) ?? [];
 
