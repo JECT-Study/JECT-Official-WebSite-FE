@@ -37,8 +37,12 @@ function toCategoryOptions({ categorySummaries }: ProjectSummary): SelectOption[
 
 function LoadingSpinner() {
   return (
-    <div className="flex h-[160px] items-center justify-center text-object-alternative">
-      <Icon name="loader-circle" size="xl" className="animate-spin" aria-hidden />
+    <div
+      role="status"
+      aria-label="불러오는 중"
+      className="flex h-[160px] items-center justify-center text-object-alternative"
+    >
+      <Icon name="loader-circle" size="xl" className="motion-safe:animate-spin" aria-hidden />
     </div>
   );
 }
