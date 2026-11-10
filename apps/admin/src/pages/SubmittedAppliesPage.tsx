@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import type { components } from "@ject/api-types/admin";
-import { Tabs } from "@jects/jds";
+import { EmptyState, Tabs } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { recruitApi } from "@/apis/recruit/api";
@@ -90,9 +90,16 @@ export default function SubmittedAppliesPage() {
         </div>
         <div className="flex flex-col gap-12">
           {isError && (
-            <p className="text-label-md font-label-normal text-object-neutral">
-              공고 목록을 불러오지 못했습니다.
-            </p>
+            <EmptyState
+              header="공고 목록을 불러오지 못했습니다"
+              body="잠시 후 다시 시도해 주세요."
+            />
+          )}
+          {data?.recruits.content.length === 0 && (
+            <EmptyState
+              header="현재 등록된 공고가 없습니다"
+              body="새로운 공고가 등록되면 확인할 수 있어요."
+            />
           )}
           {data?.recruits.content.map((recruit) => (
             <RecruitCard key={recruit.recruitId} {...recruit} />
