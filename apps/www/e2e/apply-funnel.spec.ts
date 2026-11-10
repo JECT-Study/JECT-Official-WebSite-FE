@@ -46,7 +46,11 @@ test.describe("지원 퍼널", () => {
         await page.getByRole("option").first().click();
       }
 
-      await page.getByRole("checkbox").first().check();
+      const interestedDomains = page.getByRole("combobox", { name: "관심 도메인" });
+      await interestedDomains.click();
+      await page.getByRole("option").first().click();
+      await interestedDomains.press("Escape");
+
       await page.getByRole("button", { name: "다음 단계로 진행하기" }).click();
       await page.getByRole("dialog").getByRole("button", { name: "등록하기" }).click();
     });
