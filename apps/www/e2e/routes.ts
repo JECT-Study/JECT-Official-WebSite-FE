@@ -9,7 +9,7 @@ export interface RouteContract {
 
 export const ROUTE_CONTRACT: RouteContract[] = [
   { path: "/", migrated: true },
-  { path: "/vision", migrated: false },
+  { path: "/vision", migrated: true },
   { path: "/activity", migrated: false },
   { path: "/curriculum", migrated: false },
   { path: "/mini-study", migrated: false },
