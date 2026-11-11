@@ -12,6 +12,13 @@ import type { JobFamily } from "@/constants/jobFamily";
 
 type RecruitType = components["schemas"]["RecruitType"];
 
+interface RecruitTab {
+  type: RecruitType;
+  label: string;
+  jobFamilies: readonly JobFamily[];
+  filterWidth: string;
+}
+
 const PAGE_SIZE = 100;
 
 const RECRUIT_TABS = [
@@ -24,7 +31,7 @@ const RECRUIT_TABS = [
   {
     type: "MAKERS",
     label: "메이커스 팀",
-    jobFamilies: ["FE", "BE", "APP", "PM", "PD"],
+    jobFamilies: ["FE", "BE", "PM", "PD"],
     filterWidth: "200px",
   },
   {
@@ -33,7 +40,7 @@ const RECRUIT_TABS = [
     jobFamilies: ["OPS", "INFRA", "BX", "ER"],
     filterWidth: "140px",
   },
-] as const;
+] as const satisfies readonly RecruitTab[];
 
 export default function SubmittedAppliesPage() {
   const [recruitType, setRecruitType] = useState<RecruitType>(RECRUIT_TABS[0].type);
