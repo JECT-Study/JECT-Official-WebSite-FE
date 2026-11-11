@@ -6,6 +6,7 @@ import { Divider, IconButton, Menu } from "@jects/jds";
 import { Dialog, VisuallyHidden } from "radix-ui";
 
 import { NAVIGATION_SECTIONS } from "@/constants/navigation";
+import { useTheme } from "@/hooks/useTheme";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";
 
@@ -15,6 +16,7 @@ interface SidebarProps {
 
 export function Sidebar({ triggerColor }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const close = () => setIsOpen(false);
 
@@ -35,7 +37,7 @@ export function Sidebar({ triggerColor }: SidebarProps) {
         <Dialog.Overlay className="sheet-curtain fixed inset-0 z-overlay bg-curtain-static-dim tablet:hidden" />
         <Dialog.Content
           aria-describedby={undefined}
-          className="sheet-panel fixed inset-y-0 right-0 z-overlay w-[240px] bg-surface-standard shadow-overlay [--sheet-offset:100%] tablet:hidden"
+          className="sheet-panel fixed inset-y-0 right-0 z-overlay flex w-[240px] flex-col bg-surface-standard shadow-overlay [--sheet-offset:100%] tablet:hidden"
         >
           <Dialog.Title asChild>
             <VisuallyHidden.Root>전체 메뉴</VisuallyHidden.Root>
@@ -53,7 +55,7 @@ export function Sidebar({ triggerColor }: SidebarProps) {
             </Dialog.Close>
           </div>
           <Menu.Root size="lg">
-            <div className="flex flex-col gap-24 px-margin-lg py-margin-xl">
+            <div className="flex flex-1 flex-col gap-24 overflow-y-auto px-margin-lg py-margin-xl">
               {NAVIGATION_SECTIONS.map((section, index) => (
                 <Fragment key={section.name}>
                   {index > 0 && <Divider className="-mt-6" />}
@@ -69,6 +71,16 @@ export function Sidebar({ triggerColor }: SidebarProps) {
               ))}
             </div>
           </Menu.Root>
+          <div className="flex justify-end border-t border-stroke-subtle bg-surface-deep px-16 pt-12 pb-16">
+            <IconButton
+              hierarchy="primary"
+              icon={theme === "dark" ? "moon" : "sun"}
+              size="lg"
+              condensed={false}
+              aria-label={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            />
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
