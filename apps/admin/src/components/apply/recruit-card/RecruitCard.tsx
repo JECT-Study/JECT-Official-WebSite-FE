@@ -4,7 +4,7 @@ import { useLinkClickHandler } from "react-router-dom";
 import type { ApplyManagementRecruit } from "@/apis/recruit/schemas";
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { routeTo } from "@/constants/routes";
-import { parseDate } from "@/utils/date";
+import { parseDate, parseKstDate } from "@/utils/date";
 
 type RecruitCardProps = ApplyManagementRecruit;
 
@@ -19,10 +19,9 @@ function formatPeriod(startDate: string, endDate: string): string {
 function getDeadlineLabel(endDate: string): string {
   const now = new Date();
 
-  // 서버 날짜는 오프셋 없는 한국 시각이므로 +09:00을 붙여 해석한다.
-  if (new Date(`${endDate}+09:00`) < now) return "모집 마감";
+  if (parseKstDate(endDate) < now) return "모집 마감";
 
-  const endDayStart = new Date(`${endDate.slice(0, 10)}T00:00:00+09:00`);
+  const endDayStart = parseKstDate(`${endDate.slice(0, 10)}T00:00:00`);
   const daysLeft = Math.ceil((endDayStart.getTime() - now.getTime()) / 86_400_000);
 
   return daysLeft <= 0 ? "마감 D-Day" : `마감 D-${daysLeft}`;
