@@ -23,4 +23,5 @@ export const LEGACY_REDIRECTS = [
   { from: "/apply/applicant-info", to: "/apply" },
   { from: "/apply/registration", to: "/apply" },
   { from: "/apply/complete", to: "/apply" },
+  { from: "/project/1", to: "/team-projects/1" },
 ];
