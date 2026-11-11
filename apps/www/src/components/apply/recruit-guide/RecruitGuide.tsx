@@ -4,10 +4,10 @@ import Link from "next/link";
 import { BlockButton } from "@jects/jds";
 
 import type { Recruit } from "@/apis/recruit/schemas";
+import { CopyUrlButton } from "@/components/common/copy-url-button";
 import { routeTo } from "@/constants/routes";
 import { formatDate } from "@/utils/formatDate";
 
-import { CopyUrlButton } from "./CopyUrlButton";
 import { RecruitGuideNavigation } from "./RecruitGuideNavigation";
 import { type RecruitFaq, RecruitGuideTabs } from "./RecruitGuideTabs";
 
