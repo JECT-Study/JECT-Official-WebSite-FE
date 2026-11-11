@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 
 import { BlockButton } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
@@ -14,8 +15,7 @@ import {
 } from "@/components/common/data-table";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 
-// TODO: recruitId는 URL 파라미터로, 필터 값은 필터 상태로 교체한다.
-const CONDITION = { recruitId: 1, size: 20 } as const;
+const PAGE_SIZE = 20;
 
 const columnHelper = createDataTableColumnHelper<SubmittedApply>();
 const COLUMNS = columnHelper.columns([
@@ -31,9 +31,12 @@ const COLUMNS = columnHelper.columns([
 
 export default function SubmittedRecruitAppliesPage() {
   const headerActionSlot = useHeaderActionSlot();
+  const recruitId = Number(useParams().recruitId);
+
   const { data } = useInfiniteQuery({
-    queryKey: applyQueryKeys.submittedApplies(CONDITION),
-    queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...CONDITION, cursor: pageParam }),
+    queryKey: applyQueryKeys.submittedApplies({ recruitId, size: PAGE_SIZE }),
+    queryFn: ({ pageParam }) =>
+      applyApi.getSubmittedApplies({ recruitId, size: PAGE_SIZE, cursor: pageParam }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
   });
