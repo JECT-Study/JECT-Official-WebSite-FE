@@ -1,16 +1,13 @@
 import { useState } from "react";
 
-import type { components } from "@ject/api-types/admin";
 import { EmptyState, Tabs } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { recruitApi } from "@/apis/recruit/api";
 import { recruitQueryKeys } from "@/apis/recruit/queryKeys";
+import type { JobFamily, RecruitType } from "@/apis/recruit/schemas";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
-import type { JobFamily } from "@/constants/jobFamily";
-
-type RecruitType = components["schemas"]["RecruitType"];
 
 interface RecruitTab {
   type: RecruitType;

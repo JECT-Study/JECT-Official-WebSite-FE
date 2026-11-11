@@ -2,7 +2,8 @@ import { BlockButton, MultiSelect } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
 import { Popover } from "radix-ui";
 
-import { JOB_FAMILY_BADGES, type JobFamily } from "@/constants/jobFamily";
+import type { JobFamily } from "@/apis/recruit/schemas";
+import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 
 interface JobFamilyFilterButtonProps {
   jobFamilies: readonly JobFamily[];

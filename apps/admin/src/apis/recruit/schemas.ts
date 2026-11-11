@@ -57,4 +57,6 @@ export const applyManagementRecruitsSchema = z.object({
   >,
 });
 
+export type JobFamily = z.infer<typeof jobFamilySchema>;
+export type RecruitType = z.infer<typeof recruitTypeSchema>;
 export type ApplyManagementRecruit = z.infer<typeof applyManagementRecruitSchema>;

@@ -1,7 +1,6 @@
-import type { components } from "@ject/api-types/admin";
 import type { ThemeVariant } from "@jects/jds";
 
-export type JobFamily = components["schemas"]["JobFamily"];
+import type { JobFamily } from "@/apis/recruit/schemas";
 
 interface JobFamilyBadge {
   label: string;
