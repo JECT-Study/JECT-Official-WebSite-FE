@@ -1,32 +1,56 @@
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton } from "@jects/jds";
+import { BlockButton, Icon } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
 import type { SubmittedApply } from "@/apis/apply/schemas";
+import SelectionResultBadge from "@/components/apply/selection-result-badge/SelectionResultBadge";
 import {
   createDataTableColumnHelper,
   DataTable,
   useDataTable,
 } from "@/components/common/data-table";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
+import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
+import { formatPhoneNumber } from "@/utils/phoneNumber";
 
 const PAGE_SIZE = 20;
+
+function EmptyValue() {
+  return <span className="text-object-subtle">-</span>;
+}
 
 const columnHelper = createDataTableColumnHelper<SubmittedApply>();
 const COLUMNS = columnHelper.columns([
   columnHelper.accessor("name", {
     header: "이름",
-    meta: { cellType: "title", getDescription: (apply) => apply.phoneNumber },
+    meta: { cellType: "title", getDescription: (apply) => formatPhoneNumber(apply.phoneNumber) },
   }),
-  columnHelper.accessor("careerDetails", { header: "경력" }),
-  columnHelper.accessor("selectionResult", { header: "선발 결과" }),
-  columnHelper.accessor("waitlistNumber", { header: "예비 번호" }),
-  columnHelper.accessor("note", { header: "비고" }),
+  columnHelper.accessor("careerDetails", {
+    header: "지원자 신분",
+    cell: ({ getValue }) => CAREER_DETAILS_LABELS[getValue()],
+  }),
+  columnHelper.accessor("selectionResult", {
+    header: "합격 여부",
+    cell: ({ getValue }) => <SelectionResultBadge selectionResult={getValue()} />,
+  }),
+  columnHelper.accessor("waitlistNumber", {
+    header: "예비 번호",
+    cell: ({ getValue }) => getValue() ?? <EmptyValue />,
+  }),
+  columnHelper.accessor("note", {
+    header: "비고",
+    cell: ({ getValue }) =>
+      getValue() ? (
+        <Icon name="sticky-note" size="lg" className="text-object-alternative" />
+      ) : (
+        <EmptyValue />
+      ),
+  }),
 ]);
 
 export default function SubmittedRecruitAppliesPage() {
