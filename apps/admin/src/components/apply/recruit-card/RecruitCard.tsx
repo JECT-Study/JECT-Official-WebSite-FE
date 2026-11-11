@@ -6,7 +6,9 @@ import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { routeTo } from "@/constants/routes";
 import { parseDate, parseKstDate } from "@/utils/date";
 
-type RecruitCardProps = ApplyManagementRecruit;
+interface RecruitCardProps {
+  recruit: ApplyManagementRecruit;
+}
 
 function formatPeriod(startDate: string, endDate: string): string {
   const start = parseDate(startDate);
@@ -27,7 +29,11 @@ function getDeadlineLabel(endDate: string): string {
   return daysLeft <= 0 ? "마감 D-Day" : `마감 D-${daysLeft}`;
 }
 
-function getFallbackTitle({ recruitType, semesterName, jobFamily }: RecruitCardProps): string {
+function getFallbackTitle({
+  recruitType,
+  semesterName,
+  jobFamily,
+}: ApplyManagementRecruit): string {
   const prefix = {
     SEMESTER: `[젝트 ${semesterName}]`,
     MAKERS: "젝트 메이커스",
@@ -37,7 +43,7 @@ function getFallbackTitle({ recruitType, semesterName, jobFamily }: RecruitCardP
   return `${prefix} ${JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily} 모집`;
 }
 
-export default function RecruitCard(props: RecruitCardProps) {
+export default function RecruitCard({ recruit }: RecruitCardProps) {
   const {
     recruitId,
     title,
@@ -48,7 +54,7 @@ export default function RecruitCard(props: RecruitCardProps) {
     passedCount,
     failedCount,
     waitlistedCount,
-  } = props;
+  } = recruit;
   const to = routeTo.submittedRecruitApplies(recruitId);
   // TODO: JDS Card.Overlay가 라우팅 컴포넌트를 지원하면 react-router의 Link로 교체한다.
   const handleClick = useLinkClickHandler(to);
@@ -64,7 +70,7 @@ export default function RecruitCard(props: RecruitCardProps) {
       <div className="flex flex-col gap-12 border-b border-stroke-subtle p-margin-sm">
         <Card.Title className="text-title-1 font-title-subtle break-keep whitespace-normal">
           {/* 제목이 없는 공고는 제목이 있는 공고와 같은 형식으로 만들어 표시한다. */}
-          {title ?? getFallbackTitle(props)}
+          {title ?? getFallbackTitle(recruit)}
         </Card.Title>
         <div className="flex flex-wrap items-center gap-8">
           <ContentBadge variant={JOB_FAMILY_BADGES[jobFamily]?.color} badgeStyle="alpha" size="xs">

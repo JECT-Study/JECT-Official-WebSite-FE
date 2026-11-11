@@ -106,7 +106,7 @@ export default function SubmittedAppliesPage() {
             />
           ) : (
             data.recruits.content.map((recruit) => (
-              <RecruitCard key={recruit.recruitId} {...recruit} />
+              <RecruitCard key={recruit.recruitId} recruit={recruit} />
             ))
           )}
         </div>
