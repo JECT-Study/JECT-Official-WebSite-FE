@@ -26,8 +26,8 @@ const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies
 const applyManagementRecruitSchema = z.object({
   recruitId: z.number(),
   title: z.string().nullable(),
-  semesterId: z.number(),
-  semesterName: z.string(),
+  semesterId: z.number().nullable(),
+  semesterName: z.string().nullable(),
   recruitType: recruitTypeSchema,
   jobFamily: jobFamilySchema,
   startDate: localDateTimeSchema,
