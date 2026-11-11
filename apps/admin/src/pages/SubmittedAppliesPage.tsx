@@ -49,7 +49,7 @@ export default function SubmittedAppliesPage() {
   const selectedTab = RECRUIT_TABS.find(({ type }) => type === recruitType) ?? RECRUIT_TABS[0];
 
   const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
-  const { data, isError } = useQuery({
+  const { data, isError, isPending, isPlaceholderData } = useQuery({
     queryKey: recruitQueryKeys.applyManagementRecruits(query),
     queryFn: () => recruitApi.getApplyManagementRecruits(query),
     placeholderData: keepPreviousData,
@@ -100,13 +100,15 @@ export default function SubmittedAppliesPage() {
               header="공고 목록을 불러오지 못했습니다"
               body="잠시 후 다시 시도해 주세요."
             />
-          ) : data?.recruits.content.length === 0 ? (
+          ) : isPending || isPlaceholderData ? (
+            <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
+          ) : data.recruits.content.length === 0 ? (
             <EmptyState
               header="현재 등록된 공고가 없습니다"
               body="새로운 공고가 등록되면 확인할 수 있어요."
             />
           ) : (
-            data?.recruits.content.map((recruit) => (
+            data.recruits.content.map((recruit) => (
               <RecruitCard key={recruit.recruitId} {...recruit} />
             ))
           )}
