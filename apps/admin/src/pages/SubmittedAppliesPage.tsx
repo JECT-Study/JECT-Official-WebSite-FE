@@ -12,7 +12,6 @@ import type { JobFamily } from "@/constants/jobFamily";
 
 type RecruitType = components["schemas"]["RecruitType"];
 
-// TODO: 무한 스크롤을 구현하기 전까지 허용된 최대 개수로 한 번에 받는다.
 const PAGE_SIZE = 100;
 
 const RECRUIT_TABS = [
