@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { EmptyState, Tabs } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
 import { recruitApi } from "@/apis/recruit/api";
 import { recruitQueryKeys } from "@/apis/recruit/queryKeys";
@@ -40,10 +41,13 @@ const RECRUIT_TABS = [
 ] as const satisfies readonly RecruitTab[];
 
 export default function SubmittedAppliesPage() {
-  const [recruitType, setRecruitType] = useState<RecruitType>(RECRUIT_TABS[0].type);
   const [jobFamilies, setJobFamilies] = useState<JobFamily[]>([]);
 
-  const selectedTab = RECRUIT_TABS.find(({ type }) => type === recruitType) ?? RECRUIT_TABS[0];
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const selectedTab =
+    RECRUIT_TABS.find(({ type }) => type === searchParams.get("tab")) ?? RECRUIT_TABS[0];
+  const recruitType = selectedTab.type;
 
   const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
   const { data, isError, isPending, isPlaceholderData } = useQuery({
@@ -55,7 +59,7 @@ export default function SubmittedAppliesPage() {
   const handleTabChange = (value: string) => {
     const tab = RECRUIT_TABS.find(({ type }) => type === value);
     if (!tab) return;
-    setRecruitType(tab.type);
+    setSearchParams({ tab: tab.type }, { replace: true });
     setJobFamilies([]);
   };
 
