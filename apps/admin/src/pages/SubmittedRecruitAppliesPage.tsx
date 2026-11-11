@@ -18,7 +18,7 @@ import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
 import { formatPhoneNumber } from "@/utils/phoneNumber";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 30;
 
 function EmptyValue() {
   return <span className="text-object-subtle">-</span>;
@@ -57,7 +57,7 @@ export default function SubmittedRecruitAppliesPage() {
   const headerActionSlot = useHeaderActionSlot();
   const recruitId = Number(useParams().recruitId);
 
-  const { data } = useInfiniteQuery({
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: applyQueryKeys.submittedApplies({ recruitId, size: PAGE_SIZE }),
     queryFn: ({ pageParam }) =>
       applyApi.getSubmittedApplies({ recruitId, size: PAGE_SIZE, cursor: pageParam }),
@@ -101,8 +101,20 @@ export default function SubmittedRecruitAppliesPage() {
           </BlockButton>
         </div>
       </div>
-      <div className="px-margin-lg desktop:px-margin-xl">
+      <div className="flex flex-col items-center gap-10 px-margin-lg py-16 desktop:px-margin-xl">
         <DataTable table={table} />
+        {hasNextPage && (
+          <BlockButton
+            hierarchy="primary"
+            variant="hollow"
+            size="md"
+            suffixIcon="chevron-down"
+            disabled={isFetchingNextPage}
+            onClick={() => fetchNextPage({ cancelRefetch: false })}
+          >
+            목록 더보기
+          </BlockButton>
+        )}
       </div>
     </section>
   );
