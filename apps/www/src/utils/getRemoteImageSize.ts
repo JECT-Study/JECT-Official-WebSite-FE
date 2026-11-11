@@ -27,10 +27,14 @@ function readSize(buffer: Uint8Array) {
 
 /** 원격 이미지를 크기 정보가 확인될 때까지만 로드한다. 크기를 읽지 못하면 null을 반환한다. */
 export async function getRemoteImageSize(url: string) {
+  // Next.js는 개발 모드 캐시 등을 위해 응답을 복제해 보관하므로 응답 스트림을 취소해도 다운로드가 계속된다.
+  // 읽기를 마치면 원본 요청을 중단해 복제본의 다운로드도 함께 멈춘다.
+  const controller = new AbortController();
+
   try {
-    // Next는 동일한 GET 요청의 응답을 복제해 보관하므로 cancel만으로는 다운로드를 중단할 수 없다.
-    // signal을 전달하면 응답을 복제하지 않으므로 크기를 읽은 뒤 다운로드를 중단할 수 있다.
-    const response = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+    const response = await fetch(url, {
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(REQUEST_TIMEOUT_MS)]),
+    });
 
     if (!response.ok || !response.body) {
       return null;
@@ -50,16 +54,14 @@ export async function getRemoteImageSize(url: string) {
       const size = readSize(buffer);
 
       if (size) {
-        await reader.cancel();
-
         return size;
       }
     }
 
-    await reader.cancel();
-
     return null;
   } catch {
     return null;
+  } finally {
+    controller.abort();
   }
 }
