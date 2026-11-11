@@ -118,7 +118,7 @@ export function RecruitList({ recruitments }: RecruitListProps) {
     >
       <Tabs.List aria-label="모집 유형">
         {TABS.map((tab) => (
-          <Tabs.Trigger key={tab.type} value={toTabParam(tab.type)}>
+          <Tabs.Trigger key={tab.type} value={toTabParam(tab.type)} className="max-tablet:flex-1">
             {tab.label}
           </Tabs.Trigger>
         ))}
