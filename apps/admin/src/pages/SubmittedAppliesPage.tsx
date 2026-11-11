@@ -38,20 +38,27 @@ const RECRUIT_TABS = [
   },
 ] as const satisfies readonly RecruitTab[];
 
+const SEARCH_PARAM = { tab: "tab", jobFamily: "jobFamily" } as const;
+
 const toParam = (value: string) => value.toLowerCase();
 
 export default function SubmittedAppliesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedTab =
-    RECRUIT_TABS.find(({ type }) => toParam(type) === searchParams.get("tab")) ?? RECRUIT_TABS[0];
-  const recruitType = selectedTab.type;
-  const jobFamilyParams = searchParams.getAll("jobFamily");
+    RECRUIT_TABS.find(({ type }) => toParam(type) === searchParams.get(SEARCH_PARAM.tab)) ??
+    RECRUIT_TABS[0];
+  const jobFamilyParams = searchParams.getAll(SEARCH_PARAM.jobFamily);
   const jobFamilies = selectedTab.jobFamilies.filter((jobFamily) =>
     jobFamilyParams.includes(toParam(jobFamily))
   );
 
-  const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
+  const query = {
+    status: "SUBMITTED",
+    recruitType: selectedTab.type,
+    jobFamilies,
+    size: PAGE_SIZE,
+  } as const;
   const { data, isError, isPending, isPlaceholderData } = useQuery({
     queryKey: recruitQueryKeys.applyManagementRecruits(query),
     queryFn: () => recruitApi.getApplyManagementRecruits(query),
@@ -59,13 +66,13 @@ export default function SubmittedAppliesPage() {
   });
 
   const handleTabChange = (value: string) => {
-    setSearchParams({ tab: toParam(value) }, { replace: true });
+    setSearchParams({ [SEARCH_PARAM.tab]: toParam(value) }, { replace: true });
   };
 
   const handleFilterChange = (values: JobFamily[]) => {
     const nextParams = new URLSearchParams(searchParams);
-    nextParams.delete("jobFamily");
-    values.forEach((value) => nextParams.append("jobFamily", toParam(value)));
+    nextParams.delete(SEARCH_PARAM.jobFamily);
+    values.forEach((value) => nextParams.append(SEARCH_PARAM.jobFamily, toParam(value)));
     setSearchParams(nextParams, { replace: true });
   };
 
