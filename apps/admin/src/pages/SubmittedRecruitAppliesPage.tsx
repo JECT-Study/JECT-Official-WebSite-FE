@@ -25,7 +25,7 @@ function EmptyValue() {
 }
 
 const columnHelper = createDataTableColumnHelper<SubmittedApply>();
-const COLUMNS = columnHelper.columns([
+const columns = columnHelper.columns([
   columnHelper.accessor("name", {
     header: "이름",
     meta: { cellType: "title", getDescription: (apply) => formatPhoneNumber(apply.phoneNumber) },
@@ -69,7 +69,7 @@ export default function SubmittedRecruitAppliesPage() {
 
   const table = useDataTable({
     data: applies,
-    columns: COLUMNS,
+    columns,
     getRowId: (apply) => String(apply.applyId),
   });
 
