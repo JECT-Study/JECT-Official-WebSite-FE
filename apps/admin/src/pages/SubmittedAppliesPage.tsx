@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { EmptyState, Tabs } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
@@ -41,13 +39,15 @@ const RECRUIT_TABS = [
 ] as const satisfies readonly RecruitTab[];
 
 export default function SubmittedAppliesPage() {
-  const [jobFamilies, setJobFamilies] = useState<JobFamily[]>([]);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedTab =
     RECRUIT_TABS.find(({ type }) => type === searchParams.get("tab")) ?? RECRUIT_TABS[0];
   const recruitType = selectedTab.type;
+  const jobFamilyParams = searchParams.getAll("jobFamily");
+  const jobFamilies = selectedTab.jobFamilies.filter((jobFamily) =>
+    jobFamilyParams.includes(jobFamily)
+  );
 
   const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
   const { data, isError, isPending, isPlaceholderData } = useQuery({
@@ -57,10 +57,14 @@ export default function SubmittedAppliesPage() {
   });
 
   const handleTabChange = (value: string) => {
-    const tab = RECRUIT_TABS.find(({ type }) => type === value);
-    if (!tab) return;
-    setSearchParams({ tab: tab.type }, { replace: true });
-    setJobFamilies([]);
+    setSearchParams({ tab: value }, { replace: true });
+  };
+
+  const handleFilterChange = (values: JobFamily[]) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("jobFamily");
+    values.forEach((value) => nextParams.append("jobFamily", value));
+    setSearchParams(nextParams, { replace: true });
   };
 
   const recruitTypeCounts = data?.recruitTypeCounts ?? [];
@@ -92,7 +96,7 @@ export default function SubmittedAppliesPage() {
             jobFamilies={selectedTab.jobFamilies}
             width={selectedTab.filterWidth}
             value={jobFamilies}
-            onChange={setJobFamilies}
+            onChange={handleFilterChange}
           />
         </div>
         <div className="flex flex-col gap-12">
