@@ -41,4 +41,6 @@ export const submittedAppliesSchema = z.object({
   NullableFields<Omit<Schemas["CursorPageResponseSubmittedApplyResponse"], "content">>
 >;
 
+export type CareerDetails = z.infer<typeof careerDetailsSchema>;
+export type SelectionResult = z.infer<typeof selectionResultSchema>;
 export type SubmittedApply = z.infer<typeof submittedApplySchema>;
