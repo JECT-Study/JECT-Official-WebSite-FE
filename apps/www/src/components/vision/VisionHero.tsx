@@ -1,8 +1,7 @@
 import Image from "next/image";
 
 import visionBannerImage from "@/assets/images/vision-banner.png";
-
-import { Phrases } from "./Phrases";
+import { Phrases } from "@/components/common/phrases";
 
 export function VisionHero() {
   return (

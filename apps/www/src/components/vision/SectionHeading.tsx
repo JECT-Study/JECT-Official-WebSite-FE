@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Phrases } from "./Phrases";
+import { Phrases } from "@/components/common/phrases";
 
 interface SectionHeadingProps {
   label: ReactNode;
