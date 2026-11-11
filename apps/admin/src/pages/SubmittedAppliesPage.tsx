@@ -38,15 +38,17 @@ const RECRUIT_TABS = [
   },
 ] as const satisfies readonly RecruitTab[];
 
+const toParam = (value: string) => value.toLowerCase();
+
 export default function SubmittedAppliesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedTab =
-    RECRUIT_TABS.find(({ type }) => type === searchParams.get("tab")) ?? RECRUIT_TABS[0];
+    RECRUIT_TABS.find(({ type }) => toParam(type) === searchParams.get("tab")) ?? RECRUIT_TABS[0];
   const recruitType = selectedTab.type;
   const jobFamilyParams = searchParams.getAll("jobFamily");
   const jobFamilies = selectedTab.jobFamilies.filter((jobFamily) =>
-    jobFamilyParams.includes(jobFamily)
+    jobFamilyParams.includes(toParam(jobFamily))
   );
 
   const query = { status: "SUBMITTED", recruitType, jobFamilies, size: PAGE_SIZE } as const;
@@ -57,13 +59,13 @@ export default function SubmittedAppliesPage() {
   });
 
   const handleTabChange = (value: string) => {
-    setSearchParams({ tab: value }, { replace: true });
+    setSearchParams({ tab: toParam(value) }, { replace: true });
   };
 
   const handleFilterChange = (values: JobFamily[]) => {
     const nextParams = new URLSearchParams(searchParams);
     nextParams.delete("jobFamily");
-    values.forEach((value) => nextParams.append("jobFamily", value));
+    values.forEach((value) => nextParams.append("jobFamily", toParam(value)));
     setSearchParams(nextParams, { replace: true });
   };
 
