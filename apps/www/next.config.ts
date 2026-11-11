@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   // 운영은 EC2 자체 호스팅이라 standalone 번들이 필요하다. Vercel 프리뷰는 이 값을 무시한다.
   output: "standalone",
 
+  images: {
+    remotePatterns: [
+      new URL("https://d1emvsnzj31pdh.cloudfront.net/**"),
+      new URL("https://d2lmyznn5nj2bl.cloudfront.net/**"),
+    ],
+  },
+
   // 기존 앱에서 react-router의 <Navigate replace />로 처리하던 경로다.
   async redirects() {
     return [
