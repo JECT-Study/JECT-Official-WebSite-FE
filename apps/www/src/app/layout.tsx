@@ -6,6 +6,7 @@ import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/footer";
 import { GlobalNavigationBar } from "@/components/gnb";
 import { HideOnMaintenance } from "@/components/layout";
+import { BASE_OPEN_GRAPH, SITE_DESCRIPTION, SITE_NAME } from "@/constants/metadata";
 import { THEME_STORAGE_KEY } from "@/constants/theme";
 
 import { Providers } from "./providers";
@@ -26,10 +27,6 @@ try {
 }
 `;
 
-const SITE_NAME = "젝트";
-const SITE_DESCRIPTION =
-  "젝트(JECT)는 다양한 포지션 멤버들과 협업할 수 있는 IT 사이드 프로젝트 동아리예요. 홈페이지에서 더 자세한 내용을 확인해보세요!";
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? process.env.NEXT_PUBLIC_SITE_URL
   : process.env.VERCEL_URL
@@ -49,13 +46,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    title: SITE_NAME,
-    description: SITE_DESCRIPTION,
-    locale: "ko_KR",
-  },
+  openGraph: BASE_OPEN_GRAPH,
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
