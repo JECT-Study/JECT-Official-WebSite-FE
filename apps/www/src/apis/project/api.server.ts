@@ -1,7 +1,7 @@
 import { httpClient } from "@/apis/httpClient/server";
 
 import { getProjectListQuery, projectListQuerySerializer } from "./query";
-import { projectPageSchema, projectSummarySchema } from "./schemas";
+import { projectDetailSchema, projectPageSchema, projectSummarySchema } from "./schemas";
 
 export const projectServerApi = {
   getProjects: async (category: string | null, page: number) => {
@@ -18,5 +18,14 @@ export const projectServerApi = {
     const { data } = await httpClient.GET("/projects/summary", { credentials: "omit" });
 
     return projectSummarySchema.parse(data);
+  },
+
+  getProject: async (projectId: number) => {
+    const { data } = await httpClient.GET("/projects/{projectId}", {
+      params: { path: { projectId } },
+      credentials: "omit",
+    });
+
+    return projectDetailSchema.parse(data);
   },
 } as const;
