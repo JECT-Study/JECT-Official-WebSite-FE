@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, EmptyState, Icon } from "@jects/jds";
+import { BlockButton, EmptyState, Icon, useToast } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -56,14 +56,15 @@ const columns = columnHelper.columns([
 export default function SubmittedRecruitAppliesPage() {
   const headerActionSlot = useHeaderActionSlot();
   const recruitId = Number(useParams().recruitId);
+  const { toast } = useToast();
 
   const {
     data,
     hasNextPage,
     isPending,
     isError,
-    isFetchNextPageError,
     isFetchingNextPage,
+    isFetchNextPageError,
     fetchNextPage,
   } = useInfiniteQuery({
     queryKey: applyQueryKeys.submittedApplies({ recruitId, size: PAGE_SIZE }),
@@ -80,6 +81,15 @@ export default function SubmittedRecruitAppliesPage() {
     columns,
     getRowId: (apply) => String(apply.applyId),
   });
+
+  const handleLoadMore = async () => {
+    const result = await fetchNextPage({ cancelRefetch: false });
+    if (result.isFetchNextPageError) {
+      toast.destructive("지원서 목록을 불러오지 못했습니다", {
+        description: "잠시 후 다시 시도해 주세요.",
+      });
+    }
+  };
 
   return (
     <section className="flex flex-col">
@@ -132,7 +142,7 @@ export default function SubmittedRecruitAppliesPage() {
                 size="md"
                 suffixIcon="chevron-down"
                 disabled={isFetchingNextPage}
-                onClick={() => fetchNextPage({ cancelRefetch: false })}
+                onClick={handleLoadMore}
               >
                 목록 더보기
               </BlockButton>
