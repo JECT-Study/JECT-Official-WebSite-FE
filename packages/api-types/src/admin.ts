@@ -164,6 +164,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/recruits/{recruitId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 모집확정
+         * @description 제출완료 지원서의 선정 결과를 검증하고 합격자를 구성원으로 등록한 뒤 모집을 종료합니다. 예비합격자는 불합격 처리하며, 실패 시 전체 작업을 롤백합니다.
+         */
+        post: operations["completeRecruit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/members/supporters": {
         parameters: {
             query?: never;
@@ -900,7 +920,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {string} */
-        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "SUPPORTER" | "OPS" | "INFRA" | "BX" | "ER";
+        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "OPS" | "INFRA" | "BX" | "ER";
         RecruitFaq: {
             title?: string;
             content?: string;
@@ -909,6 +929,10 @@ export interface components {
             title: string;
             content: string;
         };
+        /** @enum {string} */
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
+        /** @enum {string} */
+        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         RecruitUpdateRequest: {
             title: string;
             jobFamily: components["schemas"]["JobFamily"];
@@ -920,6 +944,10 @@ export interface components {
             recruitInformation?: string;
             notice?: string;
             faqs?: components["schemas"]["RecruitFaqRequest"][];
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            /** Format: int64 */
+            semesterId?: number;
             faqsOrNull?: components["schemas"]["RecruitFaq"][];
         };
         CustomVariableRequest: {
@@ -1000,10 +1028,14 @@ export interface components {
             recruitInformation?: string;
             notice?: string;
             faqs?: components["schemas"]["RecruitFaqRequest"][];
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            /** Format: int64 */
+            semesterId?: number;
         };
         SemesterRegisterRequest: {
             name?: string;
-            recruitRegisterRequests?: components["schemas"]["RecruitRegisterRequest"][];
+            recruitRegisterRequests: components["schemas"]["RecruitRegisterRequest"][];
         };
         CreateSemesterEventRequest: {
             name: string;
@@ -1039,8 +1071,6 @@ export interface components {
         };
         /** @enum {string} */
         MemberType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
-        /** @enum {string} */
-        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         CreateMemberSemesterRequest: {
             name: string;
             email: string;
@@ -1442,8 +1472,6 @@ export interface components {
         };
         /** @enum {string} */
         ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
-        /** @enum {string} */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
         ApplyManagementRecruitResponse: {
             /** Format: int64 */
             recruitId?: number;
@@ -2268,6 +2296,26 @@ export interface operations {
                 "application/json": components["schemas"]["RecruitRegisterRequest"][];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    completeRecruit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recruitId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

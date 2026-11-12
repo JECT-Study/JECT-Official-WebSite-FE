@@ -124,6 +124,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/login/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * PIN 로그인
+         * @description 이메일, PIN 번호, 모집 ID로 로그인하고 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.
+         */
+        post: operations["loginWithPin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/code": {
         parameters: {
             query?: never;
@@ -558,6 +578,12 @@ export interface components {
             /** Format: date-time */
             expiration?: string;
         };
+        PinLoginRequest: {
+            email: string;
+            pin: string;
+            /** Format: int64 */
+            recruitId: number;
+        };
         VerifyAuthCodeRequest: {
             email?: string;
             authCode?: string;
@@ -596,7 +622,7 @@ export interface components {
         /** @enum {string} */
         ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
         /** @enum {string} */
-        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "SUPPORTER" | "OPS" | "INFRA" | "BX" | "ER";
+        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "OPS" | "INFRA" | "BX" | "ER";
         /** @enum {string} */
         Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
         RegisterRequest: {
@@ -869,9 +895,7 @@ export type $defs = Record<string, never>;
 export interface operations {
     registerInitialProfile: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -893,9 +917,7 @@ export interface operations {
     };
     resetPin: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -917,9 +939,7 @@ export interface operations {
     };
     uploadPortfolios: {
         parameters: {
-            query: {
-                memberId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -943,9 +963,7 @@ export interface operations {
     };
     uploadContents: {
         parameters: {
-            query: {
-                memberId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1009,6 +1027,30 @@ export interface operations {
             };
         };
     };
+    loginWithPin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": boolean;
+                };
+            };
+        };
+    };
     verifyAuthCode: {
         parameters: {
             query: {
@@ -1045,7 +1087,6 @@ export interface operations {
     findTempApplicationForm: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1068,7 +1109,6 @@ export interface operations {
     saveApplicationTemporarily: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1093,7 +1133,6 @@ export interface operations {
     deleteProfileAndTempApplicationForm: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1114,7 +1153,6 @@ export interface operations {
     submitApplication: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1139,7 +1177,6 @@ export interface operations {
     saveProfile: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1411,7 +1448,6 @@ export interface operations {
     checkApplyStatus: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1455,9 +1491,7 @@ export interface operations {
     };
     isInitialApplicant: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1477,9 +1511,7 @@ export interface operations {
     };
     getCurrentApplicant: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
