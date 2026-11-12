@@ -16,7 +16,7 @@ export function useLoginWithPinMutation(
     ...options,
     mutationFn: authApi.loginWithPin,
     onSuccess: (data, variables, ...rest) => {
-      queryClient.removeQueries({ queryKey: applyQueryKeys.tempApplication(variables.recruitId) });
+      queryClient.removeQueries({ queryKey: applyQueryKeys.tempApplications() });
       options?.onSuccess?.(data, variables, ...rest);
     },
   });
