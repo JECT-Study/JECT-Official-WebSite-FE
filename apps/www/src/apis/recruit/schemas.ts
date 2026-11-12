@@ -12,7 +12,6 @@ export const jobFamilySchema = z.enum([
   "FE",
   "BE",
   "APP",
-  "SUPPORTER",
   "OPS",
   "INFRA",
   "BX",

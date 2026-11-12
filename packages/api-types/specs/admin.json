@@ -468,6 +468,32 @@
         }
       }
     },
+    "/admin/recruits/{recruitId}/complete": {
+      "post": {
+        "tags": [
+          "Admin Recruit"
+        ],
+        "summary": "모집확정",
+        "description": "제출완료 지원서의 선정 결과를 검증하고 합격자를 구성원으로 등록한 뒤 모집을 종료합니다. 예비합격자는 불합격 처리하며, 실패 시 전체 작업을 롤백합니다.",
+        "operationId": "completeRecruit",
+        "parameters": [
+          {
+            "name": "recruitId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/admin/members/supporters": {
       "get": {
         "tags": [
@@ -2175,7 +2201,6 @@
           "FE",
           "BE",
           "APP",
-          "SUPPORTER",
           "OPS",
           "INFRA",
           "BX",
@@ -2212,10 +2237,28 @@
           }
         }
       },
+      "RecruitType": {
+        "type": "string",
+        "enum": [
+          "SEMESTER",
+          "MAKERS",
+          "SUPPORTERS"
+        ]
+      },
+      "RecruitTypeDetail": {
+        "type": "string",
+        "enum": [
+          "REGULAR",
+          "NEW",
+          "REFILL"
+        ]
+      },
       "RecruitUpdateRequest": {
         "required": [
           "endDate",
           "jobFamily",
+          "recruitType",
+          "recruitTypeDetail",
           "startDate",
           "title"
         ],
@@ -2257,6 +2300,16 @@
             "items": {
               "$ref": "#/components/schemas/RecruitFaqRequest"
             }
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
           },
           "faqsOrNull": {
             "type": "array",
@@ -2544,6 +2597,8 @@
         "required": [
           "endDate",
           "jobFamily",
+          "recruitType",
+          "recruitTypeDetail",
           "startDate",
           "title"
         ],
@@ -2585,10 +2640,23 @@
             "items": {
               "$ref": "#/components/schemas/RecruitFaqRequest"
             }
+          },
+          "recruitType": {
+            "$ref": "#/components/schemas/RecruitType"
+          },
+          "recruitTypeDetail": {
+            "$ref": "#/components/schemas/RecruitTypeDetail"
+          },
+          "semesterId": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
       "SemesterRegisterRequest": {
+        "required": [
+          "recruitRegisterRequests"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -2742,14 +2810,6 @@
           "SEMESTER",
           "MAKERS",
           "SUPPORTERS"
-        ]
-      },
-      "RecruitTypeDetail": {
-        "type": "string",
-        "enum": [
-          "REGULAR",
-          "NEW",
-          "REFILL"
         ]
       },
       "CreateMemberSemesterRequest": {
@@ -3714,14 +3774,6 @@
           "TEMP_SAVED",
           "SUBMITTED",
           "REJECTED"
-        ]
-      },
-      "RecruitType": {
-        "type": "string",
-        "enum": [
-          "SEMESTER",
-          "MAKERS",
-          "SUPPORTERS"
         ]
       },
       "ApplyManagementRecruitResponse": {

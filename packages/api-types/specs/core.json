@@ -70,17 +70,6 @@
         "summary": "지원자의 최초 정보 등록",
         "description": "지원자(ROLE_APPLY)가 이름과 전화번호를 처음 등록할 때 사용합니다.",
         "operationId": "registerInitialProfile",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -106,17 +95,6 @@
         "summary": "PIN 번호 재설정",
         "description": "PIN 번호를 재설정합니다.",
         "operationId": "resetPin",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -142,17 +120,6 @@
         "summary": "포트폴리오 업로드",
         "description": "지원자의 포트폴리오를 업로드합니다.",
         "operationId": "uploadPortfolios",
-        "parameters": [
-          {
-            "name": "memberId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -191,17 +158,6 @@
         "summary": "콘텐츠 업로드",
         "description": "프로젝트 썸네일, 소개서 등 콘텐츠를 업로드합니다.",
         "operationId": "uploadContents",
-        "parameters": [
-          {
-            "name": "memberId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -304,6 +260,38 @@
         }
       }
     },
+    "/auth/login/pin": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "PIN 로그인",
+        "description": "이메일, PIN 번호, 모집 ID로 로그인하고 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.",
+        "operationId": "loginWithPin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/code": {
       "post": {
         "tags": [
@@ -387,15 +375,6 @@
         "operationId": "findTempApplicationForm",
         "parameters": [
           {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
             "name": "recruitId",
             "in": "query",
             "required": true,
@@ -426,15 +405,6 @@
         "description": "지원자의 특정 공고에 대한 지원서를 임시 저장합니다.",
         "operationId": "saveApplicationTemporarily",
         "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
           {
             "name": "recruitId",
             "in": "query",
@@ -470,15 +440,6 @@
         "operationId": "deleteProfileAndTempApplicationForm",
         "parameters": [
           {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
             "name": "recruitId",
             "in": "query",
             "required": true,
@@ -504,15 +465,6 @@
         "description": "지원자의 특정 공고에 대해 작성이 완료된 지원서를 제출합니다.",
         "operationId": "submitApplication",
         "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
           {
             "name": "recruitId",
             "in": "query",
@@ -549,15 +501,6 @@
         "description": "지원자의 특정 공고에 대한 프로필을 작성(저장)합니다.",
         "operationId": "saveProfile",
         "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
           {
             "name": "recruitId",
             "in": "query",
@@ -946,15 +889,6 @@
         "operationId": "checkApplyStatus",
         "parameters": [
           {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
             "name": "recruitId",
             "in": "query",
             "required": true,
@@ -1019,17 +953,6 @@
         "summary": "프로필 정보 최초 등록 여부 확인",
         "description": "지원자의 최초 프로필 정보(이름, 전화번호) 등록 여부를 확인합니다.",
         "operationId": "isInitialApplicant",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1052,17 +975,6 @@
         "summary": "현재 로그인한 지원자 프로필 조회",
         "description": "현재 로그인한 지원자의 프로필를 조회합니다.",
         "operationId": "getCurrentApplicant",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1151,6 +1063,27 @@
           "expiration": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "PinLoginRequest": {
+        "required": [
+          "email",
+          "pin",
+          "recruitId"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "pin": {
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          },
+          "recruitId": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -1291,7 +1224,6 @@
           "FE",
           "BE",
           "APP",
-          "SUPPORTER",
           "OPS",
           "INFRA",
           "BX",
