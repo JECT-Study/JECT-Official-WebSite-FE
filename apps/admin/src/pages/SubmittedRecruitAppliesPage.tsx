@@ -119,37 +119,49 @@ export default function SubmittedRecruitAppliesPage() {
           </BlockButton>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-10 px-margin-lg py-16 desktop:px-margin-xl">
-        {isPending ? (
-          <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
-        ) : isError && !isFetchNextPageError ? (
-          <EmptyState
-            header="지원서 목록을 불러오지 못했습니다"
-            body="잠시 후 다시 시도해 주세요."
-          />
-        ) : data?.pages[0].content.length === 0 ? (
-          <EmptyState
-            header="제출 완료된 지원서가 없습니다"
-            body="지원서가 제출되면 확인할 수 있어요."
-          />
-        ) : (
-          <>
-            <DataTable table={table} />
-            {hasNextPage && (
-              <BlockButton
-                hierarchy="primary"
-                variant="hollow"
-                size="md"
-                suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
-                className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
-                disabled={isFetchingNextPage}
-                onClick={handleLoadMore}
-              >
-                목록 더보기
-              </BlockButton>
-            )}
-          </>
-        )}
+      <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
+        <div className="rounded-10 border border-stroke-subtle">
+          <div className="flex border-b border-stroke-subtle px-16 py-12">
+            <p className="flex gap-2 rounded-6 border border-stroke-alpha-subtle px-12 py-6 text-label-md text-object-alternative">
+              <span className="font-label-bold">전체</span>
+              <span className="font-label-subtle">{data?.pages[0].totalCount}</span>
+            </p>
+          </div>
+          {/* TODO: 필터 칩과 필터 추가 버튼을 넣는다. */}
+          <div className="min-h-48 px-16 py-10" />
+        </div>
+        <div className="flex flex-col items-center gap-10">
+          {isPending ? (
+            <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
+          ) : isError && !isFetchNextPageError ? (
+            <EmptyState
+              header="지원서 목록을 불러오지 못했습니다"
+              body="잠시 후 다시 시도해 주세요."
+            />
+          ) : data?.pages[0].content.length === 0 ? (
+            <EmptyState
+              header="제출 완료된 지원서가 없습니다"
+              body="지원서가 제출되면 확인할 수 있어요."
+            />
+          ) : (
+            <>
+              <DataTable table={table} />
+              {hasNextPage && (
+                <BlockButton
+                  hierarchy="primary"
+                  variant="hollow"
+                  size="md"
+                  suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
+                  className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
+                  disabled={isFetchingNextPage}
+                  onClick={handleLoadMore}
+                >
+                  목록 더보기
+                </BlockButton>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
