@@ -40,7 +40,7 @@ function getFallbackTitle({
     SUPPORTERS: "젝트 운영 서포터즈",
   }[recruitType];
 
-  return `${prefix} ${JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily} 모집`;
+  return `${prefix} ${JOB_FAMILY_BADGES[jobFamily].label} 모집`;
 }
 
 export default function RecruitCard({ recruit }: RecruitCardProps) {
@@ -73,8 +73,8 @@ export default function RecruitCard({ recruit }: RecruitCardProps) {
           {title ?? getFallbackTitle(recruit)}
         </Card.Title>
         <div className="flex flex-wrap items-center gap-8">
-          <ContentBadge variant={JOB_FAMILY_BADGES[jobFamily]?.color} badgeStyle="alpha" size="xs">
-            {JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily}
+          <ContentBadge variant={JOB_FAMILY_BADGES[jobFamily].color} badgeStyle="alpha" size="xs">
+            {JOB_FAMILY_BADGES[jobFamily].label}
           </ContentBadge>
           <ContentBadge hierarchy="tertiary" badgeStyle="alpha" size="xs">
             {getDeadlineLabel(endDate)}

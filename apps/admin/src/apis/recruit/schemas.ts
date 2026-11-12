@@ -6,13 +6,13 @@ import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
 
+// 서버에서 사용하지 않는 SUPPORTER는 제외한다.
 const jobFamilySchema = z.enum([
   "PM",
   "PD",
   "FE",
   "BE",
   "APP",
-  "SUPPORTER",
   "OPS",
   "INFRA",
   "BX",

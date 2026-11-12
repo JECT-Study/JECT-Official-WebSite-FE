@@ -7,7 +7,7 @@ interface JobFamilyBadge {
   color: ThemeVariant;
 }
 
-export const JOB_FAMILY_BADGES: Partial<Record<JobFamily, JobFamilyBadge>> = {
+export const JOB_FAMILY_BADGES: Record<JobFamily, JobFamilyBadge> = {
   FE: { label: "프론트엔드 개발자", color: "green" },
   BE: { label: "백엔드 개발자", color: "sky" },
   APP: { label: "앱 개발자", color: "indigo" },

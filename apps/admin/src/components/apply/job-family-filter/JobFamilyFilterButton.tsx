@@ -33,7 +33,7 @@ export default function JobFamilyFilterButton({
             variant="control"
             options={jobFamilies.map((jobFamily) => ({
               value: jobFamily,
-              label: JOB_FAMILY_BADGES[jobFamily]?.label ?? jobFamily,
+              label: JOB_FAMILY_BADGES[jobFamily].label,
             }))}
             value={value}
             onChange={(selected) =>
