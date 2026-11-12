@@ -5,11 +5,19 @@ import { useState } from "react";
 import { IconButton, TextField } from "@jects/jds";
 import { useController, useFormContext } from "react-hook-form";
 
-import type { EmailVerificationFormValues } from "./schemas";
+interface PinFormValues {
+  pin: string;
+}
 
-export function PinField() {
+interface PinFieldProps {
+  label: string;
+  placeholder: string;
+  autoComplete: "new-password" | "current-password";
+}
+
+export function PinField({ label, placeholder, autoComplete }: PinFieldProps) {
   const [isPinVisible, setIsPinVisible] = useState(false);
-  const { control, trigger } = useFormContext<EmailVerificationFormValues>();
+  const { control, trigger } = useFormContext<PinFormValues>();
   const {
     field: { ref, name, value, onBlur, onChange },
     fieldState,
@@ -17,15 +25,15 @@ export function PinField() {
 
   return (
     <TextField status={fieldState.error ? "error" : "default"}>
-      <TextField.Label>PIN 설정</TextField.Label>
+      <TextField.Label>{label}</TextField.Label>
       <TextField.Input
         ref={ref}
         name={name}
         type={isPinVisible ? "text" : "password"}
         inputMode="numeric"
         maxLength={6}
-        autoComplete="new-password"
-        placeholder="6자리 숫자를 입력해주세요"
+        autoComplete={autoComplete}
+        placeholder={placeholder}
         suffix={
           <IconButton
             type="button"

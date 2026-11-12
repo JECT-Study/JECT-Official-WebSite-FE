@@ -11,6 +11,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
 import { useCheckMemberExistsMutation } from "@/hooks/auth/useCheckMemberExistsMutation";
@@ -20,7 +21,6 @@ import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 
 import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
 import { EmailField } from "./EmailField";
-import { PinField } from "./PinField";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 import { TermsField } from "./TermsField";
 
@@ -214,7 +214,11 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
 
             {isVerified && (
               <>
-                <PinField />
+                <PinField
+                  label="PIN 설정"
+                  placeholder="6자리 숫자를 입력해주세요"
+                  autoComplete="new-password"
+                />
                 <TermsField />
               </>
             )}
