@@ -109,13 +109,13 @@ export default function SubmittedAppliesPage() {
           />
         </div>
         <div className="flex flex-col gap-12">
-          {isError ? (
+          {isPending || isPlaceholderData ? (
+            <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
+          ) : isError ? (
             <EmptyState
               header="공고 목록을 불러오지 못했습니다"
               body="잠시 후 다시 시도해 주세요."
             />
-          ) : isPending || isPlaceholderData ? (
-            <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
           ) : data.recruits.content.length === 0 ? (
             <EmptyState
               header="현재 등록된 공고가 없습니다"
