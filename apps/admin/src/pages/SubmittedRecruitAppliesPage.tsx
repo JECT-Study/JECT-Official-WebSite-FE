@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, Icon } from "@jects/jds";
+import { BlockButton, EmptyState, Icon } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -57,7 +57,15 @@ export default function SubmittedRecruitAppliesPage() {
   const headerActionSlot = useHeaderActionSlot();
   const recruitId = Number(useParams().recruitId);
 
-  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
+  const {
+    data,
+    hasNextPage,
+    isPending,
+    isError,
+    isFetchNextPageError,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
     queryKey: applyQueryKeys.submittedApplies({ recruitId, size: PAGE_SIZE }),
     queryFn: ({ pageParam }) =>
       applyApi.getSubmittedApplies({ recruitId, size: PAGE_SIZE, cursor: pageParam }),
@@ -102,18 +110,34 @@ export default function SubmittedRecruitAppliesPage() {
         </div>
       </div>
       <div className="flex flex-col items-center gap-10 px-margin-lg py-16 desktop:px-margin-xl">
-        <DataTable table={table} />
-        {hasNextPage && (
-          <BlockButton
-            hierarchy="primary"
-            variant="hollow"
-            size="md"
-            suffixIcon="chevron-down"
-            disabled={isFetchingNextPage}
-            onClick={() => fetchNextPage({ cancelRefetch: false })}
-          >
-            목록 더보기
-          </BlockButton>
+        {isPending ? (
+          <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
+        ) : isError && !isFetchNextPageError ? (
+          <EmptyState
+            header="지원서 목록을 불러오지 못했습니다"
+            body="잠시 후 다시 시도해 주세요."
+          />
+        ) : data?.pages[0].content.length === 0 ? (
+          <EmptyState
+            header="제출 완료된 지원서가 없습니다"
+            body="지원서가 제출되면 확인할 수 있어요."
+          />
+        ) : (
+          <>
+            <DataTable table={table} />
+            {hasNextPage && (
+              <BlockButton
+                hierarchy="primary"
+                variant="hollow"
+                size="md"
+                suffixIcon="chevron-down"
+                disabled={isFetchingNextPage}
+                onClick={() => fetchNextPage({ cancelRefetch: false })}
+              >
+                목록 더보기
+              </BlockButton>
+            )}
+          </>
         )}
       </div>
     </section>
