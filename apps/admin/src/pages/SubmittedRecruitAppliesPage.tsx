@@ -140,7 +140,8 @@ export default function SubmittedRecruitAppliesPage() {
                 hierarchy="primary"
                 variant="hollow"
                 size="md"
-                suffixIcon="chevron-down"
+                suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
+                className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
                 disabled={isFetchingNextPage}
                 onClick={handleLoadMore}
               >
