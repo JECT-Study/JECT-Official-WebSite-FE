@@ -13,9 +13,17 @@ interface PinFieldProps {
   label: string;
   placeholder: string;
   autoComplete: "new-password" | "current-password";
+  errorMessage?: string;
+  onChange?: () => void;
 }
 
-export function PinField({ label, placeholder, autoComplete }: PinFieldProps) {
+export function PinField({
+  label,
+  placeholder,
+  autoComplete,
+  errorMessage,
+  onChange: onPinChange,
+}: PinFieldProps) {
   const [isPinVisible, setIsPinVisible] = useState(false);
   const { control, trigger } = useFormContext<PinFormValues>();
   const {
@@ -23,8 +31,10 @@ export function PinField({ label, placeholder, autoComplete }: PinFieldProps) {
     fieldState,
   } = useController({ name: "pin", control });
 
+  const helper = errorMessage ?? fieldState.error?.message;
+
   return (
-    <TextField status={fieldState.error ? "error" : "default"}>
+    <TextField status={helper ? "error" : "default"}>
       <TextField.Label>{label}</TextField.Label>
       <TextField.Input
         ref={ref}
@@ -48,15 +58,16 @@ export function PinField({ label, placeholder, autoComplete }: PinFieldProps) {
         onBlur={onBlur}
         onChange={(event) => {
           onChange(event.target.value.replace(/\D/g, ""));
+          onPinChange?.();
 
           if (!fieldState.isTouched) {
             void trigger("pin");
           }
         }}
       />
-      {fieldState.error && (
+      {helper && (
         <TextField.Footer>
-          <TextField.Helper>{fieldState.error.message}</TextField.Helper>
+          <TextField.Helper>{helper}</TextField.Helper>
         </TextField.Footer>
       )}
     </TextField>
