@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { recruitApi } from "@/apis/recruit/api";
 import { recruitQueryKeys } from "@/apis/recruit/queryKeys";
-import type { JobFamily, RecruitType } from "@/apis/recruit/schemas";
+import type { ApplyManagementRecruit, JobFamily, RecruitType } from "@/apis/recruit/schemas";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
 
@@ -109,25 +109,42 @@ export default function SubmittedAppliesPage() {
           />
         </div>
         <div className="flex flex-col gap-12">
-          {isPending || isPlaceholderData ? (
-            <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
-          ) : isError ? (
-            <EmptyState
-              header="공고 목록을 불러오지 못했습니다"
-              body="잠시 후 다시 시도해 주세요."
-            />
-          ) : data.recruits.content.length === 0 ? (
-            <EmptyState
-              header="현재 등록된 공고가 없습니다"
-              body="새로운 공고가 등록되면 확인할 수 있어요."
-            />
-          ) : (
-            data.recruits.content.map((recruit) => (
-              <RecruitCard key={recruit.recruitId} recruit={recruit} />
-            ))
-          )}
+          <RecruitList
+            recruits={data?.recruits.content ?? []}
+            isLoading={isPending || isPlaceholderData}
+            isError={isError}
+          />
         </div>
       </Tabs.Root>
     </section>
   );
+}
+
+interface RecruitListProps {
+  recruits: ApplyManagementRecruit[];
+  isLoading: boolean;
+  isError: boolean;
+}
+
+function RecruitList({ recruits, isLoading, isError }: RecruitListProps) {
+  if (isLoading) {
+    return <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+  }
+
+  if (isError) {
+    return (
+      <EmptyState header="공고 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+    );
+  }
+
+  if (recruits.length === 0) {
+    return (
+      <EmptyState
+        header="현재 등록된 공고가 없습니다"
+        body="새로운 공고가 등록되면 확인할 수 있어요."
+      />
+    );
+  }
+
+  return recruits.map((recruit) => <RecruitCard key={recruit.recruitId} recruit={recruit} />);
 }
