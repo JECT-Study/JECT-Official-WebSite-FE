@@ -9,9 +9,11 @@ import {
   Pagination,
   type ThemeVariant,
 } from "@jects/jds";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { RowSelectionState } from "@tanstack/react-table";
 
-import type { AccountListParams } from "@/apis/account/query";
+import type { AccountListParams } from "@/apis/account/api";
+import { accountQueries } from "@/apis/account/queries";
 import type { Account } from "@/apis/account/schemas";
 import {
   createDataTableColumnHelper,
@@ -31,7 +33,6 @@ import {
   ACCOUNT_STATUSES,
   type AccountRole,
 } from "@/constants/account";
-import { useAccountsQuery } from "@/hooks/account/useAccountsQuery";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -110,9 +111,9 @@ export default function AccountsPage() {
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   // 닫히는 동안 선택이 비워져도 다이얼로그 문구가 바뀌지 않도록 열 때의 대상을 따로 보관한다.
   const [deactivateTargetIds, setDeactivateTargetIds] = useState<number[]>([]);
-  const { data, isPending, isError, isPlaceholderData, refetch } = useAccountsQuery({
-    ...toAccountListFilter(filterValues),
-    page,
+  const { data, isPending, isError, isPlaceholderData, refetch } = useQuery({
+    ...accountQueries.list({ ...toAccountListFilter(filterValues), page }),
+    placeholderData: keepPreviousData,
   });
   const { mutate: deactivateAccounts, isPending: isDeactivating } = useDeactivateAccountsMutation();
   const isDeactivatingRef = useRef(false);
