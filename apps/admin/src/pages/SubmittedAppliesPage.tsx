@@ -42,6 +42,35 @@ const SEARCH_PARAM = { tab: "tab", jobFamily: "jobFamily" } as const;
 
 const toParam = (value: string) => value.toLowerCase();
 
+interface RecruitListProps {
+  recruits: ApplyManagementRecruit[];
+  isLoading: boolean;
+  isError: boolean;
+}
+
+function RecruitList({ recruits, isLoading, isError }: RecruitListProps) {
+  if (isLoading) {
+    return <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+  }
+
+  if (isError) {
+    return (
+      <EmptyState header="공고 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+    );
+  }
+
+  if (recruits.length === 0) {
+    return (
+      <EmptyState
+        header="현재 등록된 공고가 없습니다"
+        body="새로운 공고가 등록되면 확인할 수 있어요."
+      />
+    );
+  }
+
+  return recruits.map((recruit) => <RecruitCard key={recruit.recruitId} recruit={recruit} />);
+}
+
 export default function SubmittedAppliesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -118,33 +147,4 @@ export default function SubmittedAppliesPage() {
       </Tabs.Root>
     </section>
   );
-}
-
-interface RecruitListProps {
-  recruits: ApplyManagementRecruit[];
-  isLoading: boolean;
-  isError: boolean;
-}
-
-function RecruitList({ recruits, isLoading, isError }: RecruitListProps) {
-  if (isLoading) {
-    return <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
-  }
-
-  if (isError) {
-    return (
-      <EmptyState header="공고 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
-    );
-  }
-
-  if (recruits.length === 0) {
-    return (
-      <EmptyState
-        header="현재 등록된 공고가 없습니다"
-        body="새로운 공고가 등록되면 확인할 수 있어요."
-      />
-    );
-  }
-
-  return recruits.map((recruit) => <RecruitCard key={recruit.recruitId} recruit={recruit} />);
 }
