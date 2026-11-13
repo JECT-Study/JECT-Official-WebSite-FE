@@ -8,6 +8,7 @@ const columnHelper = createDataTableColumnHelper<Account>();
 export const accountColumns = columnHelper.columns([
   columnHelper.accessor("name", {
     header: "이름",
+    cell: (info) => info.getValue() ?? "-",
     meta: { cellType: "title", getDescription: (account) => account.email },
   }),
   columnHelper.accessor("role", {
