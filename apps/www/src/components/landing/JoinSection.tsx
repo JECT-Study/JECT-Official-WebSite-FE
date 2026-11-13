@@ -19,13 +19,13 @@ function SponsorList() {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex aspect-12/5 items-center justify-center rounded-6 border border-stroke-alpha-assistive bg-surface-deep"
+            className="@container flex aspect-12/5 items-center justify-center rounded-6 border border-stroke-alpha-assistive bg-surface-deep"
           >
             <Image
               src={logo}
               alt={`${name} 웹사이트 (새 창 열림)`}
               sizes="160px"
-              className="max-h-1/2 w-1/2 max-w-[160px] object-contain"
+              className="max-h-[calc(100cqw/4.8)] w-1/2 max-w-[160px] object-contain"
             />
           </a>
         </li>
