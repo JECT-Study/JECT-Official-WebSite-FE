@@ -20,6 +20,8 @@ export default function AccountsPage() {
   const [page, setPage] = useState(0);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  // 닫히는 동안 선택이 비워져도 다이얼로그 문구가 바뀌지 않도록 열 때의 대상을 따로 보관한다.
+  const [deactivateTargetIds, setDeactivateTargetIds] = useState<number[]>([]);
   const { data, isPending, isError, isPlaceholderData, refetch } = useAccountsQuery({
     ...toAccountListFilter(filterValues),
     page,
@@ -41,9 +43,9 @@ export default function AccountsPage() {
 
   const handleConfirmDeactivate = () => {
     // isPending은 다음 렌더에 반영되어 연속 클릭을 막지 못하므로 ref로 즉시 잠근다.
-    if (isDeactivatingRef.current || selectedIds.length === 0) return;
+    if (isDeactivatingRef.current || deactivateTargetIds.length === 0) return;
     isDeactivatingRef.current = true;
-    deactivateAccounts(selectedIds, {
+    deactivateAccounts(deactivateTargetIds, {
       onSuccess: () => {
         setRowSelection({});
         setIsDeactivateDialogOpen(false);
@@ -52,6 +54,11 @@ export default function AccountsPage() {
         isDeactivatingRef.current = false;
       },
     });
+  };
+
+  const handleOpenDeactivateDialog = () => {
+    setDeactivateTargetIds(selectedIds);
+    setIsDeactivateDialogOpen(true);
   };
 
   const handleAddAccount = () => {
@@ -71,7 +78,7 @@ export default function AccountsPage() {
         canAddAccount={isAdmin}
         onAddAccount={handleAddAccount}
         selectedCount={selectedIds.length}
-        onDeactivate={() => setIsDeactivateDialogOpen(true)}
+        onDeactivate={handleOpenDeactivateDialog}
       >
         <Filter
           fields={ACCOUNT_FILTER_FIELDS}
@@ -83,6 +90,9 @@ export default function AccountsPage() {
         <EmptyState
           body="목록을 불러오지 못했습니다."
           primaryAction={{ children: "다시 시도", onClick: () => void refetch() }}
+          secondaryAction={
+            page > 0 ? { children: "첫 페이지로 이동", onClick: () => setPage(0) } : undefined
+          }
         />
       ) : isPending ? null : data.content.length === 0 ? (
         <EmptyState body="조건에 맞는 계정이 없습니다." />
@@ -106,7 +116,7 @@ export default function AccountsPage() {
       )}
       <DeactivateAccountsDialog
         open={isDeactivateDialogOpen}
-        count={selectedIds.length}
+        count={deactivateTargetIds.length}
         isPending={isDeactivating}
         onOpenChange={setIsDeactivateDialogOpen}
         onConfirm={handleConfirmDeactivate}
