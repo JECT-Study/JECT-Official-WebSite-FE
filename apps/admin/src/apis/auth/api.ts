@@ -2,11 +2,15 @@ import type { components } from "@ject/api-types/admin";
 
 import { httpClient } from "@/apis/httpClient";
 
+import { loginResponseSchema } from "./schemas";
+
 type LoginRequest = components["schemas"]["AdminLoginRequest"];
 
 export const authApi = {
   login: async (body: LoginRequest) => {
-    await httpClient.POST("/admin-auth/login", { body });
+    const { data } = await httpClient.POST("/admin-auth/login", { body });
+
+    return loginResponseSchema.parse(data);
   },
 
   logout: async () => {
