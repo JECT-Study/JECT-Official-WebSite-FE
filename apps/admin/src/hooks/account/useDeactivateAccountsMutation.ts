@@ -2,7 +2,7 @@ import { useToast } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 
 import { accountApi } from "@/apis/account/api";
-import { accountQueryKeys } from "@/apis/account/queryKeys";
+import { accountQueries } from "@/apis/account/queries";
 import { queryClient } from "@/apis/queryClient";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 
@@ -18,7 +18,7 @@ export function useDeactivateAccountsMutation() {
   return useMutation({
     mutationFn: accountApi.deactivateAccounts,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: accountQueryKeys.lists() });
+      void queryClient.invalidateQueries({ queryKey: accountQueries.lists() });
       toast.positive("계정을 비활성화했습니다.");
     },
     onError: (error) => {
