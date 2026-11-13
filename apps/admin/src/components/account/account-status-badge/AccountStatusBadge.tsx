@@ -8,7 +8,7 @@ interface AccountStatusBadgeProps {
 
 export function AccountStatusBadge({ status }: AccountStatusBadgeProps) {
   return (
-    <ContentBadge hierarchy={status === "ACTIVE" ? "primary" : "tertiary"} badgeStyle="solid">
+    <ContentBadge hierarchy={status === "ACTIVE" ? "primary" : "secondary"} badgeStyle="solid">
       {ACCOUNT_STATUS_LABELS[status]}
     </ContentBadge>
   );
