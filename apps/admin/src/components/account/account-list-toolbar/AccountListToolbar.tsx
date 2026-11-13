@@ -6,6 +6,8 @@ interface AccountListToolbarProps {
   totalCount: number | undefined;
   canAddAccount: boolean;
   onAddAccount: () => void;
+  selectedCount: number;
+  onDeactivate: () => void;
   children?: ReactNode;
 }
 
@@ -13,6 +15,8 @@ export function AccountListToolbar({
   totalCount,
   canAddAccount,
   onAddAccount,
+  selectedCount,
+  onDeactivate,
   children,
 }: AccountListToolbarProps) {
   return (
@@ -36,6 +40,20 @@ export function AccountListToolbar({
           >
             계정 추가
           </BlockButton>
+        )}
+        {selectedCount > 0 && (
+          <>
+            <span className="text-label-md text-accent-neutral">{selectedCount}개 선택됨</span>
+            <BlockButton
+              hierarchy="secondary"
+              variant="outlined"
+              size="xs"
+              className="ml-auto"
+              onClick={onDeactivate}
+            >
+              비활성화
+            </BlockButton>
+          </>
         )}
       </div>
       {children && <div className="border-t border-stroke-subtle px-16 py-12">{children}</div>}

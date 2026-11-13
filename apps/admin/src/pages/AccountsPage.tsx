@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { EmptyState, Pagination } from "@jects/jds";
+import type { RowSelectionState } from "@tanstack/react-table";
 
 import { AccountListToolbar } from "@/components/account/account-list-toolbar/AccountListToolbar";
 import { AccountTable } from "@/components/account/account-table/AccountTable";
+import { DeactivateAccountsDialog } from "@/components/account/deactivate-accounts-dialog/DeactivateAccountsDialog";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterValues } from "@/components/common/filter/Filter.types";
 import { useAccountsQuery } from "@/hooks/account/useAccountsQuery";
+import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 import { ACCOUNT_FILTER_FIELDS, toAccountListFilter } from "./AccountsPage.filter";
@@ -15,10 +18,15 @@ export default function AccountsPage() {
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const [page, setPage] = useState(0);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   const { data, isPending, isError, isPlaceholderData, refetch } = useAccountsQuery({
     ...toAccountListFilter(filterValues),
     page,
   });
+  const { mutate: deactivateAccounts, isPending: isDeactivating } = useDeactivateAccountsMutation();
+  const isDeactivatingRef = useRef(false);
+  const selectedIds = Object.keys(rowSelection).map(Number);
 
   // 비활성화 등으로 현재 페이지가 사라지면 마지막 페이지로 옮긴다.
   if (data && !isPlaceholderData && data.totalPages > 0 && page >= data.totalPages) {
@@ -28,6 +36,22 @@ export default function AccountsPage() {
   const handleFilterChange = (values: FilterValues) => {
     setFilterValues(values);
     setPage(0);
+    setRowSelection({});
+  };
+
+  const handleConfirmDeactivate = () => {
+    // isPending은 다음 렌더에 반영되어 연속 클릭을 막지 못하므로 ref로 즉시 잠근다.
+    if (isDeactivatingRef.current || selectedIds.length === 0) return;
+    isDeactivatingRef.current = true;
+    deactivateAccounts(selectedIds, {
+      onSuccess: () => {
+        setRowSelection({});
+        setIsDeactivateDialogOpen(false);
+      },
+      onSettled: () => {
+        isDeactivatingRef.current = false;
+      },
+    });
   };
 
   const handleAddAccount = () => {
@@ -40,12 +64,14 @@ export default function AccountsPage() {
 
   return (
     <div className="flex flex-col gap-20 px-margin-lg pb-margin-xl desktop:px-margin-xl">
-      <h2 className="text-title-4 font-title-bold text-object-boldest">관리자 계정 목록</h2>
+      <h2 className="text-title-2 font-title-bold text-object-boldest">관리자 계정 목록</h2>
       <AccountListToolbar
         // TODO: 백엔드가 필터와 무관한 전체 수 필드를 추가하면 교체한다.
         totalCount={data?.totalElements}
         canAddAccount={isAdmin}
         onAddAccount={handleAddAccount}
+        selectedCount={selectedIds.length}
+        onDeactivate={() => setIsDeactivateDialogOpen(true)}
       >
         <Filter
           fields={ACCOUNT_FILTER_FIELDS}
@@ -62,7 +88,12 @@ export default function AccountsPage() {
         <EmptyState body="조건에 맞는 계정이 없습니다." />
       ) : (
         <>
-          <AccountTable accounts={data.content} onRowClick={handleRowClick} />
+          <AccountTable
+            accounts={data.content}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            onRowClick={handleRowClick}
+          />
           {data.totalPages > 1 && (
             <Pagination
               className="self-center"
@@ -73,6 +104,13 @@ export default function AccountsPage() {
           )}
         </>
       )}
+      <DeactivateAccountsDialog
+        open={isDeactivateDialogOpen}
+        count={selectedIds.length}
+        isPending={isDeactivating}
+        onOpenChange={setIsDeactivateDialogOpen}
+        onConfirm={handleConfirmDeactivate}
+      />
     </div>
   );
 }
