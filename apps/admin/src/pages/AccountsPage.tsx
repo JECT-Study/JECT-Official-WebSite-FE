@@ -119,7 +119,6 @@ export default function AccountsPage() {
   const selectedIds = Object.keys(rowSelection).map(Number);
   const hasSelection = selectedIds.length > 0;
   const isEmpty = data?.content.length === 0;
-  const hasMultiplePages = (data?.totalPages ?? 0) > 1;
   const isFirstPage = page === 0;
 
   // 비활성화 등으로 현재 페이지가 사라지면 마지막 페이지로 옮긴다.
@@ -232,14 +231,12 @@ export default function AccountsPage() {
       ) : (
         <>
           <DataTable table={table} />
-          {hasMultiplePages && (
-            <Pagination
-              className="self-center"
-              page={page + 1}
-              totalPages={data.totalPages}
-              onPageChange={(next) => setPage(next - 1)}
-            />
-          )}
+          <Pagination
+            className="self-center"
+            page={page + 1}
+            totalPages={data.totalPages}
+            onPageChange={(next) => setPage(next - 1)}
+          />
         </>
       )}
       <Dialog
