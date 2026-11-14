@@ -19,6 +19,7 @@ import type { FilterField, FilterValues } from "@/components/common/filter/Filte
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
 import { SELECTION_RESULT_LABELS } from "@/constants/selectionResult";
+import NotFoundPage from "@/pages/NotFoundPage";
 import { formatPhoneNumber } from "@/utils/phoneNumber";
 
 const PAGE_SIZE = 30;
@@ -81,8 +82,19 @@ const columns = columnHelper.columns([
 ]);
 
 export default function SubmittedRecruitAppliesPage() {
-  const headerActionSlot = useHeaderActionSlot();
   const recruitId = Number(useParams().recruitId);
+
+  if (!Number.isInteger(recruitId) || recruitId <= 0) return <NotFoundPage />;
+
+  return <SubmittedRecruitApplies recruitId={recruitId} />;
+}
+
+interface SubmittedRecruitAppliesProps {
+  recruitId: number;
+}
+
+function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
+  const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
 
