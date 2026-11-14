@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, Icon, useToast } from "@jects/jds";
@@ -7,18 +7,45 @@ import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
-import type { SubmittedApply } from "@/apis/apply/schemas";
+import type { CareerDetails, SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SelectionResultBadge from "@/components/apply/selection-result-badge/SelectionResultBadge";
 import {
   createDataTableColumnHelper,
   DataTable,
   useDataTable,
 } from "@/components/common/data-table";
+import Filter from "@/components/common/filter/Filter";
+import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
+import { SELECTION_RESULT_LABELS } from "@/constants/selectionResult";
 import { formatPhoneNumber } from "@/utils/phoneNumber";
 
 const PAGE_SIZE = 30;
+
+const toOptions = (labels: Record<string, string>) =>
+  Object.entries(labels).map(([value, label]) => ({ value, label }));
+
+const FILTER_FIELDS: FilterField[] = [
+  { id: "careerDetails", label: "지원자 신분", options: toOptions(CAREER_DETAILS_LABELS) },
+  { id: "selectionResults", label: "합격 여부", options: toOptions(SELECTION_RESULT_LABELS) },
+];
+
+// 옵션 값이 FILTER_FIELDS에서 오므로 각 필드의 타입으로 좁힌다.
+interface SubmittedAppliesFilterValues {
+  careerDetails?: CareerDetails[];
+  selectionResults?: SelectionResult[];
+}
+
+// 칩만 추가하고 고르지 않은 필터는 조건에서 빼야 같은 쿼리 키로 유지된다.
+function toFilterCondition(filterValues: FilterValues) {
+  const { careerDetails, selectionResults } = filterValues as SubmittedAppliesFilterValues;
+
+  return {
+    careerDetails: careerDetails?.length ? careerDetails : undefined,
+    selectionResults: selectionResults?.length ? selectionResults : undefined,
+  };
+}
 
 function EmptyValue() {
   return <span className="text-object-subtle">-</span>;
@@ -56,7 +83,10 @@ const columns = columnHelper.columns([
 export default function SubmittedRecruitAppliesPage() {
   const headerActionSlot = useHeaderActionSlot();
   const recruitId = Number(useParams().recruitId);
+  const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
+
+  const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
 
   const {
     data,
@@ -67,9 +97,8 @@ export default function SubmittedRecruitAppliesPage() {
     isFetchNextPageError,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: applyQueryKeys.submittedApplies({ recruitId, size: PAGE_SIZE }),
-    queryFn: ({ pageParam }) =>
-      applyApi.getSubmittedApplies({ recruitId, size: PAGE_SIZE, cursor: pageParam }),
+    queryKey: applyQueryKeys.submittedApplies(condition),
+    queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
   });
@@ -122,13 +151,15 @@ export default function SubmittedRecruitAppliesPage() {
       <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
         <div className="rounded-10 border border-stroke-subtle">
           <div className="flex border-b border-stroke-subtle px-16 py-12">
+            {/* TODO: 필터와 무관한 공고의 전체 지원서 수를 받을 API가 정해지면 연결한다. */}
             <p className="flex gap-2 rounded-6 border border-stroke-alpha-subtle px-12 py-6 text-label-md text-object-alternative">
               <span className="font-label-bold">전체</span>
-              <span className="font-label-subtle">{data?.pages[0].totalCount}</span>
+              <span className="font-label-subtle">127</span>
             </p>
           </div>
-          {/* TODO: 필터 칩과 필터 추가 버튼을 넣는다. */}
-          <div className="min-h-48 px-16 py-10" />
+          <div className="min-h-48 px-16 py-10">
+            <Filter fields={FILTER_FIELDS} values={filterValues} onValuesChange={setFilterValues} />
+          </div>
         </div>
         <div className="flex flex-col items-center gap-10">
           {isPending ? (
