@@ -5,27 +5,45 @@ import { useState } from "react";
 import { IconButton, TextField } from "@jects/jds";
 import { useController, useFormContext } from "react-hook-form";
 
-import type { EmailVerificationFormValues } from "./schemas";
+interface PinFormValues {
+  pin: string;
+}
 
-export function PinField() {
+interface PinFieldProps {
+  label: string;
+  placeholder: string;
+  autoComplete: "new-password" | "current-password";
+  errorMessage?: string;
+  onChange?: () => void;
+}
+
+export function PinField({
+  label,
+  placeholder,
+  autoComplete,
+  errorMessage,
+  onChange: onPinChange,
+}: PinFieldProps) {
   const [isPinVisible, setIsPinVisible] = useState(false);
-  const { control, trigger } = useFormContext<EmailVerificationFormValues>();
+  const { control, trigger } = useFormContext<PinFormValues>();
   const {
     field: { ref, name, value, onBlur, onChange },
     fieldState,
   } = useController({ name: "pin", control });
 
+  const helper = errorMessage ?? fieldState.error?.message;
+
   return (
-    <TextField status={fieldState.error ? "error" : "default"}>
-      <TextField.Label>PIN 설정</TextField.Label>
+    <TextField status={helper ? "error" : "default"}>
+      <TextField.Label>{label}</TextField.Label>
       <TextField.Input
         ref={ref}
         name={name}
         type={isPinVisible ? "text" : "password"}
         inputMode="numeric"
         maxLength={6}
-        autoComplete="new-password"
-        placeholder="6자리 숫자를 입력해주세요"
+        autoComplete={autoComplete}
+        placeholder={placeholder}
         suffix={
           <IconButton
             type="button"
@@ -40,15 +58,16 @@ export function PinField() {
         onBlur={onBlur}
         onChange={(event) => {
           onChange(event.target.value.replace(/\D/g, ""));
+          onPinChange?.();
 
           if (!fieldState.isTouched) {
             void trigger("pin");
           }
         }}
       />
-      {fieldState.error && (
+      {helper && (
         <TextField.Footer>
-          <TextField.Helper>{fieldState.error.message}</TextField.Helper>
+          <TextField.Helper>{helper}</TextField.Helper>
         </TextField.Footer>
       )}
     </TextField>

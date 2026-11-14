@@ -9,17 +9,21 @@ import { routeTo } from "@/constants/routes";
 
 interface ApplyFunnelHeaderProps {
   recruitId: number;
-  recruitTitle: string;
+  navigationTitle: string;
   children?: ReactNode;
 }
 
-export function ApplyFunnelHeader({ recruitId, recruitTitle, children }: ApplyFunnelHeaderProps) {
+export function ApplyFunnelHeader({
+  recruitId,
+  navigationTitle,
+  children,
+}: ApplyFunnelHeaderProps) {
   const router = useRouter();
 
   return (
     <div className="flex flex-col gap-24">
       <LocalNavigation
-        title={recruitTitle}
+        title={navigationTitle}
         nested
         onBackClick={() => router.push(routeTo.applyGuide(recruitId))}
         stretched

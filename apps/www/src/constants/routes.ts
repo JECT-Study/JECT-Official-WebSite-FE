@@ -27,4 +27,5 @@ export const routeTo = {
   applyGuide: (recruitId: number) => `${ROUTES.applyGuide}/${recruitId}`,
   applyFunnel: (recruitId: number) => `${ROUTES.applyFunnel}/${recruitId}`,
   applyContinue: (recruitId: number) => `${ROUTES.applyContinue}/${recruitId}`,
+  resetPin: (recruitId: number) => `${ROUTES.resetPin}/${recruitId}`,
 } as const;

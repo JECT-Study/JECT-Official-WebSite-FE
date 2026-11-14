@@ -4,8 +4,9 @@ import { BlockButton, TextField } from "@jects/jds";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 
 import { TextFieldWithButton } from "@/components/common/text-field-with-button";
+import { emailSchema } from "@/features/apply/schemas";
 
-import { emailSchema, type EmailVerificationFormValues } from "./schemas";
+import type { EmailVerificationFormValues } from "./schemas";
 
 interface EmailFieldProps {
   isVerified: boolean;
