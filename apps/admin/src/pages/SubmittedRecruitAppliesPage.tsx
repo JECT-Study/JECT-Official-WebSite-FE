@@ -88,20 +88,13 @@ export default function SubmittedRecruitAppliesPage() {
 
   const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
 
-  const {
-    data,
-    hasNextPage,
-    isPending,
-    isError,
-    isFetchingNextPage,
-    isFetchNextPageError,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: applyQueryKeys.submittedApplies(condition),
-    queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
-    initialPageParam: undefined as number | undefined,
-    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
-  });
+  const { data, hasNextPage, isPending, isError, isFetchingNextPage, fetchNextPage } =
+    useInfiniteQuery({
+      queryKey: applyQueryKeys.submittedApplies(condition),
+      queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
+      initialPageParam: undefined as number | undefined,
+      getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
+    });
 
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
 
@@ -164,7 +157,7 @@ export default function SubmittedRecruitAppliesPage() {
         <div className="flex flex-col items-center gap-10">
           {isPending ? (
             <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
-          ) : isError && !isFetchNextPageError ? (
+          ) : isError && !data ? (
             <EmptyState
               header="지원서 목록을 불러오지 못했습니다"
               body="잠시 후 다시 시도해 주세요."
