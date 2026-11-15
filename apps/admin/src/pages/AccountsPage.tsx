@@ -120,6 +120,8 @@ export default function AccountsPage() {
   const hasSelection = selectedIds.length > 0;
   const isEmpty = data?.content.length === 0;
   const isFirstPage = page === 0;
+  // 이전 페이지 행이 보이는 동안 선택하면 화면에 없는 계정이 비활성화 대상이 되므로 막는다.
+  const canSelectAccount = (account: Account) => !isPlaceholderData && account.status === "ACTIVE";
 
   // 비활성화 등으로 현재 페이지가 사라지면 마지막 페이지로 옮긴다.
   if (data && !isPlaceholderData && data.totalPages > 0 && page >= data.totalPages) {
@@ -164,7 +166,7 @@ export default function AccountsPage() {
     data: data?.content ?? EMPTY_ACCOUNTS,
     columns: accountColumns,
     getRowId: getAccountRowId,
-    selection: { rowSelection, onRowSelectionChange: setRowSelection },
+    selection: { rowSelection, onRowSelectionChange: setRowSelection, canSelect: canSelectAccount },
     rowClick: { onRowClick: handleRowClick },
   });
 
