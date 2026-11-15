@@ -5,8 +5,8 @@ import {
   ContentBadge,
   Dialog,
   EmptyState,
-  NumericBadge,
   Pagination,
+  Tabs,
   type ThemeVariant,
 } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -63,11 +63,10 @@ function toAccountListFilter(values: FilterValues): Pick<AccountListParams, "rol
   };
 }
 
-// Figma의 cyan, fuchsia가 JDS 0.8.0에 없어 가장 가까운 teal, pink를 쓴다. JDS에 추가되면 교체한다.
 const ROLE_VARIANTS: Record<AccountRole, ThemeVariant> = {
   ADMIN: "teal",
   OPERATIONS: "lime",
-  SUPPORTER: "pink",
+  SUPPORTER: "purple",
 };
 
 const columnHelper = createDataTableColumnHelper<Account>();
@@ -170,45 +169,46 @@ export default function AccountsPage() {
   });
 
   return (
-    <div className="flex flex-col gap-20 px-margin-lg pb-margin-xl desktop:px-margin-xl">
-      <h2 className="text-title-2 font-title-bold text-object-boldest">관리자 계정 목록</h2>
+    <div className="flex flex-col gap-16 px-margin-lg pb-margin-xl desktop:px-margin-xl">
+      <h2 className="py-12 text-title-2 font-title-subtle text-object-boldest">관리자 계정 목록</h2>
       <div className="rounded-10 border border-stroke-subtle bg-surface-standard">
-        <div className="flex items-center gap-12 px-16 py-12">
-          <div className="flex items-center gap-6 text-label-md text-object-neutral">
-            <span>전체</span>
-            {/* TODO: 백엔드가 필터와 무관한 전체 수 필드를 추가하면 교체한다. */}
-            {data && (
-              <NumericBadge hierarchy="tertiary" badgeStyle="hollow" size="md">
-                {data.totalElements}
-              </NumericBadge>
+        <div className="flex items-center gap-16 px-16 py-12">
+          <Tabs.Root variant="content" value="all">
+            <Tabs.List>
+              {/* TODO: 백엔드가 필터와 무관한 전체 수 필드를 추가하면 교체한다. */}
+              <Tabs.Trigger value="all" badge={data?.totalElements}>
+                전체
+              </Tabs.Trigger>
+            </Tabs.List>
+          </Tabs.Root>
+          <div className="flex items-center gap-12">
+            {isAdmin && (
+              <BlockButton
+                hierarchy="primary"
+                variant="solid"
+                size="sm"
+                prefixIcon="plus"
+                onClick={handleAddAccount}
+              >
+                계정 추가
+              </BlockButton>
             )}
-          </div>
-          {isAdmin && (
-            <BlockButton
-              hierarchy="primary"
-              variant="solid"
-              size="xs"
-              prefixIcon="plus"
-              onClick={handleAddAccount}
-            >
-              계정 추가
-            </BlockButton>
-          )}
-          {hasSelection && (
-            <>
+            {hasSelection && (
               <span className="text-label-md text-accent-neutral">
                 {selectedIds.length}개 선택됨
               </span>
-              <BlockButton
-                hierarchy="secondary"
-                variant="outlined"
-                size="xs"
-                className="ml-auto"
-                onClick={handleOpenDeactivateDialog}
-              >
-                비활성화
-              </BlockButton>
-            </>
+            )}
+          </div>
+          {hasSelection && (
+            <BlockButton
+              hierarchy="secondary"
+              variant="outlined"
+              size="sm"
+              className="ml-auto"
+              onClick={handleOpenDeactivateDialog}
+            >
+              비활성화
+            </BlockButton>
           )}
         </div>
         <div className="border-t border-stroke-subtle px-16 py-12">
