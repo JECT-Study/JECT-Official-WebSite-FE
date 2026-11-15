@@ -33,6 +33,7 @@ import {
   ACCOUNT_STATUSES,
   type AccountRole,
 } from "@/constants/account";
+import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
 import { useAuthStore } from "@/stores/useAuthStore";
 
@@ -110,7 +111,7 @@ export default function AccountsPage() {
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   // 닫히는 동안 선택이 비워져도 다이얼로그 문구가 바뀌지 않도록 열 때의 대상을 따로 보관한다.
   const [deactivateTargetIds, setDeactivateTargetIds] = useState<number[]>([]);
-  const { data, isPending, isError, isPlaceholderData, refetch } = useQuery({
+  const { data, error, isPending, isError, isPlaceholderData, refetch } = useQuery({
     ...accountQueries.list({ ...toAccountListFilter(filterValues), page }),
     placeholderData: keepPreviousData,
   });
@@ -120,6 +121,8 @@ export default function AccountsPage() {
   const hasSelection = selectedIds.length > 0;
   const isEmpty = data?.content.length === 0;
   const isFirstPage = page === 0;
+  // TODO: 목록 조회부터 ADMIN만 허용하므로 권한 라우트를 두어 진입 전에 다른 화면으로 이동시킨다.
+  const isForbidden = hasErrorCode(error, "GLOBAL-7");
   // 이전 페이지 행이 보이는 동안 선택하면 화면에 없는 계정이 비활성화 대상이 되므로 막는다.
   const canSelectAccount = (account: Account) => !isPlaceholderData && account.status === "ACTIVE";
 
@@ -221,7 +224,9 @@ export default function AccountsPage() {
           />
         </div>
       </div>
-      {isError ? (
+      {isForbidden ? (
+        <EmptyState body="계정 목록을 조회할 권한이 없습니다." />
+      ) : isError ? (
         <EmptyState
           body="목록을 불러오지 못했습니다."
           primaryAction={{ children: "다시 시도", onClick: () => void refetch() }}
