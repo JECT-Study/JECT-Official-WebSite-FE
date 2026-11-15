@@ -17,8 +17,8 @@ export function useDeactivateAccountsMutation() {
 
   return useMutation({
     mutationFn: accountApi.deactivateAccounts,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: accountQueries.lists() });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: accountQueries.lists() });
       toast.positive("계정을 비활성화했습니다.");
     },
     onError: (error) => {
