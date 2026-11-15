@@ -1,4 +1,5 @@
 import { httpClient } from "@/apis/httpClient";
+import { pageableQuerySerializer } from "@/apis/pageable";
 import { ACCOUNT_PAGE_SIZE, type AccountRole, type AccountStatus } from "@/constants/account";
 
 import { accountPageSchema } from "./schemas";
@@ -9,9 +10,6 @@ export interface AccountListParams {
   /** 서버 기준으로 0부터 센다. */
   page: number;
 }
-
-// TODO: 서버의 Pageable에 @ParameterObject가 적용되면 직렬화 설정을 제거하고 page, size를 쿼리로 직접 전달한다.
-const pageableQuerySerializer = { object: { style: "form", explode: true } } as const;
 
 export const accountApi = {
   getAccounts: async ({ roles, statuses, page }: AccountListParams) => {
