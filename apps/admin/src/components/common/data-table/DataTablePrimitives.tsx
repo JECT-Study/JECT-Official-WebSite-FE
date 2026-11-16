@@ -150,14 +150,16 @@ export function DataTableTitleCell({
       >
         {children}
       </span>
-      <span
-        className={cn(
-          "mt-2 block truncate text-label-md font-label-subtle text-object-alternative",
-          DISABLED_TEXT
-        )}
-      >
-        {description}
-      </span>
+      {description != null && (
+        <span
+          className={cn(
+            "mt-2 block truncate text-label-md font-label-subtle text-object-alternative",
+            DISABLED_TEXT
+          )}
+        >
+          {description}
+        </span>
+      )}
     </th>
   );
 }
