@@ -6,6 +6,7 @@ import RootLayout from "@/components/layout/RootLayout";
 import { ROUTES } from "@/constants/routes";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
+import MakersMembersPage from "@/pages/MakersMembersPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import SubmittedAppliesPage from "@/pages/SubmittedAppliesPage";
 
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
     children: [
       { path: ROUTES.home, element: <HomePage /> },
       { path: ROUTES.submittedApplies, element: <SubmittedAppliesPage /> },
+      { path: ROUTES.makerMembers, element: <MakersMembersPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
