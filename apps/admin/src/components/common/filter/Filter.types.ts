@@ -14,6 +14,8 @@ export interface FilterField {
   id: string;
   label: string;
   options: FilterOption[];
+  /** 생략하면 여러 값을 고를 수 있다. */
+  selectionMode?: "single" | "multiple";
 }
 
 /**

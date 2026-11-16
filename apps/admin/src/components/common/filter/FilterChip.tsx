@@ -1,6 +1,6 @@
-import type { Ref } from "react";
+import { type Ref, useState } from "react";
 
-import { Chip, MultiSelect } from "@jects/jds";
+import { Chip, MultiSelect, Select } from "@jects/jds";
 // JDS에 Popover가 추가되면 그쪽으로 교체한다.
 import { Popover } from "radix-ui";
 
@@ -15,8 +15,19 @@ interface FilterChipProps {
 }
 
 export default function FilterChip({ ref, field, selected, onChange, onRemove }: FilterChipProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const options = field.options.map((option) => ({
+    value: String(option.value),
+    label: option.label,
+  }));
+
+  const handleSelect = (value: string) => {
+    onChange([value]);
+    setIsOpen(false);
+  };
+
   return (
-    <Popover.Root>
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       {/* Chip은 ref를 안쪽 라벨 버튼에 연결하므로 팝오버 위치 기준은 칩 전체로 따로 지정한다. */}
       <Popover.Anchor asChild>
         <div className="inline-flex">
@@ -45,19 +56,28 @@ export default function FilterChip({ ref, field, selected, onChange, onRemove }:
             event.stopPropagation();
           }}
         >
-          <MultiSelect
-            width="200px"
-            maxHeight="var(--radix-popover-content-available-height)"
-            variant="control"
-            options={field.options.map((option) => ({
-              value: String(option.value),
-              label: option.label,
-            }))}
-            value={selected.map(String)}
-            // JDS는 문자열을 돌려주고, Filter가 normalizeFilterValues로 원래 옵션 값으로 되돌린다.
-            onChange={onChange}
-            aria-label={`${field.label} 선택`}
-          />
+          {/* JDS는 문자열을 돌려주고, Filter가 normalizeFilterValues로 원래 옵션 값으로 되돌린다. */}
+          {field.selectionMode === "single" ? (
+            <Select
+              width="200px"
+              maxHeight="var(--radix-popover-content-available-height)"
+              variant="control"
+              options={options}
+              value={selected[0] === undefined ? null : String(selected[0])}
+              onChange={handleSelect}
+              aria-label={`${field.label} 선택`}
+            />
+          ) : (
+            <MultiSelect
+              width="200px"
+              maxHeight="var(--radix-popover-content-available-height)"
+              variant="control"
+              options={options}
+              value={selected.map(String)}
+              onChange={onChange}
+              aria-label={`${field.label} 선택`}
+            />
+          )}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
