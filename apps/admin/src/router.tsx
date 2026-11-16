@@ -8,6 +8,7 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import SubmittedAppliesPage from "@/pages/SubmittedAppliesPage";
+import SupportersMembersPage from "@/pages/SupportersMembersPage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
     children: [
       { path: ROUTES.home, element: <HomePage /> },
       { path: ROUTES.submittedApplies, element: <SubmittedAppliesPage /> },
+      { path: ROUTES.supporterMembers, element: <SupportersMembersPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
