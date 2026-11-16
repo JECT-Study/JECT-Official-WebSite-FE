@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
         ? {
             "/admin": { target: apiBaseUrl, changeOrigin: true },
             "/auth": { target: apiBaseUrl, changeOrigin: true },
+            "/semesters": { target: apiBaseUrl, changeOrigin: true },
           }
         : undefined,
     },
