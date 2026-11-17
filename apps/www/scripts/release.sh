@@ -18,7 +18,7 @@ sudo systemctl restart ject-www
 
 # 재시작 직후에는 Node 서버가 아직 포트를 열지 않았을 수 있으므로 응답할 때까지 재시도한다.
 for _ in $(seq 1 10); do
-  if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+  if curl -fsS --max-time 5 -o /dev/null http://127.0.0.1:3000/; then
     ls -1dt "$BASE"/releases/* | tail -n +6 | xargs -r sudo rm -rf
     echo "배포를 완료했습니다: $SHA"
     exit 0
