@@ -13,6 +13,7 @@ rollback() {
   if [ -n "$PREVIOUS" ] && [ -d "$PREVIOUS" ]; then
     sudo ln -sfn "$PREVIOUS" "$BASE/current"
     sudo systemctl restart ject-www
+    sudo rm -rf "$RELEASE"
   fi
   exit 1
 }
