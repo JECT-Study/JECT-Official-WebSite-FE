@@ -44,6 +44,8 @@ jobs:
     concurrency:
       group: deploy-www
       cancel-in-progress: false
+    env:
+      RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -89,12 +91,12 @@ jobs:
       - name: Upload
         env:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-        run: scp -i ~/.ssh/deploy_key "$RUNNER_TEMP/www.tar.gz" "ubuntu@$DEPLOY_HOST:/tmp/www-$GITHUB_SHA.tar.gz"
+        run: scp -i ~/.ssh/deploy_key "$RUNNER_TEMP/www.tar.gz" "ubuntu@$DEPLOY_HOST:/tmp/www-$RELEASE_ID.tar.gz"
 
       - name: Release
         env:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-        run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$GITHUB_SHA" < apps/www/scripts/release.sh
+        run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$RELEASE_ID" < apps/www/scripts/release.sh
 
       # 같은 날 여러 번 배포하면 태그 뒤에 -2, -3을 붙인다.
       - name: Create GitHub release

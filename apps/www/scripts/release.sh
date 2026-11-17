@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# 배포 워크플로에서 SSH로 호출하며, 커밋 SHA를 인자로 전달받는다.
+# 배포 워크플로에서 SSH로 호출하며, 커밋 SHA와 실행 ID를 조합한 release ID를 인자로 전달받는다.
 set -euo pipefail
 
-SHA="$1"
+RELEASE_ID="$1"
 BASE=/srv/ject-www
-RELEASE="$BASE/releases/$SHA"
-ARCHIVE="/tmp/www-$SHA.tar.gz"
+RELEASE="$BASE/releases/$RELEASE_ID"
+ARCHIVE="/tmp/www-$RELEASE_ID.tar.gz"
 PREVIOUS="$(readlink -f "$BASE/current" || true)"
 
 rollback() {
@@ -29,7 +29,7 @@ sudo systemctl restart ject-www || rollback
 for _ in $(seq 1 10); do
   if curl -fsS --max-time 5 -o /dev/null http://127.0.0.1:3000/; then
     ls -1dt "$BASE"/releases/* | tail -n +6 | xargs -r sudo rm -rf
-    echo "배포를 완료했습니다: $SHA"
+    echo "배포를 완료했습니다: $RELEASE_ID"
     exit 0
   fi
   sleep 3
