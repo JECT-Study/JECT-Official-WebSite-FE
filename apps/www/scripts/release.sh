@@ -6,7 +6,7 @@ RELEASE_ID="$1"
 BASE=/srv/ject-www
 RELEASE="$BASE/releases/$RELEASE_ID"
 ARCHIVE="/tmp/www-$RELEASE_ID.tar.gz"
-PREVIOUS="$(readlink -f "$BASE/current" || true)"
+PREVIOUS="$(readlink -e "$BASE/current" || true)"
 
 rollback() {
   echo "서비스 재시작 또는 헬스 체크에 실패해 이전 버전으로 되돌립니다." >&2
