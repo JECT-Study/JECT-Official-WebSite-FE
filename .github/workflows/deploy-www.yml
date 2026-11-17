@@ -40,7 +40,9 @@ jobs:
     # standalone 번들에 포함되는 sharp 바이너리는 서버(t4g)와 동일한 arm64 아키텍처여야 한다.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
-    environment: production
+    environment:
+      name: production
+      url: ${{ vars.NEXT_PUBLIC_SITE_URL }}
     permissions:
       contents: write
     steps:
