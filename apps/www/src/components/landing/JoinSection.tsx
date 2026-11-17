@@ -37,6 +37,7 @@ function SponsorList() {
 export function JoinSection() {
   return (
     <section
+      data-snap
       data-theme="dark"
       className="flex justify-center bg-surface-standard px-margin-lg py-margin-5xl"
     >
