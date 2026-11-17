@@ -6,7 +6,6 @@ export const ROUTES = {
   miniStudy: "/mini-study",
   teamProject: "/team-projects",
   faq: "/faq",
-  project: "/project",
 
   apply: "/apply",
   applyList: "/apply/list",
@@ -23,7 +22,7 @@ export const routeTo = {
   main: () => ROUTES.main,
   faq: (tabId?: string, questionId?: string) =>
     [ROUTES.faq, tabId, questionId].filter(Boolean).join("/"),
-  projectDetail: (id: string) => `${ROUTES.project}/${id}`,
+  projectDetail: (id: string) => `${ROUTES.teamProject}/${id}`,
   applyGuide: (recruitId: number) => `${ROUTES.applyGuide}/${recruitId}`,
   applyFunnel: (recruitId: number) => `${ROUTES.applyFunnel}/${recruitId}`,
   applyContinue: (recruitId: number) => `${ROUTES.applyContinue}/${recruitId}`,
