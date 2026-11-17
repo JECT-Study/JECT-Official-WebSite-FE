@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 
 import type { SubmittedAppliesCondition } from "@/apis/apply/api";
@@ -51,6 +52,8 @@ interface ApplyListProps {
   isFetching: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
 }
 
 function ApplyList({
@@ -63,6 +66,8 @@ function ApplyList({
   isFetching,
   isFetchingNextPage,
   onLoadMore,
+  rowSelection,
+  onRowSelectionChange,
 }: ApplyListProps) {
   if (isLoading) {
     return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
@@ -94,7 +99,11 @@ function ApplyList({
 
   return (
     <>
-      <SubmittedAppliesTable applies={applies} />
+      <SubmittedAppliesTable
+        applies={applies}
+        rowSelection={rowSelection}
+        onRowSelectionChange={onRowSelectionChange}
+      />
       {hasNextPage && (
         <BlockButton
           hierarchy="primary"
@@ -120,6 +129,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const filterCondition = toFilterCondition(filterValues);
   const isFiltered = Object.values(filterCondition).some(Boolean);
@@ -206,6 +216,8 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             isFetching={isFetching}
             isFetchingNextPage={isFetchingNextPage}
             onLoadMore={handleLoadMore}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
           />
         </div>
       </div>
