@@ -41,6 +41,8 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     environment: production
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,3 +94,18 @@ jobs:
         env:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
         run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$GITHUB_SHA" < apps/www/scripts/release.sh
+
+      # 같은 날 여러 번 배포하면 태그 뒤에 -2, -3을 붙인다.
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          base="www-$(TZ=Asia/Seoul date +%Y.%m.%d)"
+          tag="$base"
+          n=1
+          while gh release view "$tag" > /dev/null 2>&1; do
+            n=$((n + 1))
+            tag="$base-$n"
+          done
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes ""
