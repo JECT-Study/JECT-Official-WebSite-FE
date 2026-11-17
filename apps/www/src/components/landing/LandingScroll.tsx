@@ -27,7 +27,7 @@ function SectionSnap({ containerRef }: SectionSnapProps) {
       return;
     }
 
-    const snap = new Snap(lenis, { type: "proximity", distanceThreshold: "25%" });
+    const snap = new Snap(lenis, { type: "proximity", distanceThreshold: "40%" });
     const sections = Array.from(
       container.querySelectorAll<HTMLElement>(":scope > section[data-snap]")
     );
