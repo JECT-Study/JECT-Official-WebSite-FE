@@ -37,8 +37,6 @@ jobs:
     environment:
       name: production
       url: ${{ vars.NEXT_PUBLIC_SITE_URL }}
-    permissions:
-      contents: write
     # 실행 중인 배포를 취소하면 current 링크 전환이나 서비스 재시작이 중단될 수 있다.
     # 새 배포는 이전 배포가 완료된 후 실행한다.
     concurrency:
@@ -98,6 +96,12 @@ jobs:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
         run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$RELEASE_ID" < apps/www/scripts/release.sh
 
+  github-release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
       # 같은 날 여러 번 배포하면 태그 뒤에 -2, -3을 붙인다.
       - name: Create GitHub release
         env:
