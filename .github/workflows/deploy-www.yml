@@ -111,7 +111,7 @@ jobs:
           base="www-$(TZ=Asia/Seoul date +%Y.%m.%d)"
           tag="$base"
           n=1
-          while gh release view "$tag" > /dev/null 2>&1; do
+          while gh api "repos/$GH_REPO/git/ref/tags/$tag" > /dev/null 2>&1; do
             n=$((n + 1))
             tag="$base-$n"
           done
