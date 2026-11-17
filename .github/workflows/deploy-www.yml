@@ -1,0 +1,94 @@
+name: Deploy (www)
+
+# main에 병합된 PR에 release와 www 레이블이 모두 있을 때만 운영에 배포한다.
+# 레이블 없이 병합했거나 다시 배포해야 할 때는 수동으로 실행한다.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 실행 중인 배포를 취소하면 current 링크 전환이나 서비스 재시작이 중단될 수 있다.
+# 새 배포는 이전 배포가 완료된 후 실행한다.
+concurrency:
+  group: deploy-www
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.pr.outputs.labels }}
+    steps:
+      # main에 병합된 커밋의 PR을 조회해 레이블을 가져온다.
+      - id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq '[.[0].labels[]?.name]')
+          echo "labels=$labels" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: resolve
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(fromJSON(needs.resolve.outputs.labels), '🚀release') &&
+       contains(fromJSON(needs.resolve.outputs.labels), '🌐www'))
+    # standalone 번들에 포함되는 sharp 바이너리는 서버(t4g)와 동일한 arm64 아키텍처여야 한다.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # NEXT_PUBLIC_ 값과 /api rewrite 대상은 빌드 시점에 고정된다.
+      - name: Build
+        run: pnpm build --filter=@ject/www
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+      # standalone은 정적 파일을 포함하지 않으므로 직접 복사한다.
+      - name: Package
+        working-directory: apps/www
+        run: |
+          if [ -d public ]; then cp -r public .next/standalone/apps/www/; fi
+          cp -r .next/static .next/standalone/apps/www/.next/
+          tar -czf "$RUNNER_TEMP/www.tar.gz" -C .next/standalone .
+
+      - name: Setup SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Upload
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+        run: scp -i ~/.ssh/deploy_key "$RUNNER_TEMP/www.tar.gz" "ubuntu@$DEPLOY_HOST:/tmp/www-$GITHUB_SHA.tar.gz"
+
+      - name: Release
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+        run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$GITHUB_SHA" < apps/www/scripts/release.sh
