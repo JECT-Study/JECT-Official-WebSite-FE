@@ -1,15 +1,27 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
+import {
+  BlockButton,
+  type BlockButtonProps,
+  Dialog as JdsDialog,
+  EmptyState,
+  Tabs,
+  useToast,
+} from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 
-import type { SubmittedAppliesCondition } from "@/apis/apply/api";
+import { applyApi, type SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
-import type { SubmittedApply } from "@/apis/apply/schemas";
+import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
@@ -18,6 +30,41 @@ import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/appl
 import NotFoundPage from "@/pages/NotFoundPage";
 
 const PAGE_SIZE = 30;
+
+interface SelectionResultButton {
+  selectionResult: SelectionResult;
+  hierarchy: BlockButtonProps["hierarchy"];
+  variant: BlockButtonProps["variant"];
+}
+
+const SELECTION_RESULT_BUTTONS: SelectionResultButton[] = [
+  { selectionResult: "PASSED", hierarchy: "accent", variant: "outlined" },
+  { selectionResult: "WAITLISTED", hierarchy: "primary", variant: "solid" },
+  { selectionResult: "FAILED", hierarchy: "secondary", variant: "outlined" },
+];
+
+type ConfirmAction =
+  | { type: "updateSelectionResult"; applyIds: number[]; selectionResult: SelectionResult }
+  | { type: "delete"; applyIds: number[] };
+
+function getConfirmDialogText(action: ConfirmAction) {
+  const count = action.applyIds.length;
+
+  if (action.type === "delete") {
+    return {
+      header: `선택한 ${count}개 항목을 삭제합니다`,
+      body: "삭제 후에는 되돌릴 수 없으니 유의해주세요.",
+      confirmLabel: "삭제",
+    };
+  }
+
+  const label = SELECTION_RESULT_LABELS[action.selectionResult];
+  return {
+    header: `선택한 ${count}개 항목을 ${label} 상태로 변경합니다`,
+    body: `${label} 상태는 언제든 변경할 수 있어요.`,
+    confirmLabel: "변경",
+  };
+}
 
 const toOptions = (labels: Record<string, string>) =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
@@ -130,6 +177,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { isDesktop } = useMediaQueryFlags();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -155,9 +203,53 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
   const totalCount = data?.pages.at(-1)?.totalCount;
 
-  // 좁은 화면에서는 선택을 유지한 채 체크박스만 숨기므로 일괄 작업도 데스크톱에서만 노출한다.
-  const selectedCount = Object.keys(rowSelection).length;
-  const hasSelection = isDesktop && selectedCount > 0;
+  const selectedApplyIds = Object.keys(rowSelection).map(Number);
+  const hasSelectedApplies = selectedApplyIds.length > 0;
+
+  const { mutate: updateSelectionResults } = useMutation({
+    mutationFn: applyApi.updateSelectionResults,
+    onSuccess: async (_, { applyIds, selectionResult }) => {
+      setRowSelection({});
+      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
+      toast.positive(
+        `${applyIds.length}개를 ${SELECTION_RESULT_LABELS[selectionResult]} 상태로 변경했어요`
+      );
+    },
+    onError: () => {
+      toast.destructive("합격 여부를 변경하지 못했습니다", {
+        description: "잠시 후 다시 시도해 주세요.",
+      });
+    },
+  });
+
+  const { mutate: deleteSubmittedApplies } = useMutation({
+    mutationFn: applyApi.deleteSubmittedApplies,
+    onSuccess: async (deletedCount) => {
+      setRowSelection({});
+      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
+      toast.positive(`${deletedCount}개를 삭제했어요`);
+    },
+    onError: () => {
+      toast.destructive("지원서를 삭제하지 못했습니다", {
+        description: "잠시 후 다시 시도해 주세요.",
+      });
+    },
+  });
+
+  const [pendingAction, setPendingAction] = useState<ConfirmAction | null>(null);
+  const confirmDialogText = pendingAction && getConfirmDialogText(pendingAction);
+
+  const handleConfirm = () => {
+    if (pendingAction === null) return;
+
+    if (pendingAction.type === "delete") {
+      deleteSubmittedApplies({ applyIds: pendingAction.applyIds });
+    } else {
+      const { applyIds, selectionResult } = pendingAction;
+      updateSelectionResults({ recruitId, applyIds, selectionResult });
+    }
+    setPendingAction(null);
+  };
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -206,22 +298,31 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                 </Tabs.Trigger>
               </Tabs.List>
             </Tabs.Root>
-            {hasSelection && (
+            {/* 좁은 화면에서는 선택을 유지한 채 체크박스만 숨기므로 선택 작업 버튼도 데스크톱에서만 보인다. */}
+            {isDesktop && hasSelectedApplies && (
               <>
                 <div className="flex items-center gap-12">
                   <p className="text-label-md font-label-normal text-accent-neutral">
-                    {selectedCount}개 선택됨
+                    {selectedApplyIds.length}개 선택됨
                   </p>
                   <div className="flex items-center gap-10">
-                    <BlockButton hierarchy="accent" variant="outlined" size="sm">
-                      합격
-                    </BlockButton>
-                    <BlockButton hierarchy="primary" variant="solid" size="sm">
-                      예비 합격
-                    </BlockButton>
-                    <BlockButton hierarchy="secondary" variant="outlined" size="sm">
-                      불합격
-                    </BlockButton>
+                    {SELECTION_RESULT_BUTTONS.map(({ selectionResult, hierarchy, variant }) => (
+                      <BlockButton
+                        key={selectionResult}
+                        hierarchy={hierarchy}
+                        variant={variant}
+                        size="sm"
+                        onClick={() =>
+                          setPendingAction({
+                            type: "updateSelectionResult",
+                            applyIds: selectedApplyIds,
+                            selectionResult,
+                          })
+                        }
+                      >
+                        {SELECTION_RESULT_LABELS[selectionResult]}
+                      </BlockButton>
+                    ))}
                   </div>
                 </div>
                 <BlockButton
@@ -229,6 +330,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                   size="sm"
                   prefixIcon="trash"
                   className="ml-auto"
+                  onClick={() => setPendingAction({ type: "delete", applyIds: selectedApplyIds })}
                 >
                   삭제
                 </BlockButton>
@@ -255,6 +357,17 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           />
         </div>
       </div>
+      <JdsDialog
+        open={pendingAction !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingAction(null);
+        }}
+        header={confirmDialogText?.header ?? ""}
+        body={confirmDialogText?.body}
+        width={500}
+        primaryAction={{ children: confirmDialogText?.confirmLabel, onClick: handleConfirm }}
+        secondaryAction={{ children: "취소", onClick: () => setPendingAction(null) }}
+      />
     </section>
   );
 }
