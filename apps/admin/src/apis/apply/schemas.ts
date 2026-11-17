@@ -41,6 +41,9 @@ export const submittedAppliesSchema = z.object({
   NullableFields<Omit<Schemas["CursorPageResponseSubmittedApplyResponse"], "content">>
 >;
 
+/** 실제로 삭제된 지원서 수다. 없거나 이미 삭제된 지원서는 세지 않는다. */
+export const deletedAppliesCountSchema = z.number();
+
 export type CareerDetails = z.infer<typeof careerDetailsSchema>;
 export type SelectionResult = z.infer<typeof selectionResultSchema>;
 export type SubmittedApply = z.infer<typeof submittedApplySchema>;
