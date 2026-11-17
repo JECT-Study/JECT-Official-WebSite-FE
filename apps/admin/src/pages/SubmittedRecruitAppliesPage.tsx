@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, Icon, useToast } from "@jects/jds";
+import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -53,19 +54,26 @@ function EmptyValue() {
 }
 
 const columnHelper = createDataTableColumnHelper<SubmittedApply>();
+
+const nameColumn = columnHelper.accessor("name", {
+  header: "이름",
+  meta: { cellType: "title", getDescription: (apply) => formatPhoneNumber(apply.phoneNumber) },
+});
+
+const selectionResultColumn = columnHelper.accessor("selectionResult", {
+  header: "합격 여부",
+  cell: ({ getValue }) => <SelectionResultBadge selectionResult={getValue()} />,
+});
+
+const mobileColumns = columnHelper.columns([nameColumn, selectionResultColumn]);
+
 const columns = columnHelper.columns([
-  columnHelper.accessor("name", {
-    header: "이름",
-    meta: { cellType: "title", getDescription: (apply) => formatPhoneNumber(apply.phoneNumber) },
-  }),
+  nameColumn,
   columnHelper.accessor("careerDetails", {
     header: "지원자 신분",
     cell: ({ getValue }) => CAREER_DETAILS_LABELS[getValue()],
   }),
-  columnHelper.accessor("selectionResult", {
-    header: "합격 여부",
-    cell: ({ getValue }) => <SelectionResultBadge selectionResult={getValue()} />,
-  }),
+  selectionResultColumn,
   columnHelper.accessor("waitlistNumber", {
     header: "예비 번호",
     cell: ({ getValue }) => getValue() ?? <EmptyValue />,
@@ -97,6 +105,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
+  const { isMobile } = useMediaQueryFlags();
 
   const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
 
@@ -112,7 +121,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const table = useDataTable({
     data: applies,
-    columns,
+    columns: isMobile ? mobileColumns : columns,
     getRowId: (apply) => String(apply.applyId),
   });
 
