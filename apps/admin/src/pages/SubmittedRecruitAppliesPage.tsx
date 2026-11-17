@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
+import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
@@ -129,6 +130,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
+  const { isDesktop } = useMediaQueryFlags();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const filterCondition = toFilterCondition(filterValues);
@@ -152,6 +154,10 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
   const totalCount = data?.pages.at(-1)?.totalCount;
+
+  // 좁은 화면에서는 선택을 유지한 채 체크박스만 숨기므로 일괄 작업도 데스크톱에서만 노출한다.
+  const selectedCount = Object.keys(rowSelection).length;
+  const hasSelection = isDesktop && selectedCount > 0;
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -192,7 +198,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
       </div>
       <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
         <div className="rounded-10 border border-stroke-subtle">
-          <div className="flex border-b border-stroke-subtle px-16 py-12">
+          <div className="flex items-center gap-16 border-b border-stroke-subtle px-16 py-12">
             <Tabs.Root variant="content" value="all">
               <Tabs.List>
                 <Tabs.Trigger value="all" badge={totalCount}>
@@ -200,6 +206,34 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                 </Tabs.Trigger>
               </Tabs.List>
             </Tabs.Root>
+            {hasSelection && (
+              <>
+                <div className="flex items-center gap-12">
+                  <p className="text-label-md font-label-normal text-accent-neutral">
+                    {selectedCount}개 선택됨
+                  </p>
+                  <div className="flex items-center gap-10">
+                    <BlockButton hierarchy="accent" variant="outlined" size="sm">
+                      합격
+                    </BlockButton>
+                    <BlockButton hierarchy="primary" variant="solid" size="sm">
+                      예비 합격
+                    </BlockButton>
+                    <BlockButton hierarchy="secondary" variant="outlined" size="sm">
+                      불합격
+                    </BlockButton>
+                  </div>
+                </div>
+                <BlockButton
+                  feedback="destructive"
+                  size="sm"
+                  prefixIcon="trash"
+                  className="ml-auto"
+                >
+                  삭제
+                </BlockButton>
+              </>
+            )}
           </div>
           <div className="min-h-48 px-16 py-10">
             <Filter fields={FILTER_FIELDS} values={filterValues} onValuesChange={setFilterValues} />
