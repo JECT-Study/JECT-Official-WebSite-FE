@@ -1,5 +1,6 @@
 import { ContentBadge, Icon } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
+import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import {
@@ -73,15 +74,23 @@ const getApplyRowId = (apply: SubmittedApply) => String(apply.applyId);
 
 interface SubmittedAppliesTableProps {
   applies: SubmittedApply[];
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
 }
 
-export default function SubmittedAppliesTable({ applies }: SubmittedAppliesTableProps) {
-  const { isMobile } = useMediaQueryFlags();
+export default function SubmittedAppliesTable({
+  applies,
+  rowSelection,
+  onRowSelectionChange,
+}: SubmittedAppliesTableProps) {
+  const { isMobile, isDesktop } = useMediaQueryFlags();
 
   const table = useDataTable({
     data: applies,
     columns: isMobile ? mobileColumns : columns,
     getRowId: getApplyRowId,
+    // 좁은 화면에서는 선택을 유지한 채 체크박스 열만 숨긴다.
+    selection: isDesktop ? { rowSelection, onRowSelectionChange } : undefined,
   });
 
   return <DataTable table={table} />;
