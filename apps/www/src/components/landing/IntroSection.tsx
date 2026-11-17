@@ -137,7 +137,10 @@ function ProgramsBlock() {
 
 export function IntroSection() {
   return (
-    <section className="flex justify-center bg-surface-standard px-margin-lg py-margin-5xl">
+    <section
+      data-snap
+      className="flex justify-center bg-surface-standard px-margin-lg py-margin-5xl"
+    >
       <div className="flex w-full max-w-content flex-col gap-128 pt-margin-xl pb-80">
         <AboutBlock />
         <PositionsBlock />
