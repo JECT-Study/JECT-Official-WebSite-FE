@@ -18,6 +18,7 @@ import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
+import SubmittedApplyDrawer from "@/components/apply/submitted-apply-drawer/SubmittedApplyDrawer";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
@@ -99,6 +100,7 @@ interface ApplyListProps {
   onLoadMore: () => void;
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  onRowClick: (apply: SubmittedApply) => void;
 }
 
 function ApplyList({
@@ -113,6 +115,7 @@ function ApplyList({
   onLoadMore,
   rowSelection,
   onRowSelectionChange,
+  onRowClick,
 }: ApplyListProps) {
   if (isLoading) {
     return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
@@ -148,6 +151,7 @@ function ApplyList({
         applies={applies}
         rowSelection={rowSelection}
         onRowSelectionChange={onRowSelectionChange}
+        onRowClick={onRowClick}
       />
       {hasNextPage && (
         <BlockButton
@@ -245,6 +249,8 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     }
     setPendingAction(null);
   };
+
+  const [openedApplyId, setOpenedApplyId] = useState<number | null>(null);
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -355,6 +361,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             onLoadMore={handleLoadMore}
             rowSelection={rowSelection}
             onRowSelectionChange={setRowSelection}
+            onRowClick={(apply) => setOpenedApplyId(apply.applyId)}
           />
         </div>
       </div>
@@ -369,6 +376,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
         primaryAction={{ children: confirmDialogText?.confirmLabel, onClick: handleConfirm }}
         secondaryAction={{ children: "취소", onClick: () => setPendingAction(null) }}
       />
+      <SubmittedApplyDrawer applyId={openedApplyId} onClose={() => setOpenedApplyId(null)} />
     </section>
   );
 }
