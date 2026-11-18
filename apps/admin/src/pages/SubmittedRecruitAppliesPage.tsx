@@ -66,6 +66,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     isPending,
     isPlaceholderData,
     isError,
+    isFetching,
     isFetchingNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
@@ -152,7 +153,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                   size="md"
                   suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
                   className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
-                  disabled={isFetchingNextPage}
+                  disabled={isFetching}
                   onClick={handleLoadMore}
                 >
                   목록 더보기
