@@ -76,12 +76,14 @@ interface SubmittedAppliesTableProps {
   applies: SubmittedApply[];
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  onRowClick: (apply: SubmittedApply) => void;
 }
 
 export default function SubmittedAppliesTable({
   applies,
   rowSelection,
   onRowSelectionChange,
+  onRowClick,
 }: SubmittedAppliesTableProps) {
   const { isMobile, isDesktop } = useMediaQueryFlags();
 
@@ -91,6 +93,7 @@ export default function SubmittedAppliesTable({
     getRowId: getApplyRowId,
     // 좁은 화면에서는 선택을 유지한 채 체크박스 열만 숨긴다.
     selection: isDesktop ? { rowSelection, onRowSelectionChange } : undefined,
+    rowClick: { onRowClick },
   });
 
   return <DataTable table={table} />;
