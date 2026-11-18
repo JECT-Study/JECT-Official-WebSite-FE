@@ -58,7 +58,9 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
 
-  const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
+  const filterCondition = toFilterCondition(filterValues);
+  const isFiltered = Object.values(filterCondition).some(Boolean);
+  const condition = { recruitId, size: PAGE_SIZE, ...filterCondition };
 
   const {
     data,
@@ -139,10 +141,17 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
               body="잠시 후 다시 시도해 주세요."
             />
           ) : data?.pages[0].content.length === 0 ? (
-            <EmptyState
-              header="제출 완료된 지원서가 없습니다"
-              body="지원서가 제출되면 확인할 수 있어요."
-            />
+            isFiltered ? (
+              <EmptyState
+                header="선택한 조건에 맞는 지원서가 없습니다"
+                body="필터 조건을 바꾸거나 해제해 보세요."
+              />
+            ) : (
+              <EmptyState
+                header="제출 완료된 지원서가 없습니다"
+                body="지원서가 제출되면 확인할 수 있어요."
+              />
+            )
           ) : (
             <>
               <SubmittedAppliesTable applies={applies} />
