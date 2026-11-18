@@ -17,8 +17,8 @@ export function useUpdateSelectionResultsMutation() {
         `${applyIds.length}개를 ${SELECTION_RESULT_LABELS[selectionResult]} 상태로 변경했어요`
       );
     },
-    onError: () => {
-      toast.destructive("합격 여부를 변경하지 못했습니다", {
+    onError: (_, { selectionResult }) => {
+      toast.destructive(`${SELECTION_RESULT_LABELS[selectionResult]} 상태로 변경하지 못했습니다`, {
         description: "잠시 후 다시 시도해 주세요.",
       });
     },
