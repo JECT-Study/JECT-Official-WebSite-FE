@@ -1,8 +1,6 @@
-"use client";
-
 import type { ReactNode } from "react";
 
-import { Accordion } from "@jects/jds";
+import { AccordionContent, AccordionItem, AccordionRoot, AccordionTrigger } from "@jects/jds";
 
 interface RecruitContentAccordionProps {
   title: string;
@@ -16,11 +14,11 @@ export function RecruitContentAccordion({
   children,
 }: RecruitContentAccordionProps) {
   return (
-    <Accordion.Root type="single" size="sm" isStretched={false} collapsible className={className}>
-      <Accordion.Item value="content">
-        <Accordion.Trigger withPrefixIcon="info">{title}</Accordion.Trigger>
-        <Accordion.Content>{children}</Accordion.Content>
-      </Accordion.Item>
-    </Accordion.Root>
+    <AccordionRoot type="single" size="sm" isStretched={false} collapsible className={className}>
+      <AccordionItem value="content">
+        <AccordionTrigger withPrefixIcon="info">{title}</AccordionTrigger>
+        <AccordionContent>{children}</AccordionContent>
+      </AccordionItem>
+    </AccordionRoot>
   );
 }

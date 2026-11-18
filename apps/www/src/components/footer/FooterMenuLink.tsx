@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 
-import { Menu } from "@jects/jds";
+import { MenuAnchor } from "@jects/jds";
 
 import type { NavigationLink } from "@/constants/navigation";
 
@@ -13,7 +11,7 @@ interface FooterMenuLinkProps {
 export function FooterMenuLink({ link }: FooterMenuLinkProps) {
   if (link.isExternal) {
     return (
-      <Menu.Anchor
+      <MenuAnchor
         href={link.href}
         target="_blank"
         rel="noopener noreferrer"
@@ -21,13 +19,13 @@ export function FooterMenuLink({ link }: FooterMenuLinkProps) {
         suffixIconVisible
       >
         {link.label}
-      </Menu.Anchor>
+      </MenuAnchor>
     );
   }
 
   return (
-    <Menu.Anchor asChild>
+    <MenuAnchor asChild>
       <Link href={link.href}>{link.label}</Link>
-    </Menu.Anchor>
+    </MenuAnchor>
   );
 }
