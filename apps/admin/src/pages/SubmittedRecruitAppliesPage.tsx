@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { hashKey, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams } from "react-router-dom";
 
@@ -181,6 +181,14 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const isFiltered = Object.values(filterCondition).some(Boolean);
   const condition = { recruitId, size: PAGE_SIZE, ...filterCondition };
 
+  // 결과에서 빠진 행이 선택된 채 작업 대상이 되지 않도록 조회 조건이 바뀌면 선택을 비운다.
+  const handleFilterValuesChange = (nextValues: FilterValues) => {
+    const isConditionChanged =
+      hashKey([toFilterCondition(nextValues)]) !== hashKey([toFilterCondition(filterValues)]);
+    setFilterValues(nextValues);
+    if (isConditionChanged) setRowSelection({});
+  };
+
   const {
     data,
     hasNextPage,
@@ -309,7 +317,11 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             )}
           </div>
           <div className="min-h-48 px-16 py-10">
-            <Filter fields={FILTER_FIELDS} values={filterValues} onValuesChange={setFilterValues} />
+            <Filter
+              fields={FILTER_FIELDS}
+              values={filterValues}
+              onValuesChange={handleFilterValuesChange}
+            />
           </div>
         </div>
         <div className="flex flex-col items-center gap-10">
