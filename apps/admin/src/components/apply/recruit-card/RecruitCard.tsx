@@ -1,10 +1,20 @@
+import type { ComponentPropsWithoutRef } from "react";
+
 import { Card, ContentBadge, Divider } from "@jects/jds";
-import { useLinkClickHandler } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import type { ApplyManagementRecruit } from "@/apis/recruit/schemas";
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { routeTo } from "@/constants/routes";
 import { parseDate, parseKstDate } from "@/utils/date";
+
+interface RouterLinkProps extends Omit<ComponentPropsWithoutRef<"a">, "href"> {
+  href: string;
+}
+
+function RouterLink({ href, ...props }: RouterLinkProps) {
+  return <Link to={href} {...props} />;
+}
 
 interface RecruitCardProps {
   recruit: ApplyManagementRecruit;
@@ -55,10 +65,6 @@ export default function RecruitCard({ recruit }: RecruitCardProps) {
     failedCount,
     waitlistedCount,
   } = recruit;
-  const to = routeTo.submittedRecruitApplies(recruitId);
-  // TODO: JDS Card.Overlay가 라우팅 컴포넌트를 지원하면 react-router의 Link로 교체한다.
-  const handleClick = useLinkClickHandler(to);
-
   const metaItems = [
     { label: "모집 기간", value: formatPeriod(startDate, endDate) },
     { label: "지원서", value: submittedApplyCount },
@@ -92,7 +98,7 @@ export default function RecruitCard({ recruit }: RecruitCardProps) {
           </div>
         ))}
       </div>
-      <Card.Overlay href={to} onClick={handleClick} />
+      <Card.Overlay href={routeTo.submittedRecruitApplies(recruitId)} linkAs={RouterLink} />
     </Card.Root>
   );
 }
