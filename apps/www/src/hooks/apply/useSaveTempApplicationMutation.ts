@@ -2,7 +2,7 @@ import type { components } from "@ject/api-types/core";
 import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
 import { applyApi } from "@/apis/apply/api";
-import { applyQueryKeys } from "@/apis/apply/queryKeys";
+import { applyQueries } from "@/apis/apply/queries";
 
 interface SaveTempApplicationVariables {
   recruitId: number;
@@ -19,7 +19,7 @@ export function useSaveTempApplicationMutation(
     mutationFn: ({ recruitId, request }) => applyApi.saveTempApplication(recruitId, request),
     onSuccess: (data, variables, ...rest) => {
       void queryClient.invalidateQueries({
-        queryKey: applyQueryKeys.tempApplication(variables.recruitId),
+        queryKey: applyQueries.tempApplication(variables.recruitId).queryKey,
       });
       options?.onSuccess?.(data, variables, ...rest);
     },

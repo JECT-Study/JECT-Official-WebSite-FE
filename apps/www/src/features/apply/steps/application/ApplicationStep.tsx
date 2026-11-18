@@ -8,7 +8,7 @@ import { BlockButton, Dialog, toastController } from "@jects/jds";
 import { useIsMutating } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { applyMutationKeys } from "@/apis/apply/queryKeys";
+import { applyMutationKeys } from "@/apis/apply/queries";
 import { JECT_EMAIL } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
@@ -49,7 +49,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
 
   const saveTempMutation = useSaveTempApplicationMutation();
   const submitMutation = useSubmitApplicationMutation();
-  const isUploading = useIsMutating({ mutationKey: applyMutationKeys.uploadPortfolio }) > 0;
+  const isUploading = useIsMutating({ mutationKey: applyMutationKeys.uploadPortfolio() }) > 0;
   const isPending = saveTempMutation.isPending || submitMutation.isPending || isUploading;
 
   const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));

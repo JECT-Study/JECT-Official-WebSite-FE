@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 import { applyApi } from "@/apis/apply/api";
-import { applyMutationKeys } from "@/apis/apply/queryKeys";
+import { applyMutationKeys } from "@/apis/apply/queries";
 import type { UploadedPortfolio } from "@/apis/apply/schemas";
 
 export function useUploadPortfolioMutation(
@@ -9,7 +9,7 @@ export function useUploadPortfolioMutation(
 ) {
   return useMutation({
     ...options,
-    mutationKey: applyMutationKeys.uploadPortfolio,
+    mutationKey: applyMutationKeys.uploadPortfolio(),
     mutationFn: async (file) => {
       const [uploadUrl] = await applyApi.createPortfolioUploadUrls([
         { name: file.name, contentType: file.type, contentLength: file.size },

@@ -1,7 +1,7 @@
 import { httpClient } from "@/apis/httpClient/server";
 import { pageableQuerySerializer } from "@/apis/pageable";
 
-import { getProjectListQuery } from "./query";
+import { getProjectListQuery } from "./queryParams";
 import { projectDetailSchema, projectPageSchema, projectSummarySchema } from "./schemas";
 
 export const projectServerApi = {
