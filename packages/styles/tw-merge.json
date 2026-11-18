@@ -26,17 +26,17 @@
         "112",
         "128",
         "144",
+        "margin-6xl",
+        "margin-5xl",
+        "margin-4xl",
+        "margin-3xl",
+        "margin-2xl",
+        "margin-xl",
         "margin-lg",
         "margin-md",
         "margin-sm",
-        "margin-xl",
-        "margin-2xl",
-        "margin-3xl",
         "margin-xs",
-        "margin-2xs",
-        "margin-4xl",
-        "margin-5xl",
-        "margin-6xl"
+        "margin-2xs"
       ],
       "radius": [
         "0",
@@ -57,35 +57,35 @@
         "title-4",
         "title-5",
         "title-6",
+        "label-lg",
+        "label-md",
+        "label-sm",
+        "label-xs",
         "body-lg",
         "body-md",
         "body-sm",
         "body-xs",
         "body-2xs",
-        "label-lg",
-        "label-md",
-        "label-sm",
-        "label-xs",
         "syntax-lg",
         "syntax-md",
         "syntax-sm",
         "syntax-xs"
       ],
       "font": [
-        "syntax",
         "title",
         "label",
-        "body"
+        "body",
+        "syntax"
       ],
       "font-weight": [
-        "title-normal",
         "title-bold",
+        "title-normal",
         "title-subtle",
-        "label-normal",
         "label-bold",
+        "label-normal",
         "label-subtle",
-        "body-normal",
         "body-bold",
+        "body-normal",
         "syntax-normal"
       ],
       "breakpoint": [
@@ -100,10 +100,10 @@
         "overlay"
       ],
       "ease": [
-        "bouncy",
         "fluent",
-        "leave",
-        "entrance"
+        "bouncy",
+        "entrance",
+        "leave"
       ]
     },
     "classGroups": {
