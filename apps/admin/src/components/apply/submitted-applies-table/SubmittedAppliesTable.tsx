@@ -7,8 +7,7 @@ import {
   DataTable,
   useDataTable,
 } from "@/components/common/data-table";
-import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
-import { SELECTION_RESULT_LABELS } from "@/constants/selectionResult";
+import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { formatPhoneNumber } from "@/utils/phoneNumber";
 
 const SELECTION_RESULT_BADGE_STYLES = {

@@ -12,8 +12,7 @@ import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/Su
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
-import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
-import { SELECTION_RESULT_LABELS } from "@/constants/selectionResult";
+import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 const PAGE_SIZE = 30;
