@@ -26,7 +26,7 @@ export function PinField() {
         maxLength={6}
         autoComplete="new-password"
         placeholder="6자리 숫자를 입력해주세요"
-        suffix={
+        action={
           <IconButton
             type="button"
             icon={isPinVisible ? "eye" : "eye-off"}
