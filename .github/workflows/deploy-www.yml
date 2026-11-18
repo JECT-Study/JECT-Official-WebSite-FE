@@ -1,0 +1,125 @@
+name: Deploy (www)
+
+# main에 병합된 PR에 release와 www 레이블이 모두 있을 때만 운영에 배포한다.
+# 레이블 없이 병합했거나 다시 배포해야 할 때는 수동으로 실행한다.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.pr.outputs.labels }}
+    steps:
+      # main에 병합된 커밋의 PR을 조회해 레이블을 가져온다.
+      - id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq '[.[0].labels[]?.name]')
+          echo "labels=$labels" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: resolve
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(fromJSON(needs.resolve.outputs.labels), '🚀release') &&
+       contains(fromJSON(needs.resolve.outputs.labels), '🌐www'))
+    # standalone 번들에 포함되는 sharp 바이너리는 서버(t4g)와 동일한 arm64 아키텍처여야 한다.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+    # 실행 중인 배포를 취소하면 current 링크 전환이나 서비스 재시작이 중단될 수 있다.
+    # 새 배포는 이전 배포가 완료된 후 실행한다.
+    concurrency:
+      group: deploy-www
+      cancel-in-progress: false
+    env:
+      RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # NEXT_PUBLIC_ 값과 /api rewrite 대상은 빌드 시점에 고정된다.
+      - name: Build
+        run: pnpm build --filter=@ject/www
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+      # standalone은 정적 파일을 포함하지 않으므로 직접 복사한다.
+      - name: Package
+        working-directory: apps/www
+        run: |
+          if [ -d public ]; then cp -r public .next/standalone/apps/www/; fi
+          cp -r .next/static .next/standalone/apps/www/.next/
+          tar -czf "$RUNNER_TEMP/www.tar.gz" -C .next/standalone .
+
+      - name: Setup SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<'EOF'
+          Host *
+            BatchMode yes
+            ConnectTimeout 10
+            ServerAliveInterval 20
+            ServerAliveCountMax 3
+          EOF
+
+      - name: Upload
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+        run: scp -i ~/.ssh/deploy_key "$RUNNER_TEMP/www.tar.gz" "ubuntu@$DEPLOY_HOST:/tmp/www-$RELEASE_ID.tar.gz"
+
+      - name: Release
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+        run: ssh -i ~/.ssh/deploy_key "ubuntu@$DEPLOY_HOST" bash -s -- "$RELEASE_ID" < apps/www/scripts/release.sh
+
+  github-release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # 같은 날 여러 번 배포하면 태그 뒤에 -2, -3을 붙인다.
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          base="www-$(TZ=Asia/Seoul date +%Y.%m.%d)"
+          tag="$base"
+          n=1
+          while gh api "repos/$GH_REPO/git/ref/tags/$tag" > /dev/null 2>&1; do
+            n=$((n + 1))
+            tag="$base-$n"
+          done
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes ""

@@ -171,7 +171,9 @@ export function cn(...inputs: ClassValue[]): string {}
 
 - `dev`: 통합 브랜치입니다. 작업 브랜치는 여기서 분기하고 PR도 여기로 보냅니다. 머지되면
   `.github/workflows/qa-deploy-*.yml`이 변경된 앱만 Vercel QA 사이트에 배포합니다.
-- `main`: 운영 배포에 사용합니다. 배포 파이프라인을 만들기 전까지는 건드리지 않습니다.
+- `main`: 운영 배포에 사용합니다. `dev`에서 `main`으로 릴리스 PR을 열고 `🚀release`와
+  `🌐www` 레이블을 붙여 머지하면 공식 홈페이지가 운영에 배포됩니다. 레이블은 머지 전에
+  붙입니다.
 - 작업 브랜치: `<type>/<이슈번호>-<이름>` 형식입니다(예: `feat/123-faq-migration`).
   type은 커밋 컨벤션의 prefix와 같은 집합을 씁니다.
 
