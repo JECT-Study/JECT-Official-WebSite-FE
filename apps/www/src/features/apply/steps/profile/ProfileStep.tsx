@@ -13,7 +13,6 @@ import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useSaveProfileMutation } from "@/hooks/apply/useSaveProfileMutation";
 
-import { ExperiencePeriodTooltip } from "./ExperiencePeriodTooltip";
 import { InterestedDomainsField } from "./InterestedDomainsField";
 import { NameField } from "./NameField";
 import { CAREER_DETAILS_OPTIONS, EXPERIENCE_PERIOD_OPTIONS, REGION_OPTIONS } from "./options";
@@ -90,7 +89,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
             <ProfileSelectField
               name="experiencePeriod"
               label="직무 관련 경험 기간"
-              labelSuffix={<ExperiencePeriodTooltip />}
+              labelTooltip="학습과 경력을 모두 포함한 기간"
               placeholder="직무 관련 경험 기간을 선택해주세요"
               options={EXPERIENCE_PERIOD_OPTIONS}
             />
