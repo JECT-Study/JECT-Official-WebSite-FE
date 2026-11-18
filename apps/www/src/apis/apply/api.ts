@@ -7,6 +7,7 @@ import {
   portfolioUploadUrlsSchema,
   questionsSchema,
   tempApplicationSchema,
+  type UploadedPortfolio,
 } from "./schemas";
 
 type Schemas = components["schemas"];
@@ -76,5 +77,19 @@ export const applyApi = {
     if (!response.ok) {
       throw new Error(`파일 업로드에 실패했습니다. (${response.status})`);
     }
+  },
+
+  uploadPortfolio: async (file: File): Promise<UploadedPortfolio> => {
+    const [uploadUrl] = await applyApi.createPortfolioUploadUrls([
+      { name: file.name, contentType: file.type, contentLength: file.size },
+    ]);
+
+    if (!uploadUrl) {
+      throw new Error("업로드 주소를 발급받지 못했습니다.");
+    }
+
+    await applyApi.uploadToPresignedUrl(uploadUrl.presignedUrl, file);
+
+    return { fileUrl: uploadUrl.cdnUrl, fileName: file.name, fileSize: String(file.size) };
   },
 } as const;
