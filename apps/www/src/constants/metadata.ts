@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import ogImage from "@/assets/images/og-image.png";
+
 export const SITE_NAME = "젝트";
 
 export const SITE_DESCRIPTION =
@@ -11,6 +13,8 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL
     ? `https://${process.env.VERCEL_URL}`
     : "http://localhost:3000";
 
+const DEFAULT_IMAGES = [{ url: ogImage.src, width: ogImage.width, height: ogImage.height }];
+
 /** 페이지에서 openGraph를 지정하면 루트 값을 대체하므로 이 값을 펼친 뒤 덧붙인다. */
 export const BASE_OPEN_GRAPH = {
   type: "website",
@@ -18,10 +22,12 @@ export const BASE_OPEN_GRAPH = {
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
   locale: "ko_KR",
+  images: DEFAULT_IMAGES,
 } satisfies NonNullable<Metadata["openGraph"]>;
 
 export const BASE_TWITTER = {
   card: "summary_large_image",
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
+  images: DEFAULT_IMAGES,
 } satisfies NonNullable<Metadata["twitter"]>;
