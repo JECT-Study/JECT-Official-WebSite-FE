@@ -247,8 +247,12 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const selectedApplyIds = Object.keys(rowSelection).map(Number);
   const hasSelectedApplies = selectedApplyIds.length > 0;
 
-  const { mutate: updateSelectionResults } = useUpdateSelectionResultsMutation();
-  const { mutate: deleteSubmittedApplies } = useDeleteSubmittedAppliesMutation();
+  const { mutate: updateSelectionResults, isPending: isUpdating } =
+    useUpdateSelectionResultsMutation();
+  const { mutate: deleteSubmittedApplies, isPending: isDeleting } =
+    useDeleteSubmittedAppliesMutation();
+  // 확인하면 다이얼로그가 바로 닫히므로 응답 전에 같은 선택으로 다시 요청하지 않도록 막는다.
+  const isActionPending = isUpdating || isDeleting;
 
   const [pendingAction, setPendingAction] = useState<ConfirmAction | null>(null);
   const confirmDialogText = pendingAction && getConfirmDialogText(pendingAction);
@@ -328,6 +332,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                         hierarchy={hierarchy}
                         variant={variant}
                         size="sm"
+                        disabled={isActionPending}
                         onClick={() =>
                           setPendingAction({
                             type: "updateSelectionResult",
@@ -346,6 +351,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                   size="sm"
                   prefixIcon="trash"
                   className="ml-auto"
+                  disabled={isActionPending}
                   onClick={() => setPendingAction({ type: "delete", applyIds: selectedApplyIds })}
                 >
                   삭제
