@@ -246,6 +246,10 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const selectedApplyIds = Object.keys(rowSelection).map(Number);
   const hasSelectedApplies = selectedApplyIds.length > 0;
+  // 결과가 이미 지정된 지원서는 상세에서만 바꿀 수 있어 목록 일괄 변경은 검토 중끼리만 허용한다.
+  const canUpdateSelectionResults = applies.every(
+    (apply) => !rowSelection[apply.applyId] || apply.selectionResult === "UNDECIDED"
+  );
 
   const { mutate: updateSelectionResults, isPending: isUpdating } =
     useUpdateSelectionResultsMutation();
@@ -332,7 +336,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                         hierarchy={hierarchy}
                         variant={variant}
                         size="sm"
-                        disabled={isActionPending}
+                        disabled={isActionPending || !canUpdateSelectionResults}
                         onClick={() =>
                           setPendingAction({
                             type: "updateSelectionResult",
