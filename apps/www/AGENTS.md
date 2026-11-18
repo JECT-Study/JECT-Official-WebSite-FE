@@ -62,8 +62,9 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
   둡니다. 두 너비 중 하나의 단일 열로 구성되지 않는 페이지는 그룹 밖에 두고 페이지에서
   레이아웃을 정합니다. 그룹 안의 페이지와 feature에서는 너비나 GNB 높이 여백을 다시 지정하지
   않습니다. GNB 높이는 `globals.css`의 `--gnb-height`가 단일 출처입니다.
-- **JDS와 서버 컴포넌트**: `Tabs.Root`처럼 dot notation으로 사용하는 컴포넌트와
-  `toastController` 같은 컴포넌트가 아닌 값은 서버 컴포넌트에서 사용할 수 없으므로
+- **JDS와 서버 컴포넌트**: `Menu.Root`처럼 dot notation으로 사용하는 컴포넌트는 서버
+  컴포넌트에서 사용할 수 없으므로, 서버 컴포넌트에서는 `MenuRoot` 같은 개별 export를
+  사용합니다. 개별 export가 없는 컴포넌트와 `toastController` 같은 컴포넌트가 아닌 값은
   `"use client"` 파일 안에서 사용합니다. `@jects/jds/tokens`, `@jects/jds/utils`,
   `@jects/jds/theme`에서 가져온 값은 서버 컴포넌트에서도 사용할 수 있습니다.
 - **SVG**: `import Icon from "@/assets/icon.svg"` 형태로 가져오면 React 컴포넌트입니다

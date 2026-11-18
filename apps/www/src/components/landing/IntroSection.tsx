@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { ContentBadge, EmptyState, LabelButton } from "@jects/jds";
+import { ContentBadge, EmptyState, Icon, LabelButton } from "@jects/jds";
 
 import introImage from "@/assets/images/landing/intro-section.webp";
 import { type Position, POSITIONS, PROGRAMS, STATS } from "@/constants/landing";
@@ -68,12 +68,12 @@ function AboutBlock() {
 }
 
 function PositionCard({ position }: { position: Position }) {
-  const { title, icon: Icon, description, tags, theme } = position;
+  const { title, icon, description, tags, theme } = position;
 
   return (
     <div className={cn("flex flex-col gap-16 rounded-6 border px-24 py-20", THEME_CLASS[theme])}>
       <div className="flex items-center gap-8">
-        <Icon aria-hidden className="size-24 shrink-0" />
+        <Icon name={icon} size="xl" aria-hidden className="shrink-0" />
         <h3 className="font-title text-title-2 font-title-subtle text-object-boldest">{title}</h3>
       </div>
       <p className="font-body text-body-md font-body-normal text-object-bold">{description}</p>

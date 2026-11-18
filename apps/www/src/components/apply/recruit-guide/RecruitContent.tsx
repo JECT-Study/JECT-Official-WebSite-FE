@@ -1,4 +1,10 @@
-import { Divider } from "@jects/jds";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionRoot,
+  AccordionTrigger,
+  Divider,
+} from "@jects/jds";
 import parse, {
   type DOMNode,
   domToReact,
@@ -8,8 +14,6 @@ import parse, {
 } from "html-react-parser";
 
 import { cn } from "@/utils/cn";
-
-import { RecruitContentAccordion } from "./RecruitContentAccordion";
 
 const SAFE_HREF = /^(https?:|mailto:)/i;
 
@@ -75,12 +79,14 @@ const options: HTMLReactParserOptions = {
         const body = children.filter((child) => child !== summary);
 
         return (
-          <RecruitContentAccordion
-            className="mt-16"
-            title={summary ? getSummaryText(summary).trim() : ""}
-          >
-            {domToReact(body, options)}
-          </RecruitContentAccordion>
+          <AccordionRoot type="single" size="sm" isStretched={false} collapsible className="mt-16">
+            <AccordionItem value="content">
+              <AccordionTrigger withPrefixIcon="info">
+                {summary ? getSummaryText(summary).trim() : ""}
+              </AccordionTrigger>
+              <AccordionContent>{domToReact(body, options)}</AccordionContent>
+            </AccordionItem>
+          </AccordionRoot>
         );
       }
       case "script":

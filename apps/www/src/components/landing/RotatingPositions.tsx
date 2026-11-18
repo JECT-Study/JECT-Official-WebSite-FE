@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { Icon } from "@jects/jds";
+
 import { ROTATING_POSITIONS } from "@/constants/landing";
 import { cn } from "@/utils/cn";
 
@@ -50,9 +52,10 @@ export function RotatingPositions() {
           transitionDuration: `${DURATION_MS}ms`,
         }}
       >
-        {ITEMS.map(({ icon: Icon, text }, itemIndex) => (
+        {ITEMS.map(({ icon, text }, itemIndex) => (
           <span key={itemIndex} className="flex h-lh items-center justify-center gap-10">
-            <Icon aria-hidden className="size-[1em] shrink-0" />
+            <Icon name={icon} size="3xl" aria-hidden className="shrink-0 tablet:hidden" />
+            <Icon name={icon} size="4xl" aria-hidden className="shrink-0 max-tablet:hidden" />
             {text}
           </span>
         ))}

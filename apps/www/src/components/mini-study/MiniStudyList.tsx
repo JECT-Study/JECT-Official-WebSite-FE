@@ -1,8 +1,6 @@
-"use client";
-
 import { Fragment } from "react";
 
-import { Card, Divider, EmptyState } from "@jects/jds";
+import { CardPostLink, Divider, EmptyState } from "@jects/jds";
 
 import type { MiniStudy } from "@/apis/mini-study/schemas";
 
@@ -20,7 +18,7 @@ export function MiniStudyList({ miniStudies }: MiniStudyListProps) {
       {miniStudies.map((study, index) => (
         <Fragment key={study.id}>
           {index > 0 && <Divider />}
-          <Card.Preset.Post.Link
+          <CardPostLink
             layout="horizontal"
             href={study.linkUrl ?? ""}
             target="_blank"

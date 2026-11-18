@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { Card, Icon, SelectField, type SelectOption } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -90,11 +91,11 @@ export function TeamProjectList({ summary, initialPage }: TeamProjectListProps) 
       ) : (
         <div>
           <div className="grid grid-cols-1 gap-x-20 gap-y-24 tablet:grid-cols-2 desktop:grid-cols-3">
-            {/* TODO: JDS 카드가 라우팅 컴포넌트를 지원하면 next/link로 교체한다. */}
             {projects.map((project) => (
               <Card.Preset.Plate.Link
                 key={project.id}
                 layout="vertical"
+                linkAs={Link}
                 href={routeTo.projectDetail(String(project.id))}
                 image={
                   project.thumbnailUrl

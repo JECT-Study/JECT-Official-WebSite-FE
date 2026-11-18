@@ -1,13 +1,9 @@
-import type { FC, ReactNode, SVGProps } from "react";
+import type { ReactNode } from "react";
 import Image from "next/image";
 
-import { BlockButton, ContentBadge } from "@jects/jds";
+import { BlockButton, ContentBadge, Icon, type IconName } from "@jects/jds";
 
 import type { TeamMemberNames } from "@/apis/project/schemas";
-import PositionBe from "@/assets/svg/position-be.svg";
-import PositionFe from "@/assets/svg/position-fe.svg";
-import PositionPd from "@/assets/svg/position-pd.svg";
-import PositionPm from "@/assets/svg/position-pm.svg";
 import { CopyUrlButton } from "@/components/common/copy-url-button";
 import { cn } from "@/utils/cn";
 import { formatDate } from "@/utils/formatDate";
@@ -19,7 +15,7 @@ const CONTENT_IMAGE_SIZES = "(min-width: 1200px) 922px, 100vw";
 
 interface Position {
   label: string;
-  icon: FC<SVGProps<SVGSVGElement>>;
+  icon: IconName;
   headerClassName: string;
   labelClassName: string;
 }
@@ -27,25 +23,25 @@ interface Position {
 const POSITIONS = {
   frontendDevelopers: {
     label: "프론트엔드 개발자",
-    icon: PositionFe,
+    icon: "position-fe",
     headerClassName: "bg-theme-green-alpha-subtlest",
     labelClassName: "text-theme-green-normal",
   },
   backendDevelopers: {
     label: "백엔드 개발자",
-    icon: PositionBe,
+    icon: "position-be",
     headerClassName: "bg-theme-sky-alpha-subtlest",
     labelClassName: "text-theme-sky-normal",
   },
   productManagers: {
     label: "프로덕트 매니저",
-    icon: PositionPm,
+    icon: "position-pm",
     headerClassName: "bg-theme-orange-alpha-subtlest",
     labelClassName: "text-theme-orange-normal",
   },
   productDesigners: {
     label: "프로덕트 디자이너",
-    icon: PositionPd,
+    icon: "position-pd",
     headerClassName: "bg-theme-purple-alpha-subtlest",
     labelClassName: "text-theme-purple-normal",
   },
@@ -59,7 +55,7 @@ interface TeammateCardProps {
 }
 
 function TeammateCard({ position, names }: TeammateCardProps) {
-  const { label, icon: PositionIcon, headerClassName, labelClassName } = position;
+  const { label, icon, headerClassName, labelClassName } = position;
 
   return (
     <div className="min-w-[180px] flex-1 overflow-hidden rounded-4 border border-stroke-subtle bg-surface-shallow font-label text-label-md font-label-normal">
@@ -69,7 +65,7 @@ function TeammateCard({ position, names }: TeammateCardProps) {
           headerClassName
         )}
       >
-        <PositionIcon aria-hidden className="size-[14px] shrink-0" />
+        <Icon name={icon} size="xs" aria-hidden className="shrink-0" />
         <span className={labelClassName}>{label}</span>
       </div>
       <ul className="flex flex-wrap gap-x-10 gap-y-4 p-12 text-object-bolder">
