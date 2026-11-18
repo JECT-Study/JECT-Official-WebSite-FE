@@ -46,7 +46,7 @@ export default function SubmittedRecruitAppliesPage() {
 
   if (!Number.isInteger(recruitId) || recruitId <= 0) return <NotFoundPage />;
 
-  return <SubmittedRecruitApplies recruitId={recruitId} />;
+  return <SubmittedRecruitApplies key={recruitId} recruitId={recruitId} />;
 }
 
 interface SubmittedRecruitAppliesProps {
