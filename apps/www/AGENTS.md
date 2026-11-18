@@ -23,7 +23,7 @@ src/
 ├── app/              # Next App Router. 라우팅, 레이아웃, providers만 배치
 ├── components/       # 도메인별 컴포넌트 (apply, gnb, layout, common 등)
 ├── features/         # 퍼널 단위 기능 (apply, auth. 스텝 컴포넌트 포함)
-├── apis/             # httpClient, queryClient, 도메인별 api/schemas/queryKeys
+├── apis/             # httpClient, queryClient, 도메인별 api/schemas/queries
 ├── hooks/            # 폼, 쿼리, UI 공용 훅
 ├── stores/           # Zustand 스토어
 ├── errors/           # 에러 클래스와 매핑
@@ -54,6 +54,10 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
   미들웨어는 클라이언트용에만 추가합니다. 서버 컴포넌트에서는 갱신된 쿠키를 응답에 설정할
   수 없습니다.
   `server.ts`는 `import "server-only"`로 클라이언트 번들 유입을 빌드 단계에서 막습니다.
+- **서버에서 쿼리 정의 사용**: `queries.ts`의 `queryFn`은 클라이언트용 API를 사용합니다.
+  따라서 서버 컴포넌트에서 prefetch할 때는 쿼리 정의를 펼친 뒤 `queryFn`만 `api.server.ts`의
+  함수로 재정의합니다. 쿼리 키는 기존 정의를 그대로 사용하므로 클라이언트와 동일한 캐시를
+  공유할 수 있습니다.
 - **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
   `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로
   여기서 정합니다. 페이지마다 `max-w-[922px]` 등을 다시 작성하지 않습니다.
