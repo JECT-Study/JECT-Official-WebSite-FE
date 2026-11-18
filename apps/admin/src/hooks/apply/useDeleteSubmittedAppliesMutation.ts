@@ -11,7 +11,9 @@ export function useDeleteSubmittedAppliesMutation() {
   return useMutation({
     mutationFn: applyApi.deleteSubmittedApplies,
     onSuccess: async (deletedCount) => {
-      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
+      const queryKey = applyQueries.submittedAppliesLists();
+      await queryClient.cancelQueries({ queryKey });
+      await queryClient.invalidateQueries({ queryKey });
       toast.positive(`${deletedCount}개를 삭제했어요`);
     },
     onError: () => {

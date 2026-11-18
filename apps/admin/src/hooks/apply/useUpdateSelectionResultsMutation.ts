@@ -12,7 +12,9 @@ export function useUpdateSelectionResultsMutation() {
   return useMutation({
     mutationFn: applyApi.updateSelectionResults,
     onSuccess: async (_, { applyIds, selectionResult }) => {
-      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
+      const queryKey = applyQueries.submittedAppliesLists();
+      await queryClient.cancelQueries({ queryKey });
+      await queryClient.invalidateQueries({ queryKey });
       toast.positive(
         `${applyIds.length}개를 ${SELECTION_RESULT_LABELS[selectionResult]} 상태로 변경했어요`
       );
