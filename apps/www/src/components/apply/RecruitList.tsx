@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { Card, Divider, EmptyState, Tabs } from "@jects/jds";
@@ -86,6 +87,7 @@ function RecruitTabPanel({ tab, recruitments }: RecruitTabPanelProps) {
           {index > 0 && <Divider />}
           <Card.Preset.Post.Link
             layout="horizontal"
+            linkAs={Link}
             href={routeTo.applyGuide(recruitment.recruitId)}
             title={recruitment.title}
             body={recruitment.summary}
