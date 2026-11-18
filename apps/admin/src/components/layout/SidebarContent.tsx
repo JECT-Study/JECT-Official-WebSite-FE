@@ -18,7 +18,7 @@ export function SidebarContent() {
   const { mutate: logout, isPending } = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      useAuthStore.getState().setIsLoggedIn(false);
+      useAuthStore.getState().logout();
       // 라우터로 이동하면 ProtectedRoute나 GuestRoute가 먼저 반응해 다른 경로로 보낸다.
       window.location.replace(ROUTES.login);
     },
