@@ -8,9 +8,12 @@ import { ROUTES } from "@/constants/routes";
 
 export const revalidate = 3600;
 
+const PAGE_TITLE = "미니 스터디";
+const PAGE_DESCRIPTION = "활동 중 팀 프로젝트와 병행할 수 있는, 성장을 위한 스터디입니다.";
+
 export const metadata: Metadata = createPageMetadata({
-  title: "미니 스터디",
-  description: "활동 중 팀 프로젝트와 병행할 수 있는, 성장을 위한 스터디입니다.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   path: ROUTES.miniStudy,
 });
 
@@ -19,10 +22,7 @@ export default async function MiniStudyPage() {
 
   return (
     <>
-      <PageHeader
-        title="미니 스터디"
-        description="활동 중 팀 프로젝트와 병행할 수 있는, 성장을 위한 스터디입니다."
-      />
+      <PageHeader title={PAGE_TITLE} description={PAGE_DESCRIPTION} />
       <MiniStudyList miniStudies={miniStudies} />
     </>
   );

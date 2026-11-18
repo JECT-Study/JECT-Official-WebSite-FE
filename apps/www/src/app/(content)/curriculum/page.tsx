@@ -8,19 +8,19 @@ import { ROUTES } from "@/constants/routes";
 
 const CARD_GRID = "grid grid-cols-1 gap-16 tablet:grid-cols-2";
 
+const PAGE_TITLE = "활동 커리큘럼";
+const PAGE_DESCRIPTION = "젝트의 구성원이 참여하는 커리큘럼을 소개합니다.";
+
 export const metadata: Metadata = createPageMetadata({
-  title: "활동 커리큘럼",
-  description: "젝트의 구성원이 참여하는 커리큘럼을 소개합니다.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
   path: ROUTES.curriculum,
 });
 
 export default function CurriculumPage() {
   return (
     <>
-      <PageHeader
-        title="활동 커리큘럼"
-        description="젝트의 구성원이 참여하는 커리큘럼을 소개합니다."
-      />
+      <PageHeader title={PAGE_TITLE} description={PAGE_DESCRIPTION} />
       <CurriculumTabs
         tabs={[
           {
