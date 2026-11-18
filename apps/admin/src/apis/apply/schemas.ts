@@ -1,4 +1,4 @@
-import type { components } from "@ject/api-types/admin";
+import type { components, operations } from "@ject/api-types/admin";
 import { z } from "zod";
 
 import type { NullableFields } from "@/apis/types";
@@ -41,8 +41,10 @@ export const submittedAppliesSchema = z.object({
   NullableFields<Omit<Schemas["CursorPageResponseSubmittedApplyResponse"], "content">>
 >;
 
+type DeletedAppliesCount = operations["deleteSubmittedApplies"]["responses"][200]["content"]["*/*"];
+
 /** 실제로 삭제된 지원서 수다. 없거나 이미 삭제된 지원서는 세지 않는다. */
-export const deletedAppliesCountSchema = z.number();
+export const deletedAppliesCountSchema = z.number() satisfies z.ZodType<DeletedAppliesCount>;
 
 export type CareerDetails = z.infer<typeof careerDetailsSchema>;
 export type SelectionResult = z.infer<typeof selectionResultSchema>;
