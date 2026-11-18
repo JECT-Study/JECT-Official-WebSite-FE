@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { hashKey, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams, useSearchParams } from "react-router-dom";
 
@@ -235,8 +235,13 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
   const totalCount = data?.pages.at(-1)?.totalCount;
 
-  const handleFilterChange = (values: FilterValues) => {
-    setSearchParams(toSearchParams(searchParams, values), { replace: true });
+  // 결과에서 빠진 행이 선택된 채 작업 대상이 되지 않도록 조회 조건이 바뀌면 선택을 비운다.
+  const handleFilterChange = (nextValues: FilterValues) => {
+    const isConditionChanged =
+      hashKey([toFilterCondition(nextValues)]) !== hashKey([toFilterCondition(filterValues)]);
+    if (isConditionChanged) setRowSelection({});
+
+    setSearchParams(toSearchParams(searchParams, nextValues), { replace: true });
   };
 
   const selectedApplyIds = Object.keys(rowSelection).map(Number);
