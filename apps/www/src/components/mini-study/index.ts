@@ -1,0 +1,1 @@
+export { MiniStudyList } from "./MiniStudyList";

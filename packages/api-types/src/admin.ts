@@ -85,14 +85,14 @@ export interface paths {
          */
         get: operations["findApply"];
         /**
-         * 제출된 지원서 수정
-         * @description 전달한 ID에 해당하는 제출된 지원서의 정보를 수정 합니다.
+         * 지원서 수정
+         * @description 수정 가능한 값을 요청 내용으로 교체합니다. 선정 결과는 제출완료만 지정하며, 포트폴리오는 전달한 ID만 삭제합니다.
          */
-        put: operations["editSubmittedApply"];
+        put: operations["editApply"];
         post?: never;
         /**
          * 지원서 삭제
-         * @description 전달한 ID에 해당하는 지원서를 삭제합니다.
+         * @description 지원서와 연결된 지원자를 함께 소프트 삭제합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
          */
         delete: operations["deleteApply"];
         options?: never;
@@ -164,6 +164,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/recruits/{recruitId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 모집확정
+         * @description 제출완료 지원서의 선정 결과를 검증하고 합격자를 구성원으로 등록한 뒤 모집을 종료합니다. 예비합격자는 불합격 처리하며, 실패 시 전체 작업을 롤백합니다.
+         */
+        post: operations["completeRecruit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/members/supporters": {
         parameters: {
             query?: never;
@@ -182,7 +202,11 @@ export interface paths {
          * @description 운영 서포터즈 구성원을 추가합니다.
          */
         post: operations["createAdminMemberSupporters"];
-        delete?: never;
+        /**
+         * 운영 서포터즈 구성원 일괄 삭제
+         * @description 선택한 운영 서포터즈 구성원을 일괄 삭제합니다. 유효하지 않은 ID가 있으면 전체 요청이 실패합니다.
+         */
+        delete: operations["deleteAdminMemberSupportersList"];
         options?: never;
         head?: never;
         patch?: never;
@@ -206,7 +230,11 @@ export interface paths {
          * @description 일반 구성원을 추가합니다.
          */
         post: operations["createAdminMemberSemester"];
-        delete?: never;
+        /**
+         * 일반 구성원 일괄 삭제
+         * @description 선택한 일반 구성원을 일괄 삭제합니다.
+         */
+        delete: operations["deleteAdminMemberSemesterList"];
         options?: never;
         head?: never;
         patch?: never;
@@ -230,7 +258,11 @@ export interface paths {
          * @description 메이커스팀 구성원을 추가합니다.
          */
         post: operations["createAdminMemberMakers"];
-        delete?: never;
+        /**
+         * 메이커스팀 구성원 일괄 삭제
+         * @description 선택한 메이커스팀 구성원을 일괄 삭제합니다. 유효하지 않은 ID가 있으면 전체 요청이 실패합니다.
+         */
+        delete: operations["deleteAdminMemberMakersList"];
         options?: never;
         head?: never;
         patch?: never;
@@ -244,16 +276,105 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 시나리오 목록 조회
-         * @description 등록된 모든 메일 발송 시나리오를 조회합니다.
+         * 메일 템플릿 목록 조회
+         * @description 메일 템플릿을 구분과 타입으로 필터링하여 최신순으로 조회합니다.
          */
-        get: operations["getScenarios"];
+        get: operations["searchScenarios"];
         put?: never;
         /**
          * 시나리오 생성
          * @description 새로운 메일 발송 시나리오를 생성합니다.
          */
         post: operations["createScenario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/scenarios/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 메일 미리보기
+         * @description 지원자와 입력 변수 기준으로 메일 제목과 본문을 미리 확인합니다.
+         */
+        post: operations["preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단체 메일 발송 작업 목록 조회
+         * @description 관리자 본인의 발송 작업을 최신순으로 조회합니다.
+         */
+        get: operations["searchJobs"];
+        put?: never;
+        /**
+         * 단체 메일 발송
+         * @description 선택한 제출 지원자의 발송 의도를 저장합니다. worker 활성화 시 최종 발송을 기다리지 않고
+         *     현재 상태를 반환하므로 작업 상세 조회로 결과를 확인합니다. 비활성 시 즉시 발송합니다.
+         */
+        post: operations["sendMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 예약 발송 취소
+         * @description 관리자 본인의 예약 발송 작업을 발송 처리가 시작되기 전에 취소합니다.
+         */
+        post: operations["cancelMail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/scheduled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 단체 메일 예약
+         * @description 예약 시점에 선택된 대상자와 렌더링된 메일 제목·본문을 snapshot으로 저장합니다.
+         *     scheduledAt은 시간대가 포함된 ISO-8601 형식이며 UTC Instant로 저장합니다. 한국 시간 예시는 2026-10-07T10:00:00+09:00입니다.
+         *     worker 활성화 환경에서 예약 시각 도래 후 자동 실행하며, 서버가 시각을 놓치면 복구 후 처리합니다.
+         *     발송 직전 자격을 다시 확인해 조건을 벗어난 대상만 제외하고 저장된 내용으로 발송합니다.
+         *     생성 응답에 예약 시각은 포함되지 않으므로 기존 작업 상세 조회에서 확인합니다.
+         */
+        post: operations["scheduleMail"];
         delete?: never;
         options?: never;
         head?: never;
@@ -294,26 +415,6 @@ export interface paths {
          * @description 선택된 템플릿으로 여러 이메일을 발송합니다.
          */
         post: operations["sendManualBulkTemplatedEmail"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/apply/pass": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 지원자 합격
-         * @description 지원자를 합격 처리하여 구성원으로 승인합니다.
-         */
-        post: operations["passApply"];
         delete?: never;
         options?: never;
         head?: never;
@@ -382,6 +483,154 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/admin/members/supporters/{memberActivityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 운영 서포터즈 구성원 상세 조회
+         * @description 운영 서포터즈 구성원을 상세 조회합니다.
+         */
+        get: operations["getAdminMemberSupportersDetail"];
+        put?: never;
+        post?: never;
+        /**
+         * 운영 서포터즈 구성원 삭제
+         * @description 전달한 활동 ID에 해당하는 운영 서포터즈 구성원을 삭제합니다.
+         */
+        delete: operations["deleteAdminMemberSupporters"];
+        options?: never;
+        head?: never;
+        /**
+         * 운영 서포터즈 구성원 수정
+         * @description 전달한 활동 ID에 해당하는 운영 서포터즈 구성원의 입력된 정보만 수정합니다.
+         */
+        patch: operations["editAdminMemberSupporters"];
+        trace?: never;
+    };
+    "/admin/members/semester/{memberActivityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 일반 구성원 단건 조회
+         * @description 일반 구성원 정보와 기수별 행사 참여 상태를 조회합니다.
+         */
+        get: operations["getMemberSemester"];
+        put?: never;
+        post?: never;
+        /**
+         * 일반 구성원 삭제
+         * @description 일반 구성원을 삭제합니다.
+         */
+        delete: operations["deleteAdminMemberSemester"];
+        options?: never;
+        head?: never;
+        /**
+         * 일반 구성원 수정
+         * @description 일반 구성원의 기본정보와 활동정보를 수정합니다.
+         */
+        patch: operations["editAdminMemberSemester"];
+        trace?: never;
+    };
+    "/admin/members/semester/{memberActivityId}/event-participation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 일반 구성원 행사 참여 상태 수정
+         * @description 일반 구성원의 기수별 행사 참여 상태를 수정합니다. 참여 상태가 null이면 미지정 처리합니다.
+         */
+        patch: operations["editEventParticipation"];
+        trace?: never;
+    };
+    "/admin/members/makers/{memberActivityId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 메이커스팀 구성원 상세 조회
+         * @description 메이커스팀 구성원을 상세 조회합니다.
+         */
+        get: operations["getAdminMemberMakersDetail"];
+        put?: never;
+        post?: never;
+        /**
+         * 메이커스팀 구성원 삭제
+         * @description 전달한 활동 ID에 해당하는 메이커스팀 구성원을 삭제합니다.
+         */
+        delete: operations["deleteAdminMemberMakers"];
+        options?: never;
+        head?: never;
+        /**
+         * 메이커스팀 구성원 수정
+         * @description 전달한 활동 ID에 해당하는 메이커스팀 구성원의 입력된 정보만 수정합니다.
+         */
+        patch: operations["editAdminMemberMakers"];
+        trace?: never;
+    };
+    "/admin/applies/waitlist-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 예비 번호 조정 목록 조회
+         * @description 공고별 예비 합격자 전체를 예비 번호순으로 조회합니다.
+         */
+        get: operations["getWaitlistOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 예비 번호 조정
+         * @description 현재 예비 합격자 전체 ID를 원하는 순서로 변경합니다.
+         */
+        patch: operations["editWaitlistOrder"];
+        trace?: never;
+    };
+    "/admin/applies/selection-results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * 지원자 선정 결과 일괄 변경
+         * @description 같은 공고의 제출완료 지원자에게 하나의 선정 결과를 적용합니다.
+         */
+        patch: operations["updateSelectionResults"];
         trace?: never;
     };
     "/admin/accounts/{memberId}": {
@@ -464,7 +713,7 @@ export interface paths {
         patch: operations["deactivateAccounts"];
         trace?: never;
     };
-    "/admin/members/supporters/{memberActivityId}": {
+    "/admin/recruits/apply-management": {
         parameters: {
             query?: never;
             header?: never;
@@ -472,10 +721,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 운영 서포터즈 구성원 상세 조회
-         * @description 운영 서포터즈 구성원을 상세 조회합니다.
+         * 지원서 관리용 모집공고 목록 조회
+         * @description 모집 유형과 직군으로 공고를 검색하고 제출 지원서의 선정 결과 통계를 함께 조회합니다.
          */
-        get: operations["getAdminMemberSupportersDetail"];
+        get: operations["searchApplyManagementRecruits"];
         put?: never;
         post?: never;
         delete?: never;
@@ -484,7 +733,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/members/makers/{memberActivityId}": {
+    "/admin/mails/targets": {
         parameters: {
             query?: never;
             header?: never;
@@ -492,10 +741,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 메이커스팀 구성원 상세 조회
-         * @description 메이커스팀 구성원을 상세 조회합니다.
+         * 메일 발송 대상자 조회
+         * @description 모집 공고와 선정 결과로 메일 발송 대상자를 조회합니다.
          */
-        get: operations["getAdminMemberMakersDetail"];
+        get: operations["searchTargets"];
         put?: never;
         post?: never;
         delete?: never;
@@ -524,7 +773,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/applies": {
+    "/admin/mails/recruits": {
         parameters: {
             query?: never;
             header?: never;
@@ -532,15 +781,133 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * 지원서 목록 조회
-         * @description 지원서들의 목록을 조회합니다. 모집 공고, 모집 유형, 모집 사유, 기수, 직군, 지원 상태로 필터링할 수 있습니다.
+         * 메일 발송용 모집 공고 목록 조회
+         * @description 메일 발송 기준으로 사용할 모집 공고를 등록일 최신순으로 조회합니다.
          */
-        get: operations["findApplies"];
+        get: operations["getRecruits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단체 메일 발송 작업 상세 조회
+         * @description 관리자 본인의 발송 작업 요약을 조회합니다.
+         */
+        get: operations["getJob"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/mails/dispatches/{dispatchJobId}/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 단체 메일 수신자별 결과 조회
+         * @description 관리자 본인의 발송 작업에서 수신자별 결과와 시도 횟수·다음 재시도 시각·마지막 시도 오류를
+         *     상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.
+         *     Outbox 없는 과거 이력의 재시도 정보는 null입니다.
+         */
+        get: operations["searchTargets_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/applies/temp-saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 임시저장 지원서 목록 조회
+         * @description 모집 공고별 임시저장 지원서를 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.
+         */
+        get: operations["searchTempSavedApplies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/applies/submitted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 제출완료 지원서 목록 조회
+         * @description 모집 공고별 제출완료 지원서를 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.
+         */
+        get: operations["searchSubmittedApplies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/semesters/{semesterId}/events/{semesterEventId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 기수별 행사 삭제
+         * @description 선택한 기수의 행사를 삭제합니다.
+         */
+        delete: operations["deleteEvent"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/applies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
         put?: never;
         post?: never;
         /**
          * 지원서 다수 삭제
-         * @description 선택한 다수의 지원서들을 삭제합니다. 삭제한 수를 반환합니다.
+         * @description 조회된 지원서와 연결된 지원자를 함께 소프트 삭제하고 실제 삭제한 지원서 수를 반환합니다. 중복 ID는 허용하지 않으며 존재하지 않거나 이미 삭제된 지원서는 제외합니다. 재지원 시 이메일 인증부터 다시 진행해야 합니다.
          */
         delete: operations["deleteSubmittedApplies"];
         options?: never;
@@ -553,13 +920,35 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {string} */
-        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "SUPPORTER" | "OPS" | "INFRA" | "BX" | "ER";
+        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "OPS" | "INFRA" | "BX" | "ER";
+        RecruitFaq: {
+            title?: string;
+            content?: string;
+        };
+        RecruitFaqRequest: {
+            title: string;
+            content: string;
+        };
+        /** @enum {string} */
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
+        /** @enum {string} */
+        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         RecruitUpdateRequest: {
+            title: string;
             jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
             startDate: string;
             /** Format: date-time */
             endDate: string;
+            summary?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqRequest"][];
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            /** Format: int64 */
+            semesterId?: number;
+            faqsOrNull?: components["schemas"]["RecruitFaq"][];
         };
         CustomVariableRequest: {
             key: string;
@@ -583,7 +972,7 @@ export interface components {
         /** @enum {string} */
         MailScenarioType: "FIRST_PASS" | "FINAL_PASS" | "STANDBY_PASS" | "REJECT" | "ETC";
         /** @enum {string} */
-        VariableInputType: "TEXT" | "URL" | "EMAIL" | "PHONE";
+        VariableInputType: "TEXT" | "URL" | "EMAIL" | "PHONE" | "DATE_TIME";
         CustomVariableResponse: {
             key?: string;
             label?: string;
@@ -605,32 +994,48 @@ export interface components {
             createdAt?: string;
             customVariables?: components["schemas"]["CustomVariableResponse"][];
         };
-        ApplyPortfolioDto: {
-            fileUrl?: string;
-            fileName?: string;
-            fileSize?: string;
-            sequence?: string;
-        };
-        SubmittedApplyEditRequest: {
+        /** @enum {string} */
+        CareerDetails: "STUDENT" | "EXPECTED_GRADUATE" | "JOB_SEEKER" | "BETWEEN_JOBS" | "EMPLOYEE";
+        EditApplyRequest: {
             name: string;
             phoneNumber: string;
             email: string;
-            jobFamily: components["schemas"]["JobFamily"];
+            careerDetails: components["schemas"]["CareerDetails"];
+            region?: components["schemas"]["Region"];
+            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
+            interestedDomains: string[];
+            selectionResult?: components["schemas"]["SelectionResult"];
+            note?: string;
             answers: {
                 [key: string]: string;
             };
-            portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+            deletePortfolioIds?: number[];
         };
+        /** @enum {string} */
+        ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
+        /** @enum {string} */
+        Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
+        /** @enum {string} */
+        SelectionResult: "UNDECIDED" | "PASSED" | "WAITLISTED" | "FAILED";
         RecruitRegisterRequest: {
+            title: string;
             jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
             startDate: string;
             /** Format: date-time */
             endDate: string;
+            summary?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqRequest"][];
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            /** Format: int64 */
+            semesterId?: number;
         };
         SemesterRegisterRequest: {
             name?: string;
-            recruitRegisterRequests?: components["schemas"]["RecruitRegisterRequest"][];
+            recruitRegisterRequests: components["schemas"]["RecruitRegisterRequest"][];
         };
         CreateSemesterEventRequest: {
             name: string;
@@ -666,10 +1071,6 @@ export interface components {
         };
         /** @enum {string} */
         MemberType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
-        /** @enum {string} */
-        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
-        /** @enum {string} */
-        CareerDetails: "STUDENT" | "EXPECTED_GRADUATE" | "JOB_SEEKER" | "BETWEEN_JOBS" | "EMPLOYEE";
         CreateMemberSemesterRequest: {
             name: string;
             email: string;
@@ -687,10 +1088,6 @@ export interface components {
             interestedDomains?: string[];
             region?: components["schemas"]["Region"];
         };
-        /** @enum {string} */
-        ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
-        /** @enum {string} */
-        Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
         /** @enum {string} */
         Availability: "UNAVAILABLE" | "CONSIDER_LATER" | "AVAILABLE_BY_TOPIC" | "HIGHLY_AVAILABLE";
         /** @enum {string} */
@@ -719,6 +1116,71 @@ export interface components {
         };
         /** @enum {string} */
         MakersTeam: "TEAM_1" | "TEAM_2";
+        PreviewMailRequest: {
+            /** Format: int64 */
+            scenarioId: number;
+            /** Format: int64 */
+            applyId: number;
+            inputVariables: {
+                [key: string]: string;
+            };
+        };
+        MailPreviewResponse: {
+            /** Format: int64 */
+            scenarioId?: number;
+            /** Format: int64 */
+            applyId?: number;
+            receiverEmail?: string;
+            subject?: string;
+            body?: string;
+        };
+        SendMailDispatchRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            /** Format: int64 */
+            scenarioId: number;
+            applyIds: number[];
+            subjectOverride?: string;
+            inputVariables?: {
+                [key: string]: string;
+            };
+        };
+        /** @enum {string} */
+        MailDispatchJobStatus: "SCHEDULED" | "CANCELLED" | "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
+        MailDispatchResponse: {
+            /** Format: int64 */
+            dispatchJobId?: number;
+            status?: components["schemas"]["MailDispatchJobStatus"];
+            /** Format: int32 */
+            targetCount?: number;
+            /** Format: int32 */
+            processingCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+            /** Format: int32 */
+            failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
+            /** Format: int32 */
+            excludedCount?: number;
+        };
+        ScheduleMailDispatchRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            /** Format: int64 */
+            scenarioId: number;
+            applyIds: number[];
+            subjectOverride?: string;
+            inputVariables?: {
+                [key: string]: string;
+            };
+            /**
+             * Format: date-time
+             * @description 시간대가 포함된 예약 시각. 한국 시간은 +09:00으로 입력
+             * @example 2026-10-07T10:00:00+09:00
+             */
+            scheduledAt: string;
+        };
         /** @enum {string} */
         EmailTemplate: "AUTH_CODE" | "PIN_RESET" | "REMIND_APPLY";
         SendManualTemplatedEmailRequest: {
@@ -734,9 +1196,6 @@ export interface components {
             content?: {
                 [key: string]: string;
             };
-        };
-        ApplyPassRequest: {
-            applyIds?: number[];
         };
         /** @description 관리자 계정 생성 요청 */
         AdminAccountCreateRequest: {
@@ -766,6 +1225,206 @@ export interface components {
         AdminLoginRequest: {
             email: string;
             password: string;
+        };
+        AdminLoginResponse: {
+            name?: string;
+            isAdmin?: boolean;
+        };
+        /** @description 운영 서포터즈 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지 */
+        UpdateMemberSupportersRequest: {
+            /**
+             * @description 이름
+             * @example 김젝트
+             */
+            name?: string | null;
+            /**
+             * @description 전화번호
+             * @example 01012345678
+             */
+            phoneNumber?: string | null;
+            /**
+             * @description 이메일
+             * @example supporter@ject.kr
+             */
+            email?: string | null;
+            jobFamily?: components["schemas"]["JobFamily"];
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            activityStatus?: components["schemas"]["ActivityStatus"];
+            /**
+             * Format: date
+             * @description 활동 시작일
+             * @example 2026-01-01
+             */
+            startDate?: string | null;
+            /**
+             * Format: date
+             * @description 활동 종료일
+             * @example 2026-12-31
+             */
+            endDate?: string | null;
+            /**
+             * @description 활동 증명서 번호
+             * @example JECT-SUPPORTERS-001
+             */
+            activityCertNumber?: string | null;
+            /**
+             * @description 비고
+             * @example 차기 활동 참여 희망
+             */
+            memo?: string | null;
+        };
+        /** @description 일반 구성원 편집 요청. 전달하지 않은 항목은 기존 값 유지 */
+        EditMemberSemesterRequest: {
+            /**
+             * @description 이름
+             * @example 김젝트
+             */
+            name?: string | null;
+            /**
+             * @description 이메일
+             * @example member@ject.kr
+             */
+            email?: string | null;
+            /**
+             * @description 전화번호
+             * @example 01012345678
+             */
+            phoneNumber?: string | null;
+            jobFamily?: components["schemas"]["JobFamily"];
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            activityStatus?: components["schemas"]["ActivityStatus"];
+            careerDetails?: components["schemas"]["CareerDetails"];
+            /**
+             * Format: int64
+             * @description 기수 ID. 전달하면 팀 소속도 함께 편집
+             * @example 2
+             */
+            semesterId?: number | null;
+            /**
+             * Format: int64
+             * @description 팀 ID. 단독 전달 시 현재 기수의 팀으로 편집
+             * @example 5
+             */
+            teamId?: number | null;
+            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
+            /**
+             * @description 비고
+             * @example 일반 구성원 비고
+             */
+            memo?: string | null;
+            /**
+             * @description 관심 도메인 목록(1~3개)
+             * @example [
+             *       "커머스",
+             *       "핀테크"
+             *     ]
+             */
+            interestedDomains?: (string | null)[] | null;
+            region?: components["schemas"]["Region"];
+            /**
+             * @description 활동 증명서 번호
+             * @example JECT-SEMESTER-001
+             */
+            certNumber?: string | null;
+            /**
+             * @description 1차 활동 리뷰
+             * @example https://example.com/review/1
+             */
+            firstReview?: string | null;
+            /**
+             * @description 2차 활동 리뷰
+             * @example https://example.com/review/2
+             */
+            secondReview?: string | null;
+        };
+        /** @description 일반 구성원 행사 참여 상태 수정 요청 */
+        EditEventParticipationRequest: {
+            /**
+             * Format: int64
+             * @description 기수별 행사 ID
+             * @example 1
+             */
+            semesterEventId: number;
+            participationStatus?: components["schemas"]["ParticipationStatus"];
+        };
+        /**
+         * @description 행사 참여 상태. null이면 미지정 처리
+         * @example ATTENDED
+         * @enum {string|null}
+         */
+        ParticipationStatus: "ATTENDED" | "ABSENT" | "ATTENDED" | "ABSENT" | null;
+        /** @description 메이커스팀 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지 */
+        UpdateMemberMakersRequest: {
+            /**
+             * @description 이름
+             * @example 김젝트
+             */
+            name?: string | null;
+            /**
+             * @description 이메일
+             * @example member@ject.kr
+             */
+            email?: string | null;
+            /**
+             * @description 전화번호
+             * @example 01012345678
+             */
+            phoneNumber?: string | null;
+            jobFamily?: components["schemas"]["JobFamily"];
+            careerDetails?: components["schemas"]["CareerDetails"];
+            makersTeam?: components["schemas"]["MakersTeam"];
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            activityStatus?: components["schemas"]["ActivityStatus"];
+            region?: components["schemas"]["Region"];
+            /**
+             * @description 관심 도메인 목록(1~3개)
+             * @example [
+             *       "커머스",
+             *       "핀테크"
+             *     ]
+             */
+            interestedDomains?: (string | null)[] | null;
+            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
+            mentoringAvailability?: components["schemas"]["Availability"];
+            projectSupplementAvailability?: components["schemas"]["Availability"];
+            speakerAvailability?: components["schemas"]["Availability"];
+            careerLevel?: components["schemas"]["CareerLevel"];
+            /**
+             * @description 보유 기술
+             * @example Java, Spring
+             */
+            skills?: string | null;
+            /**
+             * @description 회사
+             * @example 젝트
+             */
+            company?: string | null;
+            /**
+             * @description 공유 가능한 전문 주제
+             * @example Spring 성능 최적화
+             */
+            expertTopics?: string | null;
+            /**
+             * @description 활동 증명서 번호
+             * @example JECT-MAKERS-001
+             */
+            activityCertNumber?: string | null;
+            /**
+             * @description 비고
+             * @example 차기 프로젝트 참여 희망
+             */
+            memo?: string | null;
+        };
+        EditWaitlistOrderRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            applyIds: number[];
+        };
+        UpdateSelectionResultsRequest: {
+            /** Format: int64 */
+            recruitId: number;
+            applyIds: number[];
+            selectionResult: components["schemas"]["SelectionResult"];
         };
         /** @description 관리자 계정 정보 수정 요청 */
         AdminAccountUpdateRequest: {
@@ -810,6 +1469,49 @@ export interface components {
         SemesterEventsResponse: {
             type?: components["schemas"]["SemesterEventType"];
             events?: components["schemas"]["SemesterEventResponse"][];
+        };
+        /** @enum {string} */
+        ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
+        ApplyManagementRecruitResponse: {
+            /** Format: int64 */
+            recruitId?: number;
+            title?: string;
+            /** Format: int64 */
+            semesterId?: number;
+            semesterName?: string;
+            recruitType?: components["schemas"]["RecruitType"];
+            jobFamily?: components["schemas"]["JobFamily"];
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            /** Format: int64 */
+            submittedApplyCount?: number;
+            /** Format: int64 */
+            passedCount?: number;
+            /** Format: int64 */
+            failedCount?: number;
+            /** Format: int64 */
+            waitlistedCount?: number;
+        };
+        ApplyManagementRecruitsResponse: {
+            recruitTypeCounts?: components["schemas"]["RecruitTypeCountResponse"][];
+            recruits?: components["schemas"]["CursorPageResponseApplyManagementRecruitResponse"];
+        };
+        CursorPageResponseApplyManagementRecruitResponse: {
+            content?: components["schemas"]["ApplyManagementRecruitResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        RecruitTypeCountResponse: {
+            recruitType?: components["schemas"]["RecruitType"];
+            /** Format: int64 */
+            count?: number;
         };
         CursorPageResponseMemberSupportersListResponse: {
             content?: components["schemas"]["MemberSupportersListResponse"][];
@@ -868,6 +1570,44 @@ export interface components {
             experiencePeriod?: components["schemas"]["ExperiencePeriod"];
             status?: components["schemas"]["ActivityStatus"];
         };
+        EventParticipationResponse: {
+            /** Format: int64 */
+            semesterEventId?: number;
+            name?: string;
+            participationStatus?: components["schemas"]["ParticipationStatus"];
+        };
+        MemberSemesterResponse: {
+            /** Format: int64 */
+            memberActivityId?: number;
+            name?: string;
+            email?: string;
+            phoneNumber?: string;
+            region?: components["schemas"]["Region"];
+            interestedDomains?: string[];
+            jobFamily?: components["schemas"]["JobFamily"];
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            careerDetails?: components["schemas"]["CareerDetails"];
+            activityStatus?: components["schemas"]["ActivityStatus"];
+            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
+            memo?: string;
+            semester?: components["schemas"]["Semester"];
+            team?: components["schemas"]["Team"];
+            certNumber?: string;
+            firstReview?: string;
+            secondReview?: string;
+            events?: components["schemas"]["EventParticipationResponse"][];
+            surveys?: components["schemas"]["EventParticipationResponse"][];
+        };
+        Semester: {
+            /** Format: int64 */
+            semesterId?: number;
+            semesterName?: string;
+        };
+        Team: {
+            /** Format: int64 */
+            teamId?: number;
+            teamName?: string;
+        };
         CursorPageResponseMemberMakersListResponse: {
             content?: components["schemas"]["MemberMakersListResponse"][];
             /** Format: int32 */
@@ -914,17 +1654,22 @@ export interface components {
             activityCertNumber?: string;
             memo?: string;
         };
-        MailScenarioVariableResponse: {
+        /**
+         * @description 선정 결과 필터
+         * @example PASSED
+         * @enum {string|null}
+         */
+        MailTargetSelectionResult: "PASSED" | "WAITLISTED" | "FAILED" | null;
+        MailTargetResponse: {
             /** Format: int64 */
-            scenarioId?: number;
+            applyId?: number;
             name?: string;
-            customVariables?: components["schemas"]["CustomVariableResponse"][];
-            personalVariables?: string[];
+            phoneNumber?: string;
+            email?: string;
+            selectionResult?: components["schemas"]["SelectionResult"];
+            /** Format: int32 */
+            waitlistNumber?: number;
         };
-        /** @enum {string} */
-        ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
-        /** @enum {string} */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
         Pageable: {
             /** Format: int32 */
             page?: number;
@@ -932,18 +1677,7 @@ export interface components {
             size?: number;
             sort?: string[];
         };
-        AdminApplyResponse: {
-            /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            email?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            careerDetails?: string;
-            recruitType?: string;
-            note?: string;
-        };
-        PageAdminApplyResponse: {
+        PageMailScenarioResponse: {
             /** Format: int64 */
             totalElements?: number;
             /** Format: int32 */
@@ -952,7 +1686,7 @@ export interface components {
             last?: boolean;
             /** Format: int32 */
             size?: number;
-            content?: components["schemas"]["AdminApplyResponse"][];
+            content?: components["schemas"]["MailScenarioResponse"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
@@ -977,6 +1711,164 @@ export interface components {
             sorted?: boolean;
             unsorted?: boolean;
         };
+        MailScenarioVariableResponse: {
+            /** Format: int64 */
+            scenarioId?: number;
+            name?: string;
+            customVariables?: components["schemas"]["CustomVariableResponse"][];
+            personalVariables?: string[];
+        };
+        MailRecruitResponse: {
+            /**
+             * Format: int64
+             * @description 모집 공고 ID
+             * @example 1
+             */
+            recruitId?: number;
+            /**
+             * @description 모집 공고 제목
+             * @example 젝트 6기 백엔드 개발자 모집
+             */
+            title?: string;
+            /**
+             * Format: int64
+             * @description 기수 ID
+             * @example 2
+             */
+            semesterId?: number;
+            /**
+             * @description 기수명
+             * @example 10기
+             */
+            semesterName?: string;
+            jobFamily?: components["schemas"]["JobFamily"];
+            /**
+             * @description 직군 표시명
+             * @example 백엔드 개발자(BE)
+             */
+            jobFamilyDescription?: string;
+            recruitType?: components["schemas"]["RecruitType"];
+            /**
+             * @description 모집 유형 표시명
+             * @example 정규 기수 모집
+             */
+            recruitTypeDescription?: string;
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            /**
+             * @description 모집 세부 유형 표시명
+             * @example 정규 모집
+             */
+            recruitTypeDetailDescription?: string;
+            /**
+             * Format: date-time
+             * @description 모집 시작일
+             */
+            startDate?: string;
+            /**
+             * Format: date-time
+             * @description 모집 종료일
+             */
+            endDate?: string;
+            /**
+             * Format: date-time
+             * @description 등록일
+             */
+            createdAt?: string;
+        };
+        MailDispatchJobResponse: {
+            /** Format: int64 */
+            dispatchJobId?: number;
+            /** Format: int64 */
+            scenarioId?: number;
+            /** Format: int64 */
+            recruitId?: number;
+            /** Format: int64 */
+            requestedByAdminId?: number;
+            status?: components["schemas"]["MailDispatchJobStatus"];
+            /** Format: int32 */
+            targetCount?: number;
+            /** Format: int32 */
+            processingCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+            /** Format: int32 */
+            failedCount?: number;
+            /** Format: int32 */
+            unknownCount?: number;
+            /** Format: date-time */
+            requestedAt?: string;
+            /** Format: date-time */
+            startedAt?: string;
+            /** Format: date-time */
+            finishedAt?: string;
+            /** Format: date-time */
+            scheduledAt?: string;
+            /** Format: int32 */
+            excludedCount?: number;
+        };
+        PageMailDispatchJobResponse: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["MailDispatchJobResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
+        /** @enum {string} */
+        MailDispatchTargetStatus: "CANCELLED" | "PENDING" | "SENT" | "FAILED" | "UNKNOWN" | "EXCLUDED";
+        MailDispatchTargetResponse: {
+            /** Format: int64 */
+            targetId?: number;
+            /** Format: int64 */
+            applyId?: number;
+            email?: string;
+            status?: components["schemas"]["MailDispatchTargetStatus"];
+            /** Format: date-time */
+            sentAt?: string;
+            failureReason?: string;
+            /**
+             * Format: int32
+             * @description 기록된 발송 시도 횟수(claim 획득 기준). Outbox 없는 과거 이력은 null
+             */
+            attemptCount?: number;
+            /**
+             * Format: date-time
+             * @description 예약된 다음 재시도 시각. 대기 시각이 없으면 null이며 재발송 허가를 뜻하지 않음
+             */
+            nextAttemptAt?: string;
+            /** @description 가장 최근 저장된 시도 오류 코드. 대기 중 오류는 최종 실패 사유와 구분 */
+            lastAttemptFailureReason?: string;
+            /** @description 예약 발송에서 제외된 경우의 개인정보 없는 사유 코드 */
+            exclusionReason?: string;
+        };
+        PageMailDispatchTargetResponse: {
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+            /** Format: int32 */
+            size?: number;
+            content?: components["schemas"]["MailDispatchTargetResponse"][];
+            /** Format: int32 */
+            number?: number;
+            sort?: components["schemas"]["SortObject"];
+            /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            empty?: boolean;
+        };
         AdminApplyDetailResponse: {
             /** Format: int64 */
             applyId?: number;
@@ -986,10 +1878,98 @@ export interface components {
             jobFamily?: components["schemas"]["JobFamily"];
             careerDetails?: string;
             recruitType?: string;
+            selectionResult?: components["schemas"]["SelectionResult"];
+            /** Format: int32 */
+            waitlistNumber?: number;
             note?: string;
             region?: string;
             experiencePeriod?: string;
             interestedDomains?: string[];
+            answers?: {
+                [key: string]: string;
+            };
+            portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+        };
+        ApplyPortfolioDto: {
+            fileUrl?: string;
+            fileName?: string;
+            fileSize?: string;
+            sequence?: string;
+        };
+        WaitlistOrderResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+            /** Format: int32 */
+            waitlistNumber?: number;
+        };
+        WaitlistOrdersResponse: {
+            /** Format: int32 */
+            totalCount?: number;
+            content?: components["schemas"]["WaitlistOrderResponse"][];
+        };
+        TempSavedApplySearchCondition: {
+            /** Format: int64 */
+            recruitId: number;
+            careerDetails?: components["schemas"]["CareerDetails"][];
+            /** Format: int64 */
+            cursor?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int32 */
+            sizeOrDefault?: number;
+        };
+        CursorPageResponseTempSavedApplyResponse: {
+            content?: components["schemas"]["TempSavedApplyResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        TempSavedApplyResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+        };
+        SubmittedApplySearchCondition: {
+            /** Format: int64 */
+            recruitId: number;
+            careerDetails?: components["schemas"]["CareerDetails"][];
+            selectionResults?: components["schemas"]["SelectionResult"][];
+            /** Format: int64 */
+            cursor?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int32 */
+            sizeOrDefault?: number;
+        };
+        CursorPageResponseSubmittedApplyResponse: {
+            content?: components["schemas"]["SubmittedApplyResponse"][];
+            /** Format: int32 */
+            size?: number;
+            hasNext?: boolean;
+            /** Format: int64 */
+            nextCursor?: number;
+            /** Format: int64 */
+            totalCount?: number;
+        };
+        SubmittedApplyResponse: {
+            /** Format: int64 */
+            applyId?: number;
+            name?: string;
+            phoneNumber?: string;
+            careerDetails?: components["schemas"]["CareerDetails"];
+            selectionResult?: components["schemas"]["SelectionResult"];
+            /** Format: int32 */
+            waitlistNumber?: number;
+            note?: string;
         };
         /** @enum {string} */
         MemberStatus: "ACTIVE" | "LOCKED";
@@ -1018,6 +1998,18 @@ export interface components {
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
+        };
+        /** @description 구성원 일괄 삭제 요청 */
+        DeleteMembersRequest: {
+            /**
+             * @description 삭제할 구성원 활동 ID 목록
+             * @example [
+             *       1,
+             *       2,
+             *       3
+             *     ]
+             */
+            memberActivityIds: number[];
         };
         /** @description 지원서 일괄 삭제 요청 */
         SubmittedApplyBulkDeleteRequest: {
@@ -1178,7 +2170,7 @@ export interface operations {
             };
         };
     };
-    editSubmittedApply: {
+    editApply: {
         parameters: {
             query?: never;
             header?: never;
@@ -1189,7 +2181,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SubmittedApplyEditRequest"];
+                "application/json": components["schemas"]["EditApplyRequest"];
             };
         };
         responses: {
@@ -1314,6 +2306,26 @@ export interface operations {
             };
         };
     };
+    completeRecruit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recruitId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getAdminMemberSupportersList: {
         parameters: {
             query?: {
@@ -1347,6 +2359,28 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["CreateMemberSupportersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteAdminMemberSupportersList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteMembersRequest"];
             };
         };
         responses: {
@@ -1410,6 +2444,28 @@ export interface operations {
             };
         };
     };
+    deleteAdminMemberSemesterList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteMembersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getAdminMemberMakersList: {
         parameters: {
             query?: {
@@ -1455,9 +2511,35 @@ export interface operations {
             };
         };
     };
-    getScenarios: {
+    deleteAdminMemberMakersList: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteMembersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    searchScenarios: {
+        parameters: {
+            query: {
+                category?: components["schemas"]["MailScenarioCategory"];
+                type?: components["schemas"]["MailScenarioType"];
+                pageable: components["schemas"]["Pageable"];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1470,7 +2552,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailScenarioResponse"][];
+                    "*/*": components["schemas"]["PageMailScenarioResponse"];
                 };
             };
         };
@@ -1495,6 +2577,128 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["MailScenarioResponse"];
+                };
+            };
+        };
+    };
+    preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviewMailRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailPreviewResponse"];
+                };
+            };
+        };
+    };
+    searchJobs: {
+        parameters: {
+            query: {
+                recruitId?: number;
+                status?: components["schemas"]["MailDispatchJobStatus"];
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMailDispatchJobResponse"];
+                };
+            };
+        };
+    };
+    sendMail: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMailDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
+    cancelMail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
+                };
+            };
+        };
+    };
+    scheduleMail: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleMailDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchResponse"];
                 };
             };
         };
@@ -1540,30 +2744,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    passApply: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ApplyPassRequest"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": number;
-                };
             };
         };
     };
@@ -1650,8 +2830,298 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": components["schemas"]["AdminLoginResponse"];
                 };
+            };
+        };
+    };
+    getAdminMemberSupportersDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MemberSupportersDetailResponse"];
+                };
+            };
+        };
+    };
+    deleteAdminMemberSupporters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editAdminMemberSupporters: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMemberSupportersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getMemberSemester: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MemberSemesterResponse"];
+                };
+            };
+        };
+    };
+    deleteAdminMemberSemester: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editAdminMemberSemester: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditMemberSemesterRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editEventParticipation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditEventParticipationRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getAdminMemberMakersDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MemberMakersDetailResponse"];
+                };
+            };
+        };
+    };
+    deleteAdminMemberMakers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editAdminMemberMakers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberActivityId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMemberMakersRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getWaitlistOrders: {
+        parameters: {
+            query: {
+                recruitId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WaitlistOrdersResponse"];
+                };
+            };
+        };
+    };
+    editWaitlistOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditWaitlistOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": number;
+                };
+            };
+        };
+    };
+    updateSelectionResults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSelectionResultsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1749,13 +3219,17 @@ export interface operations {
             };
         };
     };
-    getAdminMemberSupportersDetail: {
+    searchApplyManagementRecruits: {
         parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                memberActivityId: number;
+            query: {
+                status: components["schemas"]["ApplyStatus"];
+                recruitType: components["schemas"]["RecruitType"];
+                jobFamilies?: components["schemas"]["JobFamily"][];
+                cursor?: number;
+                size?: number;
             };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1766,18 +3240,27 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberSupportersDetailResponse"];
+                    "*/*": components["schemas"]["ApplyManagementRecruitsResponse"];
                 };
             };
         };
     };
-    getAdminMemberMakersDetail: {
+    searchTargets: {
         parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                memberActivityId: number;
+            query: {
+                /**
+                 * @description 모집 공고 ID
+                 * @example 1
+                 */
+                recruitId: number;
+                /**
+                 * @description 선정 결과 필터
+                 * @example PASSED
+                 */
+                selectionResult?: components["schemas"]["MailTargetSelectionResult"];
             };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1788,7 +3271,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberMakersDetailResponse"];
+                    "*/*": components["schemas"]["MailTargetResponse"][];
                 };
             };
         };
@@ -1815,16 +3298,77 @@ export interface operations {
             };
         };
     };
-    findApplies: {
+    getRecruits: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailRecruitResponse"][];
+                };
+            };
+        };
+    };
+    getJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MailDispatchJobResponse"];
+                };
+            };
+        };
+    };
+    searchTargets_1: {
         parameters: {
             query: {
-                applyStatus?: components["schemas"]["ApplyStatus"];
-                semesterId?: number;
-                jobFamily?: components["schemas"]["JobFamily"];
-                recruitType?: components["schemas"]["RecruitType"];
-                recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-                recruitId?: number;
+                status?: components["schemas"]["MailDispatchTargetStatus"];
                 pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path: {
+                dispatchJobId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageMailDispatchTargetResponse"];
+                };
+            };
+        };
+    };
+    searchTempSavedApplies: {
+        parameters: {
+            query: {
+                condition: components["schemas"]["TempSavedApplySearchCondition"];
             };
             header?: never;
             path?: never;
@@ -1838,8 +3382,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageAdminApplyResponse"];
+                    "*/*": components["schemas"]["CursorPageResponseTempSavedApplyResponse"];
                 };
+            };
+        };
+    };
+    searchSubmittedApplies: {
+        parameters: {
+            query: {
+                condition: components["schemas"]["SubmittedApplySearchCondition"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CursorPageResponseSubmittedApplyResponse"];
+                };
+            };
+        };
+    };
+    deleteEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                semesterId: number;
+                semesterEventId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

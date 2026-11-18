@@ -1,3 +1,18 @@
+import {
+  GoalSection,
+  HeroSection,
+  IntroSection,
+  JoinSection,
+  LandingScroll,
+} from "@/components/landing";
+
 export default function HomePage() {
-  return null;
+  return (
+    <LandingScroll>
+      <HeroSection />
+      <IntroSection />
+      <GoalSection />
+      <JoinSection />
+    </LandingScroll>
+  );
 }

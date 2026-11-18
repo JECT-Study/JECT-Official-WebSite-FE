@@ -1,0 +1,2 @@
+# .env는 루트 .gitignore에서 처리한다. 여기에 .env*를 추가하면 !.env.example 예외까지 덮어써진다.
+.vercel

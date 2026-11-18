@@ -124,6 +124,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/login/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * PIN 로그인
+         * @description 이메일, PIN 번호, 모집 ID로 로그인하고 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.
+         */
+        post: operations["loginWithPin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/code": {
         parameters: {
             query?: never;
@@ -264,6 +284,26 @@ export interface paths {
          * @description 모든 기수 목록을 조회합니다.
          */
         get: operations["getAllSemesters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recruits/{recruitId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 모집공고 단건 조회
+         * @description 모집공고의 상세정보와 안내사항 및 FAQ를 조회합니다.
+         */
+        get: operations["getRecruit"];
         put?: never;
         post?: never;
         delete?: never;
@@ -495,6 +535,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dev/testbot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * 테스트봇 지원정보 삭제
+         * @description testbot@ject.kr의 지원정보를 삭제합니다.
+         */
+        delete: operations["deleteTestbot"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -518,9 +578,17 @@ export interface components {
             /** Format: date-time */
             expiration?: string;
         };
+        PinLoginRequest: {
+            email: string;
+            pin: string;
+            /** Format: int64 */
+            recruitId: number;
+        };
         VerifyAuthCodeRequest: {
             email?: string;
             authCode?: string;
+            /** Format: int64 */
+            recruitId: number;
         };
         ApplyPortfolioDto: {
             fileUrl?: string;
@@ -554,11 +622,13 @@ export interface components {
         /** @enum {string} */
         ExperiencePeriod: "NONE" | "ONE_TO_TWO" | "THREE_TO_FOUR" | "FIVE_PLUS";
         /** @enum {string} */
-        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "SUPPORTER" | "OPS" | "INFRA" | "BX" | "ER";
+        JobFamily: "PM" | "PD" | "FE" | "BE" | "APP" | "OPS" | "INFRA" | "BX" | "ER";
         /** @enum {string} */
         Region: "SEOUL" | "GYEONGGI" | "INCHEON" | "BUSAN" | "DAEGU" | "DAEJEON" | "GWANGJU" | "ULSAN" | "SEJONG" | "GANGWON" | "CHUNGBUK" | "CHUNGNAM" | "JEONBUK" | "JEONNAM" | "GYEONGBUK" | "GYEONGNAM" | "JEJU" | "OVERSEAS";
         RegisterRequest: {
             pin: string;
+            /** Format: int64 */
+            recruitId: number;
         };
         EmailRequest: {
             /**
@@ -575,9 +645,14 @@ export interface components {
         SemesterResponses: {
             semesterResponses?: components["schemas"]["SemesterResponse"][];
         };
-        ActiveRecruitmentResponse: {
+        RecruitFaqResponse: {
+            title?: string;
+            content?: string;
+        };
+        RecruitResponse: {
             /** Format: int64 */
             recruitId?: number;
+            title?: string;
             /** Format: int64 */
             semesterId?: number;
             semesterName?: string;
@@ -591,14 +666,36 @@ export interface components {
             startDate?: string;
             /** Format: date-time */
             endDate?: string;
+            recruitInformation?: string;
+            notice?: string;
+            faqs?: components["schemas"]["RecruitFaqResponse"][];
+        };
+        /** @enum {string} */
+        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
+        /** @enum {string} */
+        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
+        ActiveRecruitmentResponse: {
+            /** Format: int64 */
+            recruitId?: number;
+            title?: string;
+            /** Format: int64 */
+            semesterId?: number;
+            semesterName?: string;
+            recruitType?: components["schemas"]["RecruitType"];
+            recruitTypeDescription?: string;
+            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            recruitTypeDetailDescription?: string;
+            jobFamily?: components["schemas"]["JobFamily"];
+            jobFamilyDescription?: string;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            summary?: string;
         };
         ActiveRecruitmentResponses: {
             recruitments?: components["schemas"]["ActiveRecruitmentResponse"][];
         };
-        /** @enum {string} */
-        RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS" | "REGULAR" | "REGULAR_WAITLIST" | "BACKFILL" | "MANUAL";
-        /** @enum {string} */
-        RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         /** @enum {string} */
         Category: "SEMESTER_1" | "SEMESTER_2" | "SEMESTER_3" | "SEMESTER_4";
         Pageable: {
@@ -798,9 +895,7 @@ export type $defs = Record<string, never>;
 export interface operations {
     registerInitialProfile: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -822,9 +917,7 @@ export interface operations {
     };
     resetPin: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -846,9 +939,7 @@ export interface operations {
     };
     uploadPortfolios: {
         parameters: {
-            query: {
-                memberId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -872,9 +963,7 @@ export interface operations {
     };
     uploadContents: {
         parameters: {
-            query: {
-                memberId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -938,6 +1027,30 @@ export interface operations {
             };
         };
     };
+    loginWithPin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": boolean;
+                };
+            };
+        };
+    };
     verifyAuthCode: {
         parameters: {
             query: {
@@ -974,7 +1087,6 @@ export interface operations {
     findTempApplicationForm: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -997,7 +1109,6 @@ export interface operations {
     saveApplicationTemporarily: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1022,7 +1133,6 @@ export interface operations {
     deleteProfileAndTempApplicationForm: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1043,7 +1153,6 @@ export interface operations {
     submitApplication: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1068,7 +1177,6 @@ export interface operations {
     saveProfile: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1154,6 +1262,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["SemesterResponses"];
+                };
+            };
+        };
+    };
+    getRecruit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recruitId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RecruitResponse"];
                 };
             };
         };
@@ -1296,6 +1426,7 @@ export interface operations {
         parameters: {
             query: {
                 email: string;
+                recruitId: number;
             };
             header?: never;
             path?: never;
@@ -1317,7 +1448,6 @@ export interface operations {
     checkApplyStatus: {
         parameters: {
             query: {
-                applicantId: number;
                 recruitId: number;
             };
             header?: never;
@@ -1361,9 +1491,7 @@ export interface operations {
     };
     isInitialApplicant: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1383,9 +1511,7 @@ export interface operations {
     };
     getCurrentApplicant: {
         parameters: {
-            query: {
-                applicantId: number;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -1400,6 +1526,24 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["ApplicantProfileResponse"];
                 };
+            };
+        };
+    };
+    deleteTestbot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -4,5 +4,3 @@ const apiOrigin = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 export const CLIENT_BASE_URL = "/api";
 
 export const SERVER_BASE_URL = apiOrigin;
-
-export const REQUEST_TIMEOUT_MS = 30_000;

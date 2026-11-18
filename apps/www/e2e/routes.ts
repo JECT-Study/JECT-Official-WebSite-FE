@@ -9,12 +9,12 @@ export interface RouteContract {
 
 export const ROUTE_CONTRACT: RouteContract[] = [
   { path: "/", migrated: true },
-  { path: "/vision", migrated: false },
+  { path: "/vision", migrated: true },
   { path: "/activity", migrated: false },
-  { path: "/curriculum", migrated: false },
-  { path: "/mini-study", migrated: false },
-  { path: "/team-projects", migrated: false },
-  { path: "/faq", migrated: false },
+  { path: "/curriculum", migrated: true },
+  { path: "/mini-study", migrated: true },
+  { path: "/team-projects", migrated: true },
+  { path: "/faq", migrated: true },
   { path: "/apply", migrated: false },
 ];
 
@@ -23,4 +23,5 @@ export const LEGACY_REDIRECTS = [
   { from: "/apply/applicant-info", to: "/apply" },
   { from: "/apply/registration", to: "/apply" },
   { from: "/apply/complete", to: "/apply" },
+  { from: "/project/1", to: "/team-projects/1" },
 ];

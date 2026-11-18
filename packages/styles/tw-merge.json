@@ -1,0 +1,123 @@
+{
+  "extend": {
+    "theme": {
+      "spacing": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "6",
+        "8",
+        "10",
+        "12",
+        "16",
+        "20",
+        "24",
+        "28",
+        "32",
+        "40",
+        "48",
+        "56",
+        "64",
+        "72",
+        "80",
+        "96",
+        "112",
+        "128",
+        "144",
+        "margin-6xl",
+        "margin-5xl",
+        "margin-4xl",
+        "margin-3xl",
+        "margin-2xl",
+        "margin-xl",
+        "margin-lg",
+        "margin-md",
+        "margin-sm",
+        "margin-xs",
+        "margin-2xs"
+      ],
+      "radius": [
+        "0",
+        "2",
+        "4",
+        "6",
+        "8",
+        "10",
+        "12",
+        "16",
+        "24",
+        "max"
+      ],
+      "text": [
+        "title-1",
+        "title-2",
+        "title-3",
+        "title-4",
+        "title-5",
+        "title-6",
+        "label-lg",
+        "label-md",
+        "label-sm",
+        "label-xs",
+        "body-lg",
+        "body-md",
+        "body-sm",
+        "body-xs",
+        "body-2xs",
+        "syntax-lg",
+        "syntax-md",
+        "syntax-sm",
+        "syntax-xs"
+      ],
+      "font": [
+        "title",
+        "label",
+        "body",
+        "syntax"
+      ],
+      "font-weight": [
+        "title-bold",
+        "title-normal",
+        "title-subtle",
+        "label-bold",
+        "label-normal",
+        "label-subtle",
+        "body-bold",
+        "body-normal",
+        "syntax-normal"
+      ],
+      "breakpoint": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "shadow": [
+        "embossed",
+        "raised",
+        "floated",
+        "overlay"
+      ],
+      "ease": [
+        "fluent",
+        "bouncy",
+        "entrance",
+        "leave"
+      ]
+    },
+    "classGroups": {
+      "z": [
+        {
+          "z": [
+            "standard",
+            "embossed",
+            "raised",
+            "floated",
+            "overlay"
+          ]
+        }
+      ]
+    }
+  }
+}

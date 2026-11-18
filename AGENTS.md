@@ -21,6 +21,7 @@ apps/
 └── admin/          백오피스 (Vite SPA, react-router)
 packages/
 ├── config/         ESLint, tsconfig 베이스
+├── api-client/     openapi-fetch 기반 API 클라이언트
 ├── api-types/      OpenAPI 스펙에서 생성한 타입
 └── styles/         JDS 스타일 진입점과 Tailwind 테마 매핑
 ```
@@ -65,6 +66,9 @@ pnpm e2e --filter=@ject/www
   됩니다.
 - **경로 alias**: `@/`는 각 앱의 `src/`를 가리킵니다. 상대경로 깊이가 2 이상이면 alias를
   사용합니다.
+- **컴포넌트 이름**: 컴포넌트 단위 디렉토리는 kebab-case로 작성합니다. React 컴포넌트를
+  정의하는 파일은 PascalCase로 작성하고, 특정 컴포넌트에 속한 부수 파일은
+  `<컴포넌트>.<역할>.ts` 또는 `<컴포넌트>.<역할>.tsx`로 작성합니다.
 - **라우트 경로**: 각 앱 `src/constants/routes.ts`의 `ROUTES`와 `routeTo`가 단일 출처입니다.
   경로 문자열을 컴포넌트에 하드코딩하지 않습니다.
 - **폼과 검증**: React Hook Form과 Zod를 사용합니다. Zod 스키마를 단일 출처로 두고
@@ -80,7 +84,8 @@ pnpm e2e --filter=@ject/www
 - **에러 코드**: 실패 응답의 `status`에 담기는 코드는 `@ject/api-types/errors`의
   `ERROR_CODES`가 단일 출처이며 서버 저장소에서 생성합니다. 코드 문자열을 직접
   작성하지 않고 `ErrorCode` 타입으로 좁혀 사용합니다. 코드별로 무엇을 할지는 공유하지
-  않고 각 앱 `src/errors/`에 둡니다. 화면과 이동 경로가 앱마다 다릅니다.
+  않고 각 앱 `src/errors/`에 둡니다. 화면과 이동 경로가 앱마다 다릅니다. 백엔드 인증 계약인
+  토큰 재발급은 `@ject/api-client/auth`가 담당합니다.
 - **API 타입**: 요청과 응답 타입은 `@ject/api-types`에서 가져옵니다. 손으로 정의하지
   않습니다. zod 스키마는 런타임 검증을 위해 직접 작성하되, 생성된 타입을 `z.ZodType`에
   지정해 스펙과 어긋나면 컴파일 단계에서 드러나게 합니다.
@@ -97,6 +102,8 @@ pnpm e2e --filter=@ject/www
 
 - **뮤테이션**: TanStack Query mutation과 `httpClient`를 사용합니다. Server Actions는
   MutationCache의 전역 에러 처리를 거치지 않으므로 사용하지 않습니다.
+- **Radix**: JDS에 없는 프리미티브만 `radix-ui`로 직접 구현하고 별도 컴포넌트 파일로 감싸서
+  사용합니다. 범위와 JDS 교체 절차는 [docs/radix-usage.md](./docs/radix-usage.md)를 따릅니다.
 - **스타일**: Tailwind v4 유틸리티를 사용합니다. 전역 CSS는 각 앱
   `src/styles/globals.css`가 진입점이며 `@ject/styles`를 가져옵니다. 유틸리티는 JDS 토큰으로
   만들어지므로 `bg-surface-standard`, `p-16`, `text-body-md`처럼 씁니다. Tailwind 기본
@@ -115,7 +122,7 @@ pnpm e2e --filter=@ject/www
 
 ## 주석과 문서
 
-여기서 정한 규칙은 저장소에 남는 모든 글에 적용됩니다. 코드 주석, 설정 파일 주석
+여기서 정한 규칙은 저장소에 직접 작성하는 모든 글에 적용됩니다. 코드 주석, 설정 파일 주석
 (`yaml`, `toml`, 셸 스크립트 포함), 마크다운 문서, 그리고 `AGENTS.md`와 `CLAUDE.md`,
 `.claude/skills`처럼 에이전트가 읽는 문서가 모두 해당합니다.
 
@@ -164,7 +171,9 @@ export function cn(...inputs: ClassValue[]): string {}
 
 - `dev`: 통합 브랜치입니다. 작업 브랜치는 여기서 분기하고 PR도 여기로 보냅니다. 머지되면
   `.github/workflows/qa-deploy-*.yml`이 변경된 앱만 Vercel QA 사이트에 배포합니다.
-- `main`: 운영 배포에 사용합니다. 배포 파이프라인을 만들기 전까지는 건드리지 않습니다.
+- `main`: 운영 배포에 사용합니다. `dev`에서 `main`으로 릴리스 PR을 열고 `🚀release`와
+  `🌐www` 레이블을 붙여 머지하면 공식 홈페이지가 운영에 배포됩니다. 레이블은 머지 전에
+  붙입니다.
 - 작업 브랜치: `<type>/<이슈번호>-<이름>` 형식입니다(예: `feat/123-faq-migration`).
   type은 커밋 컨벤션의 prefix와 같은 집합을 씁니다.
 
