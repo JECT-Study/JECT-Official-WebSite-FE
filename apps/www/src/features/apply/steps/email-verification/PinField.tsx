@@ -31,7 +31,7 @@ export function PinField() {
             type="button"
             icon={isPinVisible ? "eye" : "eye-off"}
             hierarchy="tertiary"
-            size="sm"
+            size="md"
             aria-label={isPinVisible ? "PIN 숨기기" : "PIN 보기"}
             onClick={() => setIsPinVisible((visible) => !visible)}
           />
