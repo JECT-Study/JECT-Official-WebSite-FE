@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -223,12 +223,19 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const isActionPending = isUpdating || isDeleting;
 
   const [pendingAction, setPendingAction] = useState<ConfirmAction | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const confirmDialogText = pendingAction && getConfirmDialogText(pendingAction);
 
   const handleConfirm = () => {
     if (pendingAction === null) return;
 
-    const options = { onSuccess: () => setRowSelection({}) };
+    const options = {
+      onSuccess: () => setRowSelection({}),
+      onSettled: () => {
+        if (document.activeElement === document.body)
+          listRef.current?.focus({ preventScroll: true });
+      },
+    };
 
     if (pendingAction.type === "delete") {
       deleteSubmittedApplies({ applyIds: pendingAction.applyIds }, options);
@@ -335,7 +342,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             />
           </div>
         </div>
-        <div className="flex flex-col items-center gap-10">
+        <div ref={listRef} tabIndex={-1} className="flex flex-col items-center gap-10 outline-none">
           <ApplyList
             applies={applies}
             isLoading={isPending || isPlaceholderData}
