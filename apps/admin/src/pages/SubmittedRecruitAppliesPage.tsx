@@ -1,27 +1,20 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, EmptyState, Icon, useToast } from "@jects/jds";
-import { useMediaQueryFlags } from "@jects/jds/hooks";
+import { BlockButton, EmptyState, useToast } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
-import type { CareerDetails, SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
-import SelectionResultBadge from "@/components/apply/selection-result-badge/SelectionResultBadge";
-import {
-  createDataTableColumnHelper,
-  DataTable,
-  useDataTable,
-} from "@/components/common/data-table";
+import type { CareerDetails, SelectionResult } from "@/apis/apply/schemas";
+import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS } from "@/constants/careerDetails";
 import { SELECTION_RESULT_LABELS } from "@/constants/selectionResult";
 import NotFoundPage from "@/pages/NotFoundPage";
-import { formatPhoneNumber } from "@/utils/phoneNumber";
 
 const PAGE_SIZE = 30;
 
@@ -49,46 +42,6 @@ function toFilterCondition(filterValues: FilterValues) {
   };
 }
 
-function EmptyValue() {
-  return <span className="text-object-subtle">-</span>;
-}
-
-const columnHelper = createDataTableColumnHelper<SubmittedApply>();
-
-const nameColumn = columnHelper.accessor("name", {
-  header: "이름",
-  meta: { cellType: "title", getDescription: (apply) => formatPhoneNumber(apply.phoneNumber) },
-});
-
-const selectionResultColumn = columnHelper.accessor("selectionResult", {
-  header: "합격 여부",
-  cell: ({ getValue }) => <SelectionResultBadge selectionResult={getValue()} />,
-});
-
-const mobileColumns = columnHelper.columns([nameColumn, selectionResultColumn]);
-
-const columns = columnHelper.columns([
-  nameColumn,
-  columnHelper.accessor("careerDetails", {
-    header: "지원자 신분",
-    cell: ({ getValue }) => CAREER_DETAILS_LABELS[getValue()],
-  }),
-  selectionResultColumn,
-  columnHelper.accessor("waitlistNumber", {
-    header: "예비 번호",
-    cell: ({ getValue }) => getValue() ?? <EmptyValue />,
-  }),
-  columnHelper.accessor("note", {
-    header: "비고",
-    cell: ({ getValue }) =>
-      getValue() ? (
-        <Icon name="sticky-note" size="lg" className="text-object-alternative" />
-      ) : (
-        <EmptyValue />
-      ),
-  }),
-]);
-
 export default function SubmittedRecruitAppliesPage() {
   const recruitId = Number(useParams().recruitId);
 
@@ -105,7 +58,6 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const { toast } = useToast();
-  const { isMobile } = useMediaQueryFlags();
 
   const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
 
@@ -118,12 +70,6 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     });
 
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
-
-  const table = useDataTable({
-    data: applies,
-    columns: isMobile ? mobileColumns : columns,
-    getRowId: (apply) => String(apply.applyId),
-  });
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -190,7 +136,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             />
           ) : (
             <>
-              <DataTable table={table} />
+              <SubmittedAppliesTable applies={applies} />
               {hasNextPage && (
                 <BlockButton
                   hierarchy="primary"
