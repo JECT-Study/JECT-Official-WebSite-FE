@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, useToast } from "@jects/jds";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
@@ -60,15 +60,25 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const condition = { recruitId, size: PAGE_SIZE, ...toFilterCondition(filterValues) };
 
-  const { data, hasNextPage, isPending, isError, isFetchingNextPage, fetchNextPage } =
-    useInfiniteQuery({
-      queryKey: applyQueryKeys.submittedApplies(condition),
-      queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
-      initialPageParam: undefined as number | undefined,
-      getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
-    });
+  const {
+    data,
+    hasNextPage,
+    isPending,
+    isPlaceholderData,
+    isError,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: applyQueryKeys.submittedApplies(condition),
+    queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
+    // 필터를 바꾸는 동안 전체 개수를 유지하려고 이전 결과를 남긴다. 목록은 로딩 화면을 표시한다.
+    placeholderData: keepPreviousData,
+  });
 
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
+  const totalCount = data?.pages.at(-1)?.totalCount;
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -110,10 +120,9 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
       <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
         <div className="rounded-10 border border-stroke-subtle">
           <div className="flex border-b border-stroke-subtle px-16 py-12">
-            {/* TODO: 필터와 무관한 공고의 전체 지원서 수를 받을 API가 정해지면 연결한다. */}
             <p className="flex gap-2 rounded-6 border border-stroke-alpha-subtle px-12 py-6 text-label-md text-object-alternative">
               <span className="font-label-bold">전체</span>
-              <span className="font-label-subtle">127</span>
+              {totalCount !== undefined && <span className="font-label-subtle">{totalCount}</span>}
             </p>
           </div>
           <div className="min-h-48 px-16 py-10">
@@ -121,7 +130,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           </div>
         </div>
         <div className="flex flex-col items-center gap-10">
-          {isPending ? (
+          {isPending || isPlaceholderData ? (
             <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
           ) : isError && !data ? (
             <EmptyState
