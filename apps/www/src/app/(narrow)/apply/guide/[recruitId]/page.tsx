@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 
 import { RecruitContent, RecruitGuide } from "@/components/apply";
 import { getRecruit } from "@/components/apply/getRecruit";
+import { createPageMetadata } from "@/constants/metadata";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/apply/guide/[recruitId]">): Promise<Metadata> {
   const { recruit } = await getRecruit((await params).recruitId);
 
-  return { title: recruit.title };
+  return createPageMetadata({ title: recruit.title });
 }
 
 export default async function ApplyGuidePage({ params }: PageProps<"/apply/guide/[recruitId]">) {

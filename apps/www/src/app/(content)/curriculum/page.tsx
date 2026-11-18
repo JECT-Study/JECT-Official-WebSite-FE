@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { CurriculumTabs, FigmaGuideCard, TeamProjectCard } from "@/components/curriculum";
 import { PageHeader } from "@/components/layout";
 import { FIGMA_GUIDE_CURRICULUM, TEAM_PROJECT_SCHEDULE } from "@/constants/curriculum";
+import { createPageMetadata } from "@/constants/metadata";
 
 const CARD_GRID = "grid grid-cols-1 gap-16 tablet:grid-cols-2";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "활동 커리큘럼",
-};
+  description: "젝트의 구성원이 참여하는 커리큘럼을 소개합니다.",
+});
 
 export default function CurriculumPage() {
   return (

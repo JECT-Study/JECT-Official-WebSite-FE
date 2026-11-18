@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { projectServerApi } from "@/apis/project/api.server";
 import { PageHeader } from "@/components/layout";
 import { TeamProjectList } from "@/components/team-project";
+import { createPageMetadata } from "@/constants/metadata";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "팀 프로젝트",
-};
+  description: "젝트에서 진행한 팀 프로젝트들을 소개합니다.",
+});
 
 export default async function TeamProjectsPage() {
   const [summary, initialPage] = await Promise.all([

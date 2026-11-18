@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { FaqTabs } from "@/components/faq";
 import { PageHeader } from "@/components/layout";
 import { FAQ_CATEGORIES } from "@/constants/faq";
+import { createPageMetadata } from "@/constants/metadata";
 
 export const dynamicParams = false;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "FAQ",
-};
+  description: "젝트에 대해 자주 묻는 질문들이 정리되어 있어요.",
+});
 
 export function generateStaticParams() {
   return [

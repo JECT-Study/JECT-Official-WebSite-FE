@@ -31,3 +31,34 @@ export const BASE_TWITTER = {
   description: SITE_DESCRIPTION,
   images: DEFAULT_IMAGES,
 } satisfies NonNullable<Metadata["twitter"]>;
+
+interface PageMetadataOptions {
+  title: string;
+  description?: string;
+  images?: NonNullable<Metadata["openGraph"]>["images"];
+}
+
+export function createPageMetadata({
+  title,
+  description = SITE_DESCRIPTION,
+  images,
+}: PageMetadataOptions): Metadata {
+  const shareTitle = `${title} | ${SITE_NAME}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      ...BASE_OPEN_GRAPH,
+      title: shareTitle,
+      description,
+      ...(images && { images }),
+    },
+    twitter: {
+      ...BASE_TWITTER,
+      title: shareTitle,
+      description,
+      ...(images && { images }),
+    },
+  };
+}

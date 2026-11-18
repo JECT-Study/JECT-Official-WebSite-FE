@@ -3,10 +3,11 @@ import type { Metadata } from "next";
 import { Divider } from "@jects/jds";
 
 import { GrowthStorySection, MemberSection, VisionHero, VisionSection } from "@/components/vision";
+import { createPageMetadata } from "@/constants/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "비전과 스토리",
-};
+});
 
 export default function VisionPage() {
   return (

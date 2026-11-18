@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getJobFamilyName } from "@/components/apply/format";
 import { getRecruit } from "@/components/apply/getRecruit";
+import { createPageMetadata } from "@/constants/metadata";
 import { routeTo } from "@/constants/routes";
 import { ApplyFunnel } from "@/features/apply/ApplyFunnel";
 
@@ -11,7 +12,7 @@ export async function generateMetadata({
 }: PageProps<"/apply/funnel/[recruitId]">): Promise<Metadata> {
   const { recruit } = await getRecruit((await params).recruitId);
 
-  return { title: `지원서 작성 | ${recruit.title}` };
+  return createPageMetadata({ title: `지원서 작성 | ${recruit.title}` });
 }
 
 export default async function ApplyFunnelPage({ params }: PageProps<"/apply/funnel/[recruitId]">) {
