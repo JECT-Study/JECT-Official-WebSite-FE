@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 import { SelectField, type SelectOption } from "@jects/jds";
 import { useController, useFormContext } from "react-hook-form";
 
@@ -16,7 +14,7 @@ interface ProfileSelectOption<T extends string> extends SelectOption {
 interface ProfileSelectFieldProps<T extends ProfileSelectName> {
   name: T;
   label: string;
-  labelSuffix?: ReactNode;
+  labelTooltip?: string;
   placeholder: string;
   options: ProfileSelectOption<ProfileFormValues[T]>[];
 }
@@ -24,7 +22,7 @@ interface ProfileSelectFieldProps<T extends ProfileSelectName> {
 export function ProfileSelectField<T extends ProfileSelectName>({
   name,
   label,
-  labelSuffix,
+  labelTooltip,
   placeholder,
   options,
 }: ProfileSelectFieldProps<T>) {
@@ -35,7 +33,7 @@ export function ProfileSelectField<T extends ProfileSelectName>({
 
   return (
     <SelectField>
-      <SelectField.Label suffix={labelSuffix}>{label}</SelectField.Label>
+      <SelectField.Label tooltip={labelTooltip}>{label}</SelectField.Label>
       <SelectField.Input
         ref={ref}
         name={name}
