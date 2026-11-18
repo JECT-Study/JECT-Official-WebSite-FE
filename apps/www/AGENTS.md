@@ -99,11 +99,15 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
 `.env.example`에는 코드가 실제로 참조하는 변수만 두고 값은 비워 커밋합니다. 실제 값은
 `.env.local`에 두며 커밋하지 않습니다.
 
+`NEXT_PUBLIC_` 값은 빌드 시점에 번들에 고정되므로, 값을 바꾸면 다시 빌드하고 배포해야
+반영됩니다.
+
 기존 앱에서 옮길 때 이름만 바꾸지 않고 구조가 달라지는 항목입니다.
 
 - API 주소는 `NEXT_PUBLIC_API_URL` 하나로 통합합니다. 기존 앱은 `VITE_API_URL_DEV`와
   `VITE_API_URL_PROD`를 두고 `src/constants/env.ts`에서 분기했으나, 환경 구분은 값을
-  주입하는 쪽(로컬 `.env.local`, Vercel 프로젝트 설정, EC2)에서 처리합니다.
+  주입하는 쪽(로컬 `.env.local`, Vercel 프로젝트 설정, GitHub `production` Environment)에서
+  처리합니다.
 - GTM 컨테이너 ID는 `NEXT_PUBLIC_GTM_ID`로 분리합니다. 기존 앱은 `index.html`에 스니펫과
   ID를 직접 작성했으나 Next에는 해당 파일이 없습니다.
 - 임시저장 암호화 키는 `NEXT_PUBLIC_SECRET_KEY`로 옮깁니다. 브라우저에서 복호화하므로
@@ -118,8 +122,10 @@ Playwright로 작성합니다. 테스트 범위, 셀렉터, 모킹, 독립성 �
 ## 배포
 
 - QA: Vercel. `dev`에 머지되면 `.github/workflows/qa-deploy-www.yml`이 배포합니다.
-- 운영: AWS EC2. `next.config.ts`의 `output: "standalone"`으로 빌드합니다. Vercel은 이 값을
-  무시하므로 QA 배포에는 영향이 없습니다.
+- 운영: AWS EC2. 릴리스 PR이 `main`에 머지되면 `.github/workflows/deploy-www.yml`이
+  배포합니다. 레이블 없이 머지했거나 다시 배포해야 할 때는 Actions에서 수동으로 실행하며,
+  `main`에서만 실행할 수 있습니다. `next.config.ts`의 `output: "standalone"`으로 빌드합니다.
+  Vercel은 이 값을 무시하므로 QA 배포에는 영향이 없습니다.
 
 서버 런타임이므로 SSR, route handler, 미들웨어를 사용할 수 있습니다.
 
