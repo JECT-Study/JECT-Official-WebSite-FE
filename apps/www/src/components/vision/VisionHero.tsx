@@ -20,14 +20,23 @@ export function VisionHero() {
           ]}
         />
       </h1>
-      <Image
-        src={visionBannerImage}
-        alt="JECT IT 동아리 젝트 배너"
-        placeholder="blur"
-        preload
-        sizes="(min-width: 1200px) 922px, 100vw"
-        className="aspect-21/9 w-full border border-stroke-alpha-subtler object-cover"
-      />
+      <div className="@container relative">
+        <Image
+          src={visionBannerImage}
+          alt="IT 동아리 젝트 배너"
+          placeholder="blur"
+          preload
+          sizes="(min-width: 1200px) 922px, 100vw"
+          className="aspect-21/9 w-full border border-stroke-alpha-subtler object-cover"
+        />
+        {/* 시안의 배너 너비 1260px이 100cqw이므로 px 값을 12.6으로 나눠 cqw로 쓴다. */}
+        <p
+          data-theme="dark"
+          className="absolute right-[calc(167.5cqw/12.6)] bottom-[calc(34cqw/12.6)] translate-x-1/2 font-body text-[calc(15cqw/12.6)] leading-[1.6] font-body-normal whitespace-nowrap text-object-neutral select-none"
+        >
+          © {new Date().getFullYear()} JECT. All rights reserved.
+        </p>
+      </div>
     </header>
   );
 }
