@@ -72,12 +72,7 @@ export function AuthCodeField({
         <>
           <TextField.Helper>{feedback.helper}</TextField.Helper>
           {!isVerified && (
-            <FieldTimer
-              key={deadline}
-              deadline={deadline}
-              totalSeconds={validSeconds}
-              isError={feedback.status === "error"}
-            />
+            <FieldTimer key={deadline} deadline={deadline} totalSeconds={validSeconds} />
           )}
         </>
       }
