@@ -10,16 +10,11 @@ import {
   useToast,
 } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import {
-  keepPreviousData,
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams, useSearchParams } from "react-router-dom";
 
-import { applyApi, type SubmittedAppliesCondition } from "@/apis/apply/api";
+import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
@@ -32,6 +27,8 @@ import type {
 import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
+import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
+import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { parseIdParam } from "@/utils/parseIdParam";
 
@@ -212,7 +209,6 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   const { isDesktop } = useMediaQueryFlags();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -246,35 +242,8 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const selectedApplyIds = Object.keys(rowSelection).map(Number);
   const hasSelectedApplies = selectedApplyIds.length > 0;
 
-  const { mutate: updateSelectionResults } = useMutation({
-    mutationFn: applyApi.updateSelectionResults,
-    onSuccess: async (_, { applyIds, selectionResult }) => {
-      setRowSelection({});
-      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
-      toast.positive(
-        `${applyIds.length}개를 ${SELECTION_RESULT_LABELS[selectionResult]} 상태로 변경했어요`
-      );
-    },
-    onError: () => {
-      toast.destructive("합격 여부를 변경하지 못했습니다", {
-        description: "잠시 후 다시 시도해 주세요.",
-      });
-    },
-  });
-
-  const { mutate: deleteSubmittedApplies } = useMutation({
-    mutationFn: applyApi.deleteSubmittedApplies,
-    onSuccess: async (deletedCount) => {
-      setRowSelection({});
-      await queryClient.invalidateQueries({ queryKey: applyQueries.submittedAppliesLists() });
-      toast.positive(`${deletedCount}개를 삭제했어요`);
-    },
-    onError: () => {
-      toast.destructive("지원서를 삭제하지 못했습니다", {
-        description: "잠시 후 다시 시도해 주세요.",
-      });
-    },
-  });
+  const { mutate: updateSelectionResults } = useUpdateSelectionResultsMutation();
+  const { mutate: deleteSubmittedApplies } = useDeleteSubmittedAppliesMutation();
 
   const [pendingAction, setPendingAction] = useState<ConfirmAction | null>(null);
   const confirmDialogText = pendingAction && getConfirmDialogText(pendingAction);
@@ -282,11 +251,13 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const handleConfirm = () => {
     if (pendingAction === null) return;
 
+    const options = { onSuccess: () => setRowSelection({}) };
+
     if (pendingAction.type === "delete") {
-      deleteSubmittedApplies({ applyIds: pendingAction.applyIds });
+      deleteSubmittedApplies({ applyIds: pendingAction.applyIds }, options);
     } else {
       const { applyIds, selectionResult } = pendingAction;
-      updateSelectionResults({ recruitId, applyIds, selectionResult });
+      updateSelectionResults({ recruitId, applyIds, selectionResult }, options);
     }
     setPendingAction(null);
   };
