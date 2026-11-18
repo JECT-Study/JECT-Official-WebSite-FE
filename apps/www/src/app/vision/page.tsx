@@ -4,9 +4,11 @@ import { Divider } from "@jects/jds";
 
 import { GrowthStorySection, MemberSection, VisionHero, VisionSection } from "@/components/vision";
 import { createPageMetadata } from "@/constants/metadata";
+import { ROUTES } from "@/constants/routes";
 
 export const metadata: Metadata = createPageMetadata({
   title: "비전과 스토리",
+  path: ROUTES.vision,
 });
 
 export default function VisionPage() {

@@ -35,12 +35,14 @@ export const BASE_TWITTER = {
 interface PageMetadataOptions {
   title: string;
   description?: string;
+  path?: string;
   images?: NonNullable<Metadata["openGraph"]>["images"];
 }
 
 export function createPageMetadata({
   title,
   description = SITE_DESCRIPTION,
+  path,
   images,
 }: PageMetadataOptions): Metadata {
   const shareTitle = `${title} | ${SITE_NAME}`;
@@ -48,10 +50,12 @@ export function createPageMetadata({
   return {
     title,
     description,
+    ...(path && { alternates: { canonical: path } }),
     openGraph: {
       ...BASE_OPEN_GRAPH,
       title: shareTitle,
       description,
+      ...(path && { url: path }),
       ...(images && { images }),
     },
     twitter: {

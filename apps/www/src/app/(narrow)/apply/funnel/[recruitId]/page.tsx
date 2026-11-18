@@ -12,7 +12,10 @@ export async function generateMetadata({
 }: PageProps<"/apply/funnel/[recruitId]">): Promise<Metadata> {
   const { recruit } = await getRecruit((await params).recruitId);
 
-  return createPageMetadata({ title: `지원서 작성 | ${recruit.title}` });
+  return createPageMetadata({
+    title: `지원서 작성 | ${recruit.title}`,
+    path: routeTo.applyFunnel(recruit.recruitId),
+  });
 }
 
 export default async function ApplyFunnelPage({ params }: PageProps<"/apply/funnel/[recruitId]">) {

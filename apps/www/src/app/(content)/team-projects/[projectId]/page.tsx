@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { TeamProjectDetail } from "@/components/team-project";
 import { getProject } from "@/components/team-project/getProject";
 import { createPageMetadata } from "@/constants/metadata";
+import { routeTo } from "@/constants/routes";
 
 export const revalidate = 3600;
 
@@ -13,11 +14,13 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps<"/team-projects/[projectId]">): Promise<Metadata> {
-  const { name, description, bannerImageUrl } = await getProject((await params).projectId);
+  const { projectId } = await params;
+  const { name, description, bannerImageUrl } = await getProject(projectId);
 
   return createPageMetadata({
     title: name,
     description,
+    path: routeTo.projectDetail(projectId),
     ...(bannerImageUrl && {
       images: [
         {
