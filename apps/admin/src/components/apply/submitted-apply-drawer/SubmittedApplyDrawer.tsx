@@ -1,7 +1,6 @@
 import {
   DropdownMenu,
   File,
-  Icon,
   IconButton,
   LabelButton,
   MultiSelectField,
@@ -106,7 +105,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
               <SelectField.Input options={[]} />
             </SelectField>
             <MultiSelectField readonly>
-              <MultiSelectField.Label suffix={<Icon name="info" size="2xs" />}>
+              <MultiSelectField.Label tooltip="최대 3개까지 선택">
                 관심 도메인
               </MultiSelectField.Label>
               <MultiSelectField.Input options={[]} />
@@ -119,7 +118,9 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
               />
             </SelectField>
             <TextField readonly>
-              <TextField.Label suffix={<Icon name="info" size="2xs" />}>예비 번호</TextField.Label>
+              <TextField.Label tooltip="예비 번호는 지원서 목록에서 변경">
+                예비 번호
+              </TextField.Label>
               <TextField.Input placeholder="예비 합격 상태일 때 확인할 수 있어요" />
             </TextField>
           </div>
