@@ -5,9 +5,9 @@ import { Dialog } from "@jects/jds";
 import { useDialogStore } from "@/stores/dialogStore";
 
 export function GlobalDialog() {
-  const { open, options, selectAction, dismiss } = useDialogStore();
+  const { open, content, selectAction, dismiss } = useDialogStore();
 
-  if (options === null) {
+  if (content === null) {
     return null;
   }
 
@@ -15,12 +15,12 @@ export function GlobalDialog() {
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => !nextOpen && dismiss()}
-      header={options.header}
-      body={options.body}
-      primaryAction={{ children: options.primaryLabel, onClick: () => selectAction("primary") }}
+      header={content.header}
+      body={content.body}
+      primaryAction={{ children: content.primaryLabel, onClick: () => selectAction("primary") }}
       secondaryAction={
-        options.secondaryLabel
-          ? { children: options.secondaryLabel, onClick: () => selectAction("secondary") }
+        content.secondaryLabel
+          ? { children: content.secondaryLabel, onClick: () => selectAction("secondary") }
           : undefined
       }
     />
