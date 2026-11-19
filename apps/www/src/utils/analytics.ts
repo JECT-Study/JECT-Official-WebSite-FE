@@ -1,6 +1,8 @@
 import * as amplitude from "@amplitude/analytics-browser";
 import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 
+import type { JobFamily } from "@/apis/recruit/schemas";
+
 const isAnalyticsEnvironment =
   process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "true";
 
@@ -76,4 +78,16 @@ function trackEvent(eventName: string, eventProperties: Record<string, unknown> 
 
 export function trackApplyStart(source: string) {
   trackEvent("apply_start", { source });
+}
+
+export function trackApplyStepView(step: string, jobFamily: JobFamily) {
+  trackEvent("apply_step_view", { step, job_family: jobFamily });
+}
+
+export function trackApplyStepComplete(step: string, jobFamily: JobFamily) {
+  trackEvent("apply_step_complete", { step, job_family: jobFamily });
+}
+
+export function trackApplyComplete(jobFamily: JobFamily) {
+  trackEvent("apply_complete", { job_family: jobFamily, conversion: true });
 }
