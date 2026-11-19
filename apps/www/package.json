@@ -18,6 +18,8 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.49.3",
+    "@amplitude/plugin-session-replay-browser": "^1.37.0",
     "@hookform/resolvers": "^5.4.0",
     "@ject/api-client": "workspace:*",
     "@ject/api-types": "workspace:*",

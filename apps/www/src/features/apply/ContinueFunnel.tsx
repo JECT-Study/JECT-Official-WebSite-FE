@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 
 import { useFunnel } from "@use-funnel/browser";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { useIsClient } from "@/hooks/useIsClient";
+import { trackApplyComplete, trackApplyStepComplete, trackApplyStepView } from "@/utils/analytics";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
 import { ApplyProgress } from "./ApplyProgress";
@@ -34,6 +35,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
     initial: { step: "identityVerification", context: {} },
   });
 
+  useEffect(() => {
+    trackApplyStepView(funnel.step, jobFamily);
+  }, [funnel.step, jobFamily]);
+
   return (
     <div className="flex flex-col gap-48">
       <ApplyFunnelHeader
@@ -49,7 +54,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
           <IdentityVerificationStep
             recruitId={recruitId}
             // 본인 확인 후 뒤로 가기로 본인 확인 단계에 돌아오지 않게 한다.
-            onNext={(step) => history.replace(step, {})}
+            onNext={(step) => {
+              trackApplyStepComplete("identityVerification", jobFamily);
+              void history.replace(step, {});
+            }}
           />
         )}
         profile={({ history }) => (
@@ -57,12 +65,22 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
             recruitId={recruitId}
             jobFamily={jobFamily}
             jobFamilyName={jobFamilyName}
-            onNext={() => history.push("application", {})}
+            onNext={() => {
+              trackApplyStepComplete("profile", jobFamily);
+              void history.push("application", {});
+            }}
           />
         )}
         application={({ history }) => (
           <Suspense fallback={null}>
-            <ApplicationStep recruitId={recruitId} onNext={() => history.replace("complete", {})} />
+            <ApplicationStep
+              recruitId={recruitId}
+              onNext={() => {
+                trackApplyStepComplete("application", jobFamily);
+                trackApplyComplete(jobFamily);
+                void history.replace("complete", {});
+              }}
+            />
           </Suspense>
         )}
         complete={() => <CompleteStep />}
