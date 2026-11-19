@@ -5,9 +5,7 @@ import BX_홍가민 from "@/assets/images/members/BX_홍가민.png";
 import 대외협력_백자영 from "@/assets/images/members/대외협력_백자영.png";
 import 대표_왕효준 from "@/assets/images/members/대표_왕효준.png";
 import 메이커스_강태성 from "@/assets/images/members/메이커스_강태성.png";
-import 메이커스_공희상 from "@/assets/images/members/메이커스_공희상.png";
 import 메이커스_권정인 from "@/assets/images/members/메이커스_권정인.jpg";
-import 메이커스_김영재 from "@/assets/images/members/메이커스_김영재.png";
 import 메이커스_김지훈 from "@/assets/images/members/메이커스_김지훈.jpg";
 import 메이커스_김진범 from "@/assets/images/members/메이커스_김진범.png";
 import 메이커스_문소희 from "@/assets/images/members/메이커스_문소희.png";
@@ -54,13 +52,6 @@ export const SUPPORTERS: Supporter[] = [
 
 export const MAKERS_1: Maker[] = [
   {
-    name: "김영재",
-    role: "프론트엔드",
-    image: 메이커스_김영재,
-    description:
-      "화면부터 배포까지 서비스가 사용자에게 닿는 전 과정을 고민하며, 탄탄한 프론트엔드 기반을 만들어갑니다.",
-  },
-  {
     name: "김지훈",
     role: "프론트엔드",
     image: 메이커스_김지훈,
@@ -79,12 +70,6 @@ export const MAKERS_1: Maker[] = [
     role: "백엔드",
     image: 메이커스_강태성,
     description: "호기심을 바탕으로 깊게 고민하며, 문제의 본질을 찾아 해결합니다.",
-  },
-  {
-    name: "공희상",
-    role: "백엔드",
-    image: 메이커스_공희상,
-    description: "사용자에게 필요한 기능을 실용적으로 구현하고자 고민하며 몰입하고 있습니다.",
   },
   {
     name: "김진범",

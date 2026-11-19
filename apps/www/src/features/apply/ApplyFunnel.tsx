@@ -1,10 +1,12 @@
 "use client";
 
-import { Suspense, useSyncExternalStore } from "react";
+import { Suspense, useEffect } from "react";
 
 import { useFunnel } from "@use-funnel/browser";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
+import { useIsClient } from "@/hooks/useIsClient";
+import { trackApplyComplete, trackApplyStepComplete, trackApplyStepView } from "@/utils/analytics";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
 import { ApplyProgress } from "./ApplyProgress";
@@ -23,10 +25,6 @@ interface ApplyFunnelProps {
   jobFamilyName: string;
 }
 
-function subscribe() {
-  return () => {};
-}
-
 function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunnelProps) {
   const funnel = useFunnel<{
     emailVerification: object;
@@ -38,9 +36,13 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
     initial: { step: "emailVerification", context: {} },
   });
 
+  useEffect(() => {
+    trackApplyStepView(funnel.step, jobFamily);
+  }, [funnel.step, jobFamily]);
+
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader recruitId={recruitId} recruitTitle={recruitTitle}>
+      <ApplyFunnelHeader recruitId={recruitId} navigationTitle={recruitTitle}>
         {funnel.step !== "complete" && <ApplyProgress current={PROGRESS_INDEX[funnel.step]} />}
       </ApplyFunnelHeader>
       <funnel.Render
@@ -48,7 +50,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
           <EmailVerificationStep
             recruitId={recruitId}
             // 지원자 등록 후 뒤로 가기로 이메일 인증 단계에 돌아오지 않게 한다.
-            onNext={() => history.replace("profile", {})}
+            onNext={() => {
+              trackApplyStepComplete("emailVerification", jobFamily);
+              void history.replace("profile", {});
+            }}
           />
         )}
         profile={({ history }) => (
@@ -56,7 +61,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
             recruitId={recruitId}
             jobFamily={jobFamily}
             jobFamilyName={jobFamilyName}
-            onNext={() => history.push("application", {})}
+            onNext={() => {
+              trackApplyStepComplete("profile", jobFamily);
+              void history.push("application", {});
+            }}
           />
         )}
         application={({ history }) => (
@@ -64,7 +72,11 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
             <ApplicationStep
               recruitId={recruitId}
               // 제출 후 뒤로 가기로 지원서 작성 단계에 돌아오지 않게 한다.
-              onNext={() => history.replace("complete", {})}
+              onNext={() => {
+                trackApplyStepComplete("application", jobFamily);
+                trackApplyComplete(jobFamily);
+                void history.replace("complete", {});
+              }}
             />
           </Suspense>
         )}
@@ -76,11 +88,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
 export function ApplyFunnel(props: ApplyFunnelProps) {
   // use-funnel의 step은 브라우저 히스토리에 저장되어 서버에서 알 수 없으므로 클라이언트에서만 렌더링한다.
-  const isClient = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false
-  );
+  const isClient = useIsClient();
 
   if (!isClient) {
     return null;

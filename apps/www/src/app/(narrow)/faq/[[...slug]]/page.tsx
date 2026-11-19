@@ -3,12 +3,19 @@ import type { Metadata } from "next";
 import { FaqTabs } from "@/components/faq";
 import { PageHeader } from "@/components/layout";
 import { FAQ_CATEGORIES } from "@/constants/faq";
+import { createPageMetadata } from "@/constants/metadata";
+import { ROUTES } from "@/constants/routes";
 
 export const dynamicParams = false;
 
-export const metadata: Metadata = {
-  title: "FAQ",
-};
+const PAGE_TITLE = "FAQ";
+const PAGE_DESCRIPTION = "젝트에 대해 자주 묻는 질문들이 정리되어 있어요.";
+
+export const metadata: Metadata = createPageMetadata({
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  path: ROUTES.faq,
+});
 
 export function generateStaticParams() {
   return [
@@ -26,7 +33,7 @@ export default async function FaqPage({ params }: PageProps<"/faq/[[...slug]]">)
 
   return (
     <>
-      <PageHeader title="FAQ" description="젝트에 대해 자주 묻는 질문들이 정리되어 있어요." />
+      <PageHeader title={PAGE_TITLE} description={PAGE_DESCRIPTION} />
       <FaqTabs
         key={slug.join("/")}
         categories={FAQ_CATEGORIES}

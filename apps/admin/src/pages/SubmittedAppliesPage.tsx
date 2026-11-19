@@ -2,8 +2,7 @@ import { EmptyState, Tabs } from "@jects/jds";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
-import { recruitApi } from "@/apis/recruit/api";
-import { recruitQueryKeys } from "@/apis/recruit/queryKeys";
+import { recruitQueries } from "@/apis/recruit/queries";
 import type { ApplyManagementRecruit, JobFamily, RecruitType } from "@/apis/recruit/schemas";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
@@ -89,8 +88,7 @@ export default function SubmittedAppliesPage() {
     size: PAGE_SIZE,
   } as const;
   const { data, isError, isPending, isPlaceholderData } = useQuery({
-    queryKey: recruitQueryKeys.applyManagementRecruits(query),
-    queryFn: () => recruitApi.getApplyManagementRecruits(query),
+    ...recruitQueries.applyManagementRecruits(query),
     placeholderData: keepPreviousData,
   });
 

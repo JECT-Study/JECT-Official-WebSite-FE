@@ -101,6 +101,17 @@ export const tempApplicationSchema = z.object({
   portfolios: z.array(portfolioSchema),
 }) satisfies z.ZodType<Schemas["TempApplicationFormResponse"]>;
 
+export const applyStatusSchema = z.enum([
+  "JOINED",
+  "TEMP_SAVED",
+  "SUBMITTED",
+  "REJECTED",
+]) satisfies z.ZodType<Schemas["ApplyStatus"]>;
+
+export const applyStatusResponseSchema = z.object({
+  status: applyStatusSchema,
+}) satisfies z.ZodType<Schemas["ApplyStatusResponse"]>;
+
 export const portfolioUploadUrlsSchema = z.array(
   z.object({
     cdnUrl: z.string(),
@@ -112,3 +123,4 @@ export const portfolioUploadUrlsSchema = z.array(
 export type Question = z.infer<typeof questionSchema>;
 export type UploadedPortfolio = z.infer<typeof uploadedPortfolioSchema>;
 export type TempApplication = z.infer<typeof tempApplicationSchema>;
+export type ApplyStatus = z.infer<typeof applyStatusSchema>;

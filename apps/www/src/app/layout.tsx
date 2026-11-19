@@ -6,7 +6,13 @@ import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/footer";
 import { GlobalNavigationBar } from "@/components/gnb";
 import { HideOnMaintenance } from "@/components/layout";
-import { BASE_OPEN_GRAPH, SITE_DESCRIPTION, SITE_NAME } from "@/constants/metadata";
+import {
+  BASE_OPEN_GRAPH,
+  BASE_TWITTER,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/constants/metadata";
 import { THEME_STORAGE_KEY } from "@/constants/theme";
 
 import { Providers } from "./providers";
@@ -27,12 +33,6 @@ try {
 }
 `;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-  ? process.env.NEXT_PUBLIC_SITE_URL
-  : process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -40,18 +40,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   openGraph: BASE_OPEN_GRAPH,
-  twitter: {
-    card: "summary_large_image",
-    title: SITE_NAME,
-    description: SITE_DESCRIPTION,
-  },
+  twitter: BASE_TWITTER,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

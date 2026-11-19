@@ -6,21 +6,21 @@ import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, LabelButton, toastController } from "@jects/jds";
+import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
+import { authApi, type VerifyAuthCodeRequest } from "@/apis/auth/api";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
-import { useCheckMemberExistsMutation } from "@/hooks/auth/useCheckMemberExistsMutation";
 import { useSendAuthCodeMutation } from "@/hooks/auth/useSendAuthCodeMutation";
-import { useVerifyAuthCodeMutation } from "@/hooks/auth/useVerifyAuthCodeMutation";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 
 import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
 import { EmailField } from "./EmailField";
-import { PinField } from "./PinField";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 import { TermsField } from "./TermsField";
 
@@ -97,8 +97,9 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
     onError: showSendFailureToast,
   });
 
-  const checkMemberMutation = useCheckMemberExistsMutation({
-    onSuccess: (isExistMember, { email }) => {
+  const checkMemberMutation = useMutation({
+    mutationFn: (email: string) => authApi.isExistMember(email, recruitId),
+    onSuccess: (isExistMember, email) => {
       if (isExistMember) {
         setIsExistingMemberDialogOpen(true);
         return;
@@ -109,7 +110,8 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
     onError: showSendFailureToast,
   });
 
-  const verifyMutation = useVerifyAuthCodeMutation({
+  const verifyMutation = useMutation({
+    mutationFn: (request: VerifyAuthCodeRequest) => authApi.verifyAuthCode(request, "AUTH_CODE"),
     onError: (error) => {
       if (hasErrorCode(error, "AUTH-1") || hasErrorCode(error, "AUTH-2")) {
         setIsAuthCodeMismatch(true);
@@ -137,7 +139,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
 
   const handleSend = async () => {
     if (await form.trigger("email")) {
-      checkMemberMutation.mutate({ email: form.getValues("email"), recruitId });
+      checkMemberMutation.mutate(form.getValues("email"));
     }
   };
 
@@ -151,7 +153,6 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
         email: sentEmail,
         authCode: form.getValues("authCode").trim(),
         recruitId,
-        template: "AUTH_CODE",
       },
       {
         onSuccess: () => {
@@ -214,7 +215,11 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
 
             {isVerified && (
               <>
-                <PinField />
+                <PinField
+                  label="PIN 설정"
+                  placeholder="6자리 숫자를 입력해주세요"
+                  autoComplete="new-password"
+                />
                 <TermsField />
               </>
             )}

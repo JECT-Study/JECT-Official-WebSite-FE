@@ -1,13 +1,11 @@
 export const ROUTES = {
   main: "/",
   vision: "/vision",
-  activity: "/activity",
   curriculum: "/curriculum",
   miniStudy: "/mini-study",
   teamProject: "/team-projects",
   faq: "/faq",
 
-  apply: "/apply",
   applyList: "/apply/list",
   applyGuide: "/apply/guide",
   applyFunnel: "/apply/funnel",
@@ -26,4 +24,5 @@ export const routeTo = {
   applyGuide: (recruitId: number) => `${ROUTES.applyGuide}/${recruitId}`,
   applyFunnel: (recruitId: number) => `${ROUTES.applyFunnel}/${recruitId}`,
   applyContinue: (recruitId: number) => `${ROUTES.applyContinue}/${recruitId}`,
+  resetPin: (recruitId: number) => `${ROUTES.resetPin}/${recruitId}`,
 } as const;

@@ -3,10 +3,12 @@
 import { useId } from "react";
 
 import { FileField, Textarea, TextField, toastController } from "@jects/jds";
+import { useMutation } from "@tanstack/react-query";
 import { useController, useFormContext } from "react-hook-form";
 
+import { applyApi } from "@/apis/apply/api";
+import { applyMutationKeys } from "@/apis/apply/queries";
 import type { Question } from "@/apis/apply/schemas";
-import { useUploadPortfolioMutation } from "@/hooks/apply/useUploadPortfolioMutation";
 
 import { type ApplicationFormValues, DEFAULT_MAX_FILE_SIZE_MB, toAnswerKey } from "./schemas";
 
@@ -109,7 +111,10 @@ function PortfolioFileField({ question, titleId }: FieldContentProps) {
   const {
     field: { ref, name, value, onChange },
   } = useController({ name: "portfolio", control });
-  const uploadMutation = useUploadPortfolioMutation();
+  const uploadMutation = useMutation({
+    mutationKey: applyMutationKeys.uploadPortfolio(),
+    mutationFn: applyApi.uploadPortfolio,
+  });
 
   const maxFileSizeMb = question.maxFileSize ?? DEFAULT_MAX_FILE_SIZE_MB;
 

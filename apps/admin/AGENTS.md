@@ -21,7 +21,7 @@ pnpm build --filter=@ject/admin
 src/
 ├── pages/            # 라우트 단위 페이지
 ├── components/       # 도메인별 컴포넌트 (layout, common 등)
-├── apis/             # httpClient, queryClient, 도메인별 api/schemas/queryKeys
+├── apis/             # httpClient, queryClient, 도메인별 api/schemas/queries
 ├── hooks/
 ├── stores/           # Zustand 스토어
 ├── constants/        # 경로, 엔드포인트 등 상수

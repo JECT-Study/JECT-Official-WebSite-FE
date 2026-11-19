@@ -47,7 +47,7 @@ export function LoginForm() {
   const { toast } = useToast();
   const { mutate, isPending } = useMutation({
     mutationFn: authApi.login,
-    onSuccess: () => useAuthStore.getState().setIsLoggedIn(true),
+    onSuccess: ({ isAdmin }) => useAuthStore.getState().login({ isAdmin }),
     onError: (error) => {
       const code = error instanceof ApiError && isErrorCode(error.status) ? error.status : null;
       const { title, description } =

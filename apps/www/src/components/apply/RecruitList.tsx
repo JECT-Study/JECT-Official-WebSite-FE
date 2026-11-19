@@ -9,6 +9,7 @@ import { Card, Divider, EmptyState, Tabs } from "@jects/jds";
 import type { ActiveRecruitment, RecruitType } from "@/apis/recruit/schemas";
 import { EXTERNAL_LINKS } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
+import { trackRecruitmentAlertClick, trackTalentPoolClick } from "@/utils/analytics";
 import { formatDate } from "@/utils/formatDate";
 
 interface RecruitTabDetail {
@@ -18,6 +19,7 @@ interface RecruitTabDetail {
     body: string;
     action: string;
     href: string;
+    onActionClick: (type: RecruitType) => void;
   };
 }
 
@@ -30,6 +32,7 @@ const TALENT_POOL_EMPTY = {
   body: "인재풀 등록을 희망하시면 버튼을 눌러 신청해 주세요.",
   action: "인재풀 등록",
   href: EXTERNAL_LINKS.talentPool,
+  onActionClick: trackTalentPoolClick,
 };
 
 const TAB_DETAILS = {
@@ -40,6 +43,7 @@ const TAB_DETAILS = {
       body: "다음 기수 모집 알림을 희망하시면 버튼을 눌러 신청해 주세요.",
       action: "모집 알림 신청",
       href: EXTERNAL_LINKS.recruitmentAlert,
+      onActionClick: trackRecruitmentAlertClick,
     },
   },
   MAKERS: { label: "메이커스", empty: TALENT_POOL_EMPTY },
@@ -65,7 +69,7 @@ interface RecruitTabPanelProps {
 }
 
 function RecruitTabPanel({ tab, recruitments }: RecruitTabPanelProps) {
-  const { label, empty } = tab;
+  const { type, label, empty } = tab;
 
   if (recruitments.length === 0) {
     return (
@@ -74,7 +78,10 @@ function RecruitTabPanel({ tab, recruitments }: RecruitTabPanelProps) {
         body={empty.body}
         primaryAction={{
           children: empty.action,
-          onClick: () => window.open(empty.href, "_blank", "noopener,noreferrer"),
+          onClick: () => {
+            empty.onActionClick(type);
+            window.open(empty.href, "_blank", "noopener,noreferrer");
+          },
         }}
       />
     );
