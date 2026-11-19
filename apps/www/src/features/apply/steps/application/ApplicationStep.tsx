@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlockButton, Dialog, toastController } from "@jects/jds";
+import { BlockButton, toastController } from "@jects/jds";
 import { useIsMutating, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { applyApi, type SubmitApplicationRequest } from "@/apis/apply/api";
 import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
-import { JECT_EMAIL } from "@/constants/links";
+import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
-import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
+import { showDialog } from "@/stores/dialogStore";
 
 import { ApplicationField } from "./ApplicationField";
 import {
@@ -40,10 +39,6 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
       tempApplication: tempApplication.data,
     }),
   });
-
-  const [pendingApplication, setPendingApplication] = useState<ApplicationFormValues | null>(null);
-  const [isClosedDialogOpen, setIsClosedDialogOpen] = useState(false);
-  const [isSubmittedDialogOpen, setIsSubmittedDialogOpen] = useState(false);
 
   const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(createApplicationSchema(questions)),
@@ -73,7 +68,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
         },
         onError: (error) => {
           if (isRecruitClosedError(error)) {
-            setIsClosedDialogOpen(true);
+            void showDialog(DIALOG_CONTENT.recruitClosed).then(moveToGuide);
             return;
           }
 
@@ -85,21 +80,17 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
     );
   };
 
-  const handleConfirmSubmit = () => {
-    if (pendingApplication === null) {
-      return;
-    }
-
-    submitMutation.mutate(toApplicationRequest(pendingApplication), {
+  const submitApplication = (application: ApplicationFormValues) => {
+    submitMutation.mutate(toApplicationRequest(application), {
       onSuccess: onNext,
       onError: (error) => {
         if (hasErrorCode(error, "APPLY-2")) {
-          setIsSubmittedDialogOpen(true);
+          void showDialog(DIALOG_CONTENT.alreadySubmitted).then(moveToGuide);
           return;
         }
 
         if (isRecruitClosedError(error)) {
-          setIsClosedDialogOpen(true);
+          void showDialog(DIALOG_CONTENT.recruitClosed).then(moveToGuide);
           return;
         }
 
@@ -108,7 +99,12 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
         });
       },
     });
-    setPendingApplication(null);
+  };
+
+  const handleSubmit = async (application: ApplicationFormValues) => {
+    if ((await showDialog(DIALOG_CONTENT.submitApplication)) === "primary") {
+      submitApplication(application);
+    }
   };
 
   return (
@@ -117,7 +113,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
         <form
           className="flex flex-col gap-margin-3xl"
           noValidate
-          onSubmit={form.handleSubmit(setPendingApplication)}
+          onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="flex flex-col gap-24">
             {questions
@@ -149,44 +145,6 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
           </div>
         </form>
       </FormProvider>
-
-      <Dialog
-        open={pendingApplication !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPendingApplication(null);
-          }
-        }}
-        header="지원서를 최종 제출합니다"
-        body={
-          <>
-            제출한 뒤에는 지원서를 수정하거나 지원을 취소할 수 없어요.
-            <br />
-            지원 관련 도움이 필요하시다면 {JECT_EMAIL} 로 문의해주세요.
-          </>
-        }
-        primaryAction={{ children: "지원서 제출하기", onClick: handleConfirmSubmit }}
-        secondaryAction={{ children: "취소", onClick: () => setPendingApplication(null) }}
-      />
-
-      <RecruitClosedDialog open={isClosedDialogOpen} recruitId={recruitId} />
-      <Dialog
-        open={isSubmittedDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            moveToGuide();
-          }
-        }}
-        header="이미 제출한 지원서예요"
-        body={
-          <>
-            이미 제출이 완료되어 지원서를 다시 제출할 수 없어요.
-            <br />
-            공고 페이지로 이동합니다.
-          </>
-        }
-        primaryAction={{ children: "확인", onClick: moveToGuide }}
-      />
     </ApplyStepLayout>
   );
 }

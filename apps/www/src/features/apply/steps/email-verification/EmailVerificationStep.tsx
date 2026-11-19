@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, LabelButton, toastController } from "@jects/jds";
+import { LabelButton, toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { authApi, type VerifyAuthCodeRequest } from "@/apis/auth/api";
+import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
@@ -18,6 +19,7 @@ import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
 import { useSendAuthCodeMutation } from "@/hooks/auth/useSendAuthCodeMutation";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
+import { showDialog } from "@/stores/dialogStore";
 
 import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
 import { EmailField } from "./EmailField";
@@ -69,7 +71,6 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
   const [isAuthCodeMismatch, setIsAuthCodeMismatch] = useState(false);
-  const [isExistingMemberDialogOpen, setIsExistingMemberDialogOpen] = useState(false);
   const [sentAt, setSentAt] = useState<number | null>(null);
 
   const form = useForm<EmailVerificationFormValues>({
@@ -77,6 +78,12 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
     mode: "onTouched",
     defaultValues: { email: "", authCode: "", pin: "", agreedTerms: [] },
   });
+
+  const openExistingApplicantDialog = async () => {
+    if ((await showDialog(DIALOG_CONTENT.existingApplicant)) === "primary") {
+      router.push(routeTo.applyContinue(recruitId));
+    }
+  };
 
   const showSendFailureToast = () => {
     toastController.destructive("인증번호 발송 실패", {
@@ -99,15 +106,6 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
 
   const checkMemberMutation = useMutation({
     mutationFn: (email: string) => authApi.isExistMember(email, recruitId),
-    onSuccess: (isExistMember, email) => {
-      if (isExistMember) {
-        setIsExistingMemberDialogOpen(true);
-        return;
-      }
-
-      sendMutation.mutate({ email, template: "AUTH_CODE" });
-    },
-    onError: showSendFailureToast,
   });
 
   const verifyMutation = useMutation({
@@ -124,23 +122,24 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
     },
   });
 
-  const registerMutation = useRegisterApplicantMutation({
-    onError: (error) => {
-      if (hasErrorCode(error, "APPLICANT-2")) {
-        setIsExistingMemberDialogOpen(true);
-        return;
-      }
-
-      toastController.destructive("PIN 설정 실패", {
-        description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-      });
-    },
-  });
+  const registerMutation = useRegisterApplicantMutation();
 
   const handleSend = async () => {
-    if (await form.trigger("email")) {
-      checkMemberMutation.mutate(form.getValues("email"));
+    if (!(await form.trigger("email"))) {
+      return;
     }
+
+    checkMemberMutation.mutate(form.getValues("email"), {
+      onSuccess: (isExistMember, email) => {
+        if (isExistMember) {
+          void openExistingApplicantDialog();
+          return;
+        }
+
+        sendMutation.mutate({ email, template: "AUTH_CODE" });
+      },
+      onError: showSendFailureToast,
+    });
   };
 
   const handleVerify = async () => {
@@ -164,7 +163,22 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   };
 
   const handleRegister = ({ pin }: EmailVerificationFormValues) => {
-    registerMutation.mutate({ pin, recruitId }, { onSuccess: onNext });
+    registerMutation.mutate(
+      { pin, recruitId },
+      {
+        onSuccess: onNext,
+        onError: (error) => {
+          if (hasErrorCode(error, "APPLICANT-2")) {
+            void openExistingApplicantDialog();
+            return;
+          }
+
+          toastController.destructive("PIN 설정 실패", {
+            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
+          });
+        },
+      }
+    );
   };
 
   const deadline = sentAt === null ? null : sentAt + AUTH_CODE_VALID_SECONDS * 1000;
@@ -228,21 +242,6 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
           <StepSubmitButton disabled={!isVerified || registerMutation.isPending} />
         </form>
       </FormProvider>
-
-      <Dialog
-        open={isExistingMemberDialogOpen}
-        onOpenChange={setIsExistingMemberDialogOpen}
-        header="페이지를 이동해 지원서를 이어서 작성합니다"
-        body="이미 등록된 이메일은 마지막 작성 단계부터 이어서 작성할 수 있어요."
-        primaryAction={{
-          children: "페이지 이동하기",
-          onClick: () => router.push(routeTo.applyContinue(recruitId)),
-        }}
-        secondaryAction={{
-          children: "닫기",
-          onClick: () => setIsExistingMemberDialogOpen(false),
-        }}
-      />
     </ApplyStepLayout>
   );
 }
