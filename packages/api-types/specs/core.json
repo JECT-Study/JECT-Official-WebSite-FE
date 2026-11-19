@@ -82,7 +82,37 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -107,7 +137,37 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -139,9 +199,125 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UploadFileResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UploadFileResponse"
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "INVALID_EXTENSION": {
+                    "description": "",
+                    "value": {
+                      "status": "FILE-1",
+                      "data": [
+                        "유효하지 않은 확장자입니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.683241036"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "EXCEEDED_PORTFOLIO_MAX_SIZE": {
+                    "description": "",
+                    "value": {
+                      "status": "FILE-2",
+                      "data": [
+                        "첨부 가능한 포트폴리오 최대 용량을 초과했습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.689441731"
+                    }
                   }
                 }
               }
@@ -177,9 +353,125 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UploadFileResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UploadFileResponse"
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "INVALID_EXTENSION": {
+                    "description": "",
+                    "value": {
+                      "status": "FILE-1",
+                      "data": [
+                        "유효하지 않은 확장자입니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.715446065"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "EXCEEDED_PORTFOLIO_MAX_SIZE": {
+                    "description": "",
+                    "value": {
+                      "status": "FILE-2",
+                      "data": [
+                        "첨부 가능한 포트폴리오 최대 용량을 초과했습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.715457998"
+                    }
                   }
                 }
               }
@@ -233,7 +525,37 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -252,7 +574,86 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "INVALID_REFRESH_TOKEN": {
+                    "description": "",
+                    "value": {
+                      "status": "AUTH-3",
+                      "data": [
+                        "유효하지 않은 리프레시 토큰입니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.786510987"
+                    }
+                  },
+                  "EXPIRED_REFRESH_TOKEN": {
+                    "description": "",
+                    "value": {
+                      "status": "AUTH-4",
+                      "data": [
+                        "만료된 리프레시 토큰입니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.786535748"
+                    }
+                  }
                 }
               }
             }
@@ -266,7 +667,7 @@
           "Auth"
         ],
         "summary": "PIN 로그인",
-        "description": "이메일, PIN 번호, 모집 ID로 로그인하고 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.",
+        "description": "이메일, PIN 번호, 모집 ID로 인증하고 지원서 제출과 동일한 지원 자격을 검증합니다. 모집 대상 유형·기수 기준 활동 중인 구성원이거나 다른 OPEN 공고에 임시저장·제출한 지원서가 있으면 로그인을 제한하며, 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.",
         "operationId": "loginWithPin",
         "requestBody": {
           "content": {
@@ -284,7 +685,86 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "APPLY_EXISTS_IN_OTHER_RECRUIT": {
+                    "description": "",
+                    "value": {
+                      "status": "APPLY-12",
+                      "data": [
+                        "다른 공고에서 작성 중인 지원서가 있습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.869708016"
+                    }
+                  },
+                  "ACTIVE_MEMBER_APPLICATION_NOT_ALLOWED": {
+                    "description": "",
+                    "value": {
+                      "status": "APPLY-18",
+                      "data": [
+                        "활동 중인 구성원은 지원할 수 없습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.869728783"
+                    }
+                  }
                 }
               }
             }
@@ -338,6 +818,110 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "INVALID_EMAIL_TEMPLATE": {
+                    "description": "",
+                    "value": {
+                      "status": "EMAIL-1",
+                      "data": [
+                        "유효하지 않은 메일 템플릿입니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.911496943"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "data": {
+                      "type": "array",
+                      "nullable": false,
+                      "items": {
+                        "type": "string",
+                        "nullable": false
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                },
+                "examples": {
+                  "INVALID_AUTH_CODE": {
+                    "description": "",
+                    "value": {
+                      "status": "AUTH-1",
+                      "data": [
+                        "인증 번호가 유효하지 않습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.910760667"
+                    }
+                  },
+                  "NOT_FOUND_AUTH_CODE": {
+                    "description": "",
+                    "value": {
+                      "status": "AUTH-2",
+                      "data": [
+                        "인증 번호를 찾을 수 없습니다."
+                      ],
+                      "timestamp": "2026-11-20T08:02:52.910775041"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "default": {
             "description": "default response",
             "headers": {
@@ -357,7 +941,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -390,7 +996,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/TempApplicationFormResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/TempApplicationFormResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -427,7 +1055,37 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       },
@@ -451,7 +1109,37 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -487,7 +1175,37 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -523,7 +1241,37 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -552,7 +1300,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -584,7 +1354,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "string"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -606,7 +1398,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/SemesterResponses"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/SemesterResponses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -639,7 +1453,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/RecruitResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RecruitResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -661,7 +1497,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ActiveRecruitmentResponses"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ActiveRecruitmentResponses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -701,7 +1559,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageProjectResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PageProjectResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -734,7 +1614,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectDetailResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectDetailResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -756,7 +1658,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProjectSummaryResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProjectSummaryResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -788,7 +1712,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageMiniStudyResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PageMiniStudyResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -830,7 +1776,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageJectalkResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/PageJectalkResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -871,7 +1839,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -904,7 +1894,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplyStatusResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ApplyStatusResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -937,7 +1949,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/QuestionResponses"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/QuestionResponses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -959,7 +1993,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "boolean"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "boolean"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -981,7 +2037,29 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApplicantProfileResponse"
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ApplicantProfileResponse"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
                 }
               }
             }
@@ -999,7 +2077,37 @@
         "operationId": "deleteTestbot",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": [
+                    "data",
+                    "status",
+                    "timestamp"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "nullable": false,
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": false,
+                      "example": "2025-08-08T14:10:32.123"
+                    }
+                  },
+                  "nullable": false
+                }
+              }
+            }
           }
         }
       }
@@ -1052,6 +2160,11 @@
         }
       },
       "UploadFileResponse": {
+        "required": [
+          "cdnUrl",
+          "expiration",
+          "presignedUrl"
+        ],
         "type": "object",
         "properties": {
           "cdnUrl": {
@@ -1284,6 +2397,10 @@
         }
       },
       "SemesterResponse": {
+        "required": [
+          "id",
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1296,6 +2413,9 @@
         }
       },
       "SemesterResponses": {
+        "required": [
+          "semesterResponses"
+        ],
         "type": "object",
         "properties": {
           "semesterResponses": {
@@ -1307,6 +2427,10 @@
         }
       },
       "RecruitFaqResponse": {
+        "required": [
+          "content",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "title": {
@@ -1318,6 +2442,23 @@
         }
       },
       "RecruitResponse": {
+        "required": [
+          "endDate",
+          "faqs",
+          "jobFamily",
+          "jobFamilyDescription",
+          "notice",
+          "recruitId",
+          "recruitInformation",
+          "recruitType",
+          "recruitTypeDescription",
+          "recruitTypeDetail",
+          "recruitTypeDetailDescription",
+          "semesterId",
+          "semesterName",
+          "startDate",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "recruitId": {
@@ -1325,14 +2466,17 @@
             "format": "int64"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "semesterId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "nullable": true
           },
           "semesterName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "recruitType": {
             "$ref": "#/components/schemas/RecruitType"
@@ -1361,10 +2505,12 @@
             "format": "date-time"
           },
           "recruitInformation": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "notice": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "faqs": {
             "type": "array",
@@ -1391,6 +2537,21 @@
         ]
       },
       "ActiveRecruitmentResponse": {
+        "required": [
+          "endDate",
+          "jobFamily",
+          "jobFamilyDescription",
+          "recruitId",
+          "recruitType",
+          "recruitTypeDescription",
+          "recruitTypeDetail",
+          "recruitTypeDetailDescription",
+          "semesterId",
+          "semesterName",
+          "startDate",
+          "summary",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "recruitId": {
@@ -1398,14 +2559,17 @@
             "format": "int64"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "semesterId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "nullable": true
           },
           "semesterName": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "recruitType": {
             "$ref": "#/components/schemas/RecruitType"
@@ -1434,11 +2598,15 @@
             "format": "date-time"
           },
           "summary": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         }
       },
       "ActiveRecruitmentResponses": {
+        "required": [
+          "recruitments"
+        ],
         "type": "object",
         "properties": {
           "recruitments": {
@@ -1480,42 +2648,58 @@
         }
       },
       "PageProjectResponse": {
+        "required": [
+          "content",
+          "last",
+          "number",
+          "numberOfElements",
+          "size",
+          "totalElements",
+          "totalPages"
+        ],
         "type": "object",
         "properties": {
           "totalElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "nullable": false
           },
           "totalPages": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "first": {
             "type": "boolean"
           },
           "last": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           },
           "size": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "content": {
             "type": "array",
+            "nullable": false,
             "items": {
               "$ref": "#/components/schemas/ProjectResponse"
             }
           },
           "number": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1552,6 +2736,14 @@
         }
       },
       "ProjectResponse": {
+        "required": [
+          "description",
+          "id",
+          "name",
+          "serviceType",
+          "summary",
+          "thumbnailUrl"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1559,16 +2751,19 @@
             "format": "int64"
           },
           "thumbnailUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "summary": {
             "type": "string"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "serviceType": {
             "type": "string"
@@ -1590,18 +2785,35 @@
         }
       },
       "ProjectDetailResponse": {
+        "required": [
+          "badges",
+          "bannerImageUrl",
+          "description",
+          "descriptionImageUrls",
+          "endDate",
+          "githubUrl",
+          "name",
+          "sampleImageUrls",
+          "serviceUrl",
+          "startDate",
+          "teamMemberNames",
+          "techStack"
+        ],
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "startDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "nullable": true
           },
           "endDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "nullable": true
           },
           "teamMemberNames": {
             "$ref": "#/components/schemas/TeamMemberNames"
@@ -1619,16 +2831,24 @@
             }
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "serviceUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "githubUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "bannerImageUrl": {
-            "$ref": "#/components/schemas/ProjectIntroResponse"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProjectIntroResponse"
+              }
+            ]
           },
           "sampleImageUrls": {
             "type": "array",
@@ -1645,6 +2865,10 @@
         }
       },
       "ProjectIntroResponse": {
+        "required": [
+          "imageUrl",
+          "sequence"
+        ],
         "type": "object",
         "properties": {
           "imageUrl": {
@@ -1657,6 +2881,12 @@
         }
       },
       "TeamMemberNames": {
+        "required": [
+          "backendDevelopers",
+          "frontendDevelopers",
+          "productDesigners",
+          "productManagers"
+        ],
         "type": "object",
         "properties": {
           "productManagers": {
@@ -1686,6 +2916,10 @@
         }
       },
       "CategorySummary": {
+        "required": [
+          "categoryName",
+          "count"
+        ],
         "type": "object",
         "properties": {
           "categoryName": {
@@ -1698,6 +2932,9 @@
         }
       },
       "ProjectSummaryResponse": {
+        "required": [
+          "categorySummaries"
+        ],
         "type": "object",
         "properties": {
           "categorySummaries": {
@@ -1709,6 +2946,14 @@
         }
       },
       "MiniStudyResponse": {
+        "required": [
+          "id",
+          "imageUrl",
+          "linkUrl",
+          "name",
+          "summary",
+          "tag"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1719,10 +2964,12 @@
             "type": "string"
           },
           "linkUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "summary": {
             "type": "string"
@@ -1733,42 +2980,58 @@
         }
       },
       "PageMiniStudyResponse": {
+        "required": [
+          "content",
+          "last",
+          "number",
+          "numberOfElements",
+          "size",
+          "totalElements",
+          "totalPages"
+        ],
         "type": "object",
         "properties": {
           "totalElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "nullable": false
           },
           "totalPages": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "first": {
             "type": "boolean"
           },
           "last": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           },
           "size": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "content": {
             "type": "array",
+            "nullable": false,
             "items": {
               "$ref": "#/components/schemas/MiniStudyResponse"
             }
           },
           "number": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1785,6 +3048,15 @@
         ]
       },
       "JectalkResponse": {
+        "required": [
+          "contentType",
+          "contentUrl",
+          "description",
+          "id",
+          "summary",
+          "thumbnailUrl",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1798,13 +3070,15 @@
             "type": "string"
           },
           "contentUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "contentType": {
             "$ref": "#/components/schemas/ContentType"
           },
           "thumbnailUrl": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "summary": {
             "type": "string"
@@ -1812,42 +3086,58 @@
         }
       },
       "PageJectalkResponse": {
+        "required": [
+          "content",
+          "last",
+          "number",
+          "numberOfElements",
+          "size",
+          "totalElements",
+          "totalPages"
+        ],
         "type": "object",
         "properties": {
           "totalElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "nullable": false
           },
           "totalPages": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "first": {
             "type": "boolean"
           },
           "last": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           },
           "size": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "content": {
             "type": "array",
+            "nullable": false,
             "items": {
               "$ref": "#/components/schemas/JectalkResponse"
             }
           },
           "number": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": false
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1858,6 +3148,11 @@
         }
       },
       "TempApplicationFormResponse": {
+        "required": [
+          "answers",
+          "jobFamily",
+          "portfolios"
+        ],
         "type": "object",
         "properties": {
           "jobFamily": {
@@ -1887,6 +3182,9 @@
         ]
       },
       "ApplyStatusResponse": {
+        "required": [
+          "status"
+        ],
         "type": "object",
         "properties": {
           "status": {
@@ -1904,6 +3202,19 @@
         ]
       },
       "QuestionResponse": {
+        "required": [
+          "id",
+          "inputHint",
+          "inputType",
+          "isRequired",
+          "label",
+          "maxFileSize",
+          "maxTextLength",
+          "selectOptions",
+          "sequence",
+          "subtitle",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1924,7 +3235,8 @@
             "type": "string"
           },
           "subtitle": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "label": {
             "type": "string"
@@ -1936,19 +3248,25 @@
             }
           },
           "inputHint": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "maxTextLength": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "maxFileSize": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           }
         }
       },
       "QuestionResponses": {
+        "required": [
+          "questionResponses"
+        ],
         "type": "object",
         "properties": {
           "questionResponses": {
@@ -1960,6 +3278,15 @@
         }
       },
       "ApplicantProfileResponse": {
+        "required": [
+          "careerDetails",
+          "experiencePeriod",
+          "id",
+          "interestedDomains",
+          "name",
+          "phoneNumber",
+          "region"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1967,19 +3294,36 @@
             "format": "int64"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "phoneNumber": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "careerDetails": {
-            "$ref": "#/components/schemas/CareerDetails"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CareerDetails"
+              }
+            ]
           },
           "region": {
-            "$ref": "#/components/schemas/Region"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Region"
+              }
+            ]
           },
           "experiencePeriod": {
-            "$ref": "#/components/schemas/ExperiencePeriod"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExperiencePeriod"
+              }
+            ]
           },
           "interestedDomains": {
             "type": "array",

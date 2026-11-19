@@ -40,7 +40,7 @@ export interface paths {
          * 모집 정보 강제 수정
          * @description 마감 여부와 관계없이 모집 정보를 강제로 수정합니다.
          */
-        put: operations["updateRecruit_1"];
+        put: operations["updateRecruit"];
         post?: never;
         delete?: never;
         options?: never;
@@ -826,7 +826,7 @@ export interface paths {
          *     상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.
          *     Outbox 없는 과거 이력의 재시도 정보는 null입니다.
          */
-        get: operations["searchTargets_1"];
+        get: operations["searchTargets"];
         put?: never;
         post?: never;
         delete?: never;
@@ -974,25 +974,25 @@ export interface components {
         /** @enum {string} */
         VariableInputType: "TEXT" | "URL" | "EMAIL" | "PHONE" | "DATE_TIME";
         CustomVariableResponse: {
-            key?: string;
-            label?: string;
-            inputType?: string;
-            required?: boolean;
-            description?: string;
+            key: string;
+            label: string;
+            inputType: string;
+            required: boolean;
+            description: string | null;
         };
         MailScenarioResponse: {
             /** Format: int64 */
-            id?: number;
-            name?: string;
-            category?: components["schemas"]["MailScenarioCategory"];
-            type?: components["schemas"]["MailScenarioType"];
-            scenarioCode?: string;
-            subjectTemplate?: string;
-            bodyTemplate?: string;
-            active?: boolean;
+            id: number;
+            name: string;
+            category: components["schemas"]["MailScenarioCategory"];
+            type: components["schemas"]["MailScenarioType"];
+            scenarioCode: string;
+            subjectTemplate: string;
+            bodyTemplate: string;
+            active: boolean;
             /** Format: date-time */
-            createdAt?: string;
-            customVariables?: components["schemas"]["CustomVariableResponse"][];
+            createdAt: string;
+            customVariables: components["schemas"]["CustomVariableResponse"][];
         };
         /** @enum {string} */
         CareerDetails: "STUDENT" | "EXPECTED_GRADUATE" | "JOB_SEEKER" | "BETWEEN_JOBS" | "EMPLOYEE";
@@ -1127,12 +1127,12 @@ export interface components {
         };
         MailPreviewResponse: {
             /** Format: int64 */
-            scenarioId?: number;
+            scenarioId: number;
             /** Format: int64 */
-            applyId?: number;
-            receiverEmail?: string;
-            subject?: string;
-            body?: string;
+            applyId: number;
+            receiverEmail: string;
+            subject: string;
+            body: string;
         };
         SendMailDispatchRequest: {
             /** Format: int64 */
@@ -1149,20 +1149,20 @@ export interface components {
         MailDispatchJobStatus: "SCHEDULED" | "CANCELLED" | "REQUESTED" | "PROCESSING" | "COMPLETED" | "FAILED" | "UNKNOWN";
         MailDispatchResponse: {
             /** Format: int64 */
-            dispatchJobId?: number;
-            status?: components["schemas"]["MailDispatchJobStatus"];
+            dispatchJobId: number;
+            status: components["schemas"]["MailDispatchJobStatus"];
             /** Format: int32 */
-            targetCount?: number;
+            targetCount: number;
             /** Format: int32 */
-            processingCount?: number;
+            processingCount: number;
             /** Format: int32 */
-            successCount?: number;
+            successCount: number;
             /** Format: int32 */
-            failedCount?: number;
+            failedCount: number;
             /** Format: int32 */
-            unknownCount?: number;
+            unknownCount: number;
             /** Format: int32 */
-            excludedCount?: number;
+            excludedCount: number;
         };
         ScheduleMailDispatchRequest: {
             /** Format: int64 */
@@ -1227,8 +1227,8 @@ export interface components {
             password: string;
         };
         AdminLoginResponse: {
-            name?: string;
-            isAdmin?: boolean;
+            name: string | null;
+            isAdmin: boolean;
         };
         /** @description 운영 서포터즈 구성원 수정 요청. 전달하지 않은 항목은 기존 값 유지 */
         UpdateMemberSupportersRequest: {
@@ -1463,196 +1463,196 @@ export interface components {
         };
         SemesterEventResponse: {
             /** Format: int64 */
-            id?: number;
-            name?: string;
+            id: number;
+            name: string;
         };
         SemesterEventsResponse: {
-            type?: components["schemas"]["SemesterEventType"];
-            events?: components["schemas"]["SemesterEventResponse"][];
+            type: components["schemas"]["SemesterEventType"];
+            events: components["schemas"]["SemesterEventResponse"][];
         };
         /** @enum {string} */
         ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
         ApplyManagementRecruitResponse: {
             /** Format: int64 */
-            recruitId?: number;
-            title?: string;
+            recruitId: number;
+            title: string | null;
             /** Format: int64 */
-            semesterId?: number;
-            semesterName?: string;
-            recruitType?: components["schemas"]["RecruitType"];
-            jobFamily?: components["schemas"]["JobFamily"];
+            semesterId: number | null;
+            semesterName: string | null;
+            recruitType: components["schemas"]["RecruitType"];
+            jobFamily: components["schemas"]["JobFamily"];
             /** Format: date-time */
-            startDate?: string;
+            startDate: string;
             /** Format: date-time */
-            endDate?: string;
+            endDate: string;
             /** Format: int64 */
-            submittedApplyCount?: number;
+            submittedApplyCount: number;
             /** Format: int64 */
-            passedCount?: number;
+            passedCount: number;
             /** Format: int64 */
-            failedCount?: number;
+            failedCount: number;
             /** Format: int64 */
-            waitlistedCount?: number;
+            waitlistedCount: number;
         };
         ApplyManagementRecruitsResponse: {
-            recruitTypeCounts?: components["schemas"]["RecruitTypeCountResponse"][];
-            recruits?: components["schemas"]["CursorPageResponseApplyManagementRecruitResponse"];
+            recruitTypeCounts: components["schemas"]["RecruitTypeCountResponse"][];
+            recruits: components["schemas"]["CursorPageResponseApplyManagementRecruitResponse"];
         };
         CursorPageResponseApplyManagementRecruitResponse: {
-            content?: components["schemas"]["ApplyManagementRecruitResponse"][];
+            content: components["schemas"]["ApplyManagementRecruitResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         RecruitTypeCountResponse: {
-            recruitType?: components["schemas"]["RecruitType"];
+            recruitType: components["schemas"]["RecruitType"];
             /** Format: int64 */
-            count?: number;
+            count: number;
         };
         CursorPageResponseMemberSupportersListResponse: {
-            content?: components["schemas"]["MemberSupportersListResponse"][];
+            content: components["schemas"]["MemberSupportersListResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         MemberSupportersListResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            phoneNumber?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            activityStatus?: components["schemas"]["ActivityStatus"];
-            memo?: string;
+            memberActivityId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            activityStatus: components["schemas"]["ActivityStatus"];
+            memo: string | null;
         };
         MemberSupportersDetailResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            phoneNumber?: string;
-            email?: string;
-            memberType?: components["schemas"]["MemberType"];
-            jobFamily?: components["schemas"]["JobFamily"];
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            activityStatus?: components["schemas"]["ActivityStatus"];
+            memberActivityId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            email: string;
+            memberType: components["schemas"]["MemberType"];
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            activityStatus: components["schemas"]["ActivityStatus"];
             /** Format: date */
-            startDate?: string;
+            startDate: string | null;
             /** Format: date */
-            endDate?: string;
-            activityCertNumber?: string;
-            memo?: string;
+            endDate: string | null;
+            activityCertNumber: string | null;
+            memo: string | null;
         };
         CursorPageResponseSearchMemberSemesterResponse: {
-            content?: components["schemas"]["SearchMemberSemesterResponse"][];
+            content: components["schemas"]["SearchMemberSemesterResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         SearchMemberSemesterResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            phoneNumber?: string;
-            careerDetails?: components["schemas"]["CareerDetails"];
-            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
-            status?: components["schemas"]["ActivityStatus"];
+            memberActivityId: number;
+            name: string | null;
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            phoneNumber: string | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
+            experiencePeriod: components["schemas"]["ExperiencePeriod"] | null;
+            status: components["schemas"]["ActivityStatus"];
         };
         EventParticipationResponse: {
             /** Format: int64 */
-            semesterEventId?: number;
-            name?: string;
-            participationStatus?: components["schemas"]["ParticipationStatus"];
+            semesterEventId: number;
+            name: string;
+            participationStatus: components["schemas"]["ParticipationStatus"] | null;
         };
         MemberSemesterResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            email?: string;
-            phoneNumber?: string;
-            region?: components["schemas"]["Region"];
-            interestedDomains?: string[];
-            jobFamily?: components["schemas"]["JobFamily"];
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            careerDetails?: components["schemas"]["CareerDetails"];
-            activityStatus?: components["schemas"]["ActivityStatus"];
-            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
-            memo?: string;
-            semester?: components["schemas"]["Semester"];
-            team?: components["schemas"]["Team"];
-            certNumber?: string;
-            firstReview?: string;
-            secondReview?: string;
-            events?: components["schemas"]["EventParticipationResponse"][];
-            surveys?: components["schemas"]["EventParticipationResponse"][];
+            memberActivityId: number;
+            name: string | null;
+            email: string;
+            phoneNumber: string | null;
+            region: components["schemas"]["Region"] | null;
+            interestedDomains: string[];
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            careerDetails: components["schemas"]["CareerDetails"] | null;
+            activityStatus: components["schemas"]["ActivityStatus"];
+            experiencePeriod: components["schemas"]["ExperiencePeriod"] | null;
+            memo: string | null;
+            semester: components["schemas"]["Semester"];
+            team: components["schemas"]["Team"] | null;
+            certNumber: string | null;
+            firstReview: string | null;
+            secondReview: string | null;
+            events: components["schemas"]["EventParticipationResponse"][];
+            surveys: components["schemas"]["EventParticipationResponse"][];
         };
         Semester: {
             /** Format: int64 */
-            semesterId?: number;
-            semesterName?: string;
+            semesterId: number;
+            semesterName: string;
         };
         Team: {
             /** Format: int64 */
-            teamId?: number;
-            teamName?: string;
+            teamId: number;
+            teamName: string;
         };
         CursorPageResponseMemberMakersListResponse: {
-            content?: components["schemas"]["MemberMakersListResponse"][];
+            content: components["schemas"]["MemberMakersListResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         MemberMakersListResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            email?: string;
-            phoneNumber?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            makersTeam?: components["schemas"]["MakersTeam"];
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            activityStatus?: components["schemas"]["ActivityStatus"];
-            memo?: string;
+            memberActivityId: number;
+            name: string | null;
+            email: string;
+            phoneNumber: string | null;
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            makersTeam: components["schemas"]["MakersTeam"] | null;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            activityStatus: components["schemas"]["ActivityStatus"];
+            memo: string | null;
         };
         MemberMakersDetailResponse: {
             /** Format: int64 */
-            memberActivityId?: number;
-            name?: string;
-            email?: string;
-            phoneNumber?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            careerDetails?: components["schemas"]["CareerDetails"];
-            makersTeam?: components["schemas"]["MakersTeam"];
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            region?: components["schemas"]["Region"];
-            interestedDomains?: string[];
-            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
-            mentoringAvailability?: components["schemas"]["Availability"];
-            projectSupplementAvailability?: components["schemas"]["Availability"];
-            speakerAvailability?: components["schemas"]["Availability"];
-            careerLevel?: components["schemas"]["CareerLevel"];
-            activityStatus?: components["schemas"]["ActivityStatus"];
-            skills?: string;
-            company?: string;
-            expertTopics?: string;
-            activityCertNumber?: string;
-            memo?: string;
+            memberActivityId: number;
+            name: string | null;
+            email: string;
+            phoneNumber: string | null;
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
+            makersTeam: components["schemas"]["MakersTeam"] | null;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            region: components["schemas"]["Region"] | null;
+            interestedDomains: string[];
+            experiencePeriod: components["schemas"]["ExperiencePeriod"] | null;
+            mentoringAvailability: components["schemas"]["Availability"] | null;
+            projectSupplementAvailability: components["schemas"]["Availability"] | null;
+            speakerAvailability: components["schemas"]["Availability"] | null;
+            careerLevel: components["schemas"]["CareerLevel"] | null;
+            activityStatus: components["schemas"]["ActivityStatus"];
+            skills: string | null;
+            company: string | null;
+            expertTopics: string | null;
+            activityCertNumber: string | null;
+            memo: string | null;
         };
         /**
          * @description 선정 결과 필터
@@ -1662,13 +1662,13 @@ export interface components {
         MailTargetSelectionResult: "PASSED" | "WAITLISTED" | "FAILED" | null;
         MailTargetResponse: {
             /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            email?: string;
-            selectionResult?: components["schemas"]["SelectionResult"];
+            applyId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            email: string;
+            selectionResult: components["schemas"]["SelectionResult"];
             /** Format: int32 */
-            waitlistNumber?: number;
+            waitlistNumber: number | null;
         };
         Pageable: {
             /** Format: int32 */
@@ -1679,19 +1679,19 @@ export interface components {
         };
         PageMailScenarioResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["MailScenarioResponse"][];
+            size: number;
+            content: components["schemas"]["MailScenarioResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1713,10 +1713,10 @@ export interface components {
         };
         MailScenarioVariableResponse: {
             /** Format: int64 */
-            scenarioId?: number;
-            name?: string;
-            customVariables?: components["schemas"]["CustomVariableResponse"][];
-            personalVariables?: string[];
+            scenarioId: number;
+            name: string;
+            customVariables: components["schemas"]["CustomVariableResponse"][];
+            personalVariables: string[];
         };
         MailRecruitResponse: {
             /**
@@ -1724,103 +1724,103 @@ export interface components {
              * @description 모집 공고 ID
              * @example 1
              */
-            recruitId?: number;
+            recruitId: number;
             /**
              * @description 모집 공고 제목
              * @example 젝트 6기 백엔드 개발자 모집
              */
-            title?: string;
+            title: string | null;
             /**
              * Format: int64
              * @description 기수 ID
              * @example 2
              */
-            semesterId?: number;
+            semesterId: number | null;
             /**
              * @description 기수명
              * @example 10기
              */
-            semesterName?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
+            semesterName: string | null;
+            jobFamily: components["schemas"]["JobFamily"];
             /**
              * @description 직군 표시명
              * @example 백엔드 개발자(BE)
              */
-            jobFamilyDescription?: string;
-            recruitType?: components["schemas"]["RecruitType"];
+            jobFamilyDescription: string;
+            recruitType: components["schemas"]["RecruitType"];
             /**
              * @description 모집 유형 표시명
              * @example 정규 기수 모집
              */
-            recruitTypeDescription?: string;
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
+            recruitTypeDescription: string;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
             /**
              * @description 모집 세부 유형 표시명
              * @example 정규 모집
              */
-            recruitTypeDetailDescription?: string;
+            recruitTypeDetailDescription: string;
             /**
              * Format: date-time
              * @description 모집 시작일
              */
-            startDate?: string;
+            startDate: string;
             /**
              * Format: date-time
              * @description 모집 종료일
              */
-            endDate?: string;
+            endDate: string;
             /**
              * Format: date-time
              * @description 등록일
              */
-            createdAt?: string;
+            createdAt: string;
         };
         MailDispatchJobResponse: {
             /** Format: int64 */
-            dispatchJobId?: number;
+            dispatchJobId: number;
             /** Format: int64 */
-            scenarioId?: number;
+            scenarioId: number;
             /** Format: int64 */
-            recruitId?: number;
+            recruitId: number;
             /** Format: int64 */
-            requestedByAdminId?: number;
-            status?: components["schemas"]["MailDispatchJobStatus"];
+            requestedByAdminId: number;
+            status: components["schemas"]["MailDispatchJobStatus"];
             /** Format: int32 */
-            targetCount?: number;
+            targetCount: number;
             /** Format: int32 */
-            processingCount?: number;
+            processingCount: number;
             /** Format: int32 */
-            successCount?: number;
+            successCount: number;
             /** Format: int32 */
-            failedCount?: number;
+            failedCount: number;
             /** Format: int32 */
-            unknownCount?: number;
+            unknownCount: number;
             /** Format: date-time */
-            requestedAt?: string;
+            requestedAt: string;
             /** Format: date-time */
-            startedAt?: string;
+            startedAt: string | null;
             /** Format: date-time */
-            finishedAt?: string;
+            finishedAt: string | null;
             /** Format: date-time */
-            scheduledAt?: string;
+            scheduledAt: string | null;
             /** Format: int32 */
-            excludedCount?: number;
+            excludedCount: number;
         };
         PageMailDispatchJobResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["MailDispatchJobResponse"][];
+            size: number;
+            content: components["schemas"]["MailDispatchJobResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -1828,67 +1828,64 @@ export interface components {
         MailDispatchTargetStatus: "CANCELLED" | "PENDING" | "SENT" | "FAILED" | "UNKNOWN" | "EXCLUDED";
         MailDispatchTargetResponse: {
             /** Format: int64 */
-            targetId?: number;
+            targetId: number;
             /** Format: int64 */
-            applyId?: number;
-            email?: string;
-            status?: components["schemas"]["MailDispatchTargetStatus"];
+            applyId: number;
+            email: string;
+            status: components["schemas"]["MailDispatchTargetStatus"];
             /** Format: date-time */
-            sentAt?: string;
-            failureReason?: string;
-            /**
-             * Format: int32
-             * @description 기록된 발송 시도 횟수(claim 획득 기준). Outbox 없는 과거 이력은 null
-             */
-            attemptCount?: number;
+            sentAt: string | null;
+            failureReason: string | null;
+            /** Format: int32 */
+            attemptCount: number;
             /**
              * Format: date-time
              * @description 예약된 다음 재시도 시각. 대기 시각이 없으면 null이며 재발송 허가를 뜻하지 않음
              */
-            nextAttemptAt?: string;
+            nextAttemptAt: string | null;
             /** @description 가장 최근 저장된 시도 오류 코드. 대기 중 오류는 최종 실패 사유와 구분 */
-            lastAttemptFailureReason?: string;
+            lastAttemptFailureReason: string | null;
             /** @description 예약 발송에서 제외된 경우의 개인정보 없는 사유 코드 */
-            exclusionReason?: string;
+            exclusionReason: string | null;
         };
         PageMailDispatchTargetResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["MailDispatchTargetResponse"][];
+            size: number;
+            content: components["schemas"]["MailDispatchTargetResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         AdminApplyDetailResponse: {
             /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            email?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            careerDetails?: string;
-            recruitType?: string;
-            selectionResult?: components["schemas"]["SelectionResult"];
+            applyId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            email: string;
+            jobFamily: components["schemas"]["JobFamily"] | null;
+            careerDetails: string;
+            recruitType: string;
+            selectionResult: components["schemas"]["SelectionResult"];
             /** Format: int32 */
-            waitlistNumber?: number;
-            note?: string;
-            region?: string;
-            experiencePeriod?: string;
-            interestedDomains?: string[];
-            answers?: {
+            waitlistNumber: number | null;
+            note: string;
+            region: string;
+            experiencePeriod: string;
+            interestedDomains: string[];
+            answers: {
                 [key: string]: string;
             };
-            portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+            portfolios: components["schemas"]["ApplyPortfolioDto"][];
         };
         ApplyPortfolioDto: {
             fileUrl?: string;
@@ -1898,17 +1895,17 @@ export interface components {
         };
         WaitlistOrderResponse: {
             /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            careerDetails?: components["schemas"]["CareerDetails"];
+            applyId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
             /** Format: int32 */
-            waitlistNumber?: number;
+            waitlistNumber: number | null;
         };
         WaitlistOrdersResponse: {
             /** Format: int32 */
-            totalCount?: number;
-            content?: components["schemas"]["WaitlistOrderResponse"][];
+            totalCount: number;
+            content: components["schemas"]["WaitlistOrderResponse"][];
         };
         TempSavedApplySearchCondition: {
             /** Format: int64 */
@@ -1922,21 +1919,21 @@ export interface components {
             sizeOrDefault?: number;
         };
         CursorPageResponseTempSavedApplyResponse: {
-            content?: components["schemas"]["TempSavedApplyResponse"][];
+            content: components["schemas"]["TempSavedApplyResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         TempSavedApplyResponse: {
             /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            careerDetails?: components["schemas"]["CareerDetails"];
+            applyId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
         };
         SubmittedApplySearchCondition: {
             /** Format: int64 */
@@ -1951,51 +1948,51 @@ export interface components {
             sizeOrDefault?: number;
         };
         CursorPageResponseSubmittedApplyResponse: {
-            content?: components["schemas"]["SubmittedApplyResponse"][];
+            content: components["schemas"]["SubmittedApplyResponse"][];
             /** Format: int32 */
-            size?: number;
-            hasNext?: boolean;
+            size: number;
+            hasNext: boolean;
             /** Format: int64 */
-            nextCursor?: number;
+            nextCursor: number | null;
             /** Format: int64 */
-            totalCount?: number;
+            totalCount: number;
         };
         SubmittedApplyResponse: {
             /** Format: int64 */
-            applyId?: number;
-            name?: string;
-            phoneNumber?: string;
-            careerDetails?: components["schemas"]["CareerDetails"];
-            selectionResult?: components["schemas"]["SelectionResult"];
+            applyId: number;
+            name: string | null;
+            phoneNumber: string | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
+            selectionResult: components["schemas"]["SelectionResult"];
             /** Format: int32 */
-            waitlistNumber?: number;
-            note?: string;
+            waitlistNumber: number | null;
+            note: string;
         };
         /** @enum {string} */
         MemberStatus: "ACTIVE" | "LOCKED";
         AdminAccountResponse: {
             /** Format: int64 */
-            id?: number;
-            email?: string;
-            name?: string;
-            role?: components["schemas"]["Role"];
-            status?: components["schemas"]["MemberStatus"];
+            id: number;
+            email: string;
+            name: string | null;
+            role: components["schemas"]["Role"];
+            status: components["schemas"]["MemberStatus"];
         };
         PageAdminAccountResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["AdminAccountResponse"][];
+            size: number;
+            content: components["schemas"]["AdminAccountResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -2052,7 +2049,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2072,11 +2080,22 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
-    updateRecruit_1: {
+    updateRecruit: {
         parameters: {
             query?: never;
             header?: never;
@@ -2096,7 +2115,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2121,7 +2151,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailScenarioResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailScenarioResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2165,7 +2204,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AdminApplyDetailResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["AdminApplyDetailResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2190,7 +2238,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2210,7 +2269,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2232,7 +2302,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2255,7 +2336,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SemesterEventsResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["SemesterEventsResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2280,7 +2370,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2302,7 +2403,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2322,7 +2434,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2344,7 +2467,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorPageResponseMemberSupportersListResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["CursorPageResponseMemberSupportersListResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2367,7 +2499,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2389,7 +2532,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2417,7 +2571,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorPageResponseSearchMemberSemesterResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["CursorPageResponseSearchMemberSemesterResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2440,7 +2603,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2462,7 +2636,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2484,7 +2669,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorPageResponseMemberMakersListResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["CursorPageResponseMemberMakersListResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2507,7 +2701,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2529,7 +2734,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2552,7 +2768,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMailScenarioResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageMailScenarioResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2576,7 +2801,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailScenarioResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailScenarioResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2600,7 +2834,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailPreviewResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailPreviewResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2624,7 +2867,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMailDispatchJobResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageMailDispatchJobResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2650,7 +2902,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailDispatchResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailDispatchResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2672,7 +2933,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailDispatchResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailDispatchResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2698,7 +2968,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailDispatchResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailDispatchResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2721,7 +3000,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2743,7 +3033,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2766,7 +3067,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageAdminAccountResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageAdminAccountResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2789,7 +3099,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2807,7 +3128,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2830,7 +3162,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["AdminLoginResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["AdminLoginResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2852,7 +3193,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberSupportersDetailResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MemberSupportersDetailResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2873,7 +3223,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2897,7 +3258,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2918,7 +3290,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberSemesterResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MemberSemesterResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -2939,7 +3320,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2963,7 +3355,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -2987,7 +3390,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3008,7 +3422,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MemberMakersDetailResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MemberMakersDetailResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3029,7 +3452,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3053,7 +3487,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3074,7 +3519,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["WaitlistOrdersResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["WaitlistOrdersResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3098,7 +3552,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": number;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        /** Format: int32 */
+                        data: number;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3121,7 +3585,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3145,7 +3620,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3169,7 +3655,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3193,7 +3690,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3215,7 +3723,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3240,7 +3759,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ApplyManagementRecruitsResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ApplyManagementRecruitsResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3271,7 +3799,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailTargetResponse"][];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailTargetResponse"][];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3293,7 +3830,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailScenarioVariableResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailScenarioVariableResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3313,7 +3859,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailRecruitResponse"][];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailRecruitResponse"][];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3335,12 +3890,21 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["MailDispatchJobResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["MailDispatchJobResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
     };
-    searchTargets_1: {
+    searchTargets: {
         parameters: {
             query: {
                 status?: components["schemas"]["MailDispatchTargetStatus"];
@@ -3360,7 +3924,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMailDispatchTargetResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageMailDispatchTargetResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3382,7 +3955,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorPageResponseTempSavedApplyResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["CursorPageResponseTempSavedApplyResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3404,7 +3986,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CursorPageResponseSubmittedApplyResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["CursorPageResponseSubmittedApplyResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -3426,7 +4017,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -3449,7 +4051,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": number;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        /** Format: int32 */
+                        data: number;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
