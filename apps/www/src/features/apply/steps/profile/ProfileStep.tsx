@@ -3,12 +3,11 @@
 import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { components } from "@ject/api-types/core";
 import { Dialog, toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { applyApi } from "@/apis/apply/api";
+import { applyApi, type ApplyProfileRequest } from "@/apis/apply/api";
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
@@ -40,8 +39,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
   });
 
   const saveMutation = useMutation({
-    mutationFn: (request: components["schemas"]["ApplyProfileRequest"]) =>
-      applyApi.saveProfile(recruitId, request),
+    mutationFn: (request: ApplyProfileRequest) => applyApi.saveProfile(recruitId, request),
   });
 
   const handleConfirm = () => {

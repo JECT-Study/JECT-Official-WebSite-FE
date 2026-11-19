@@ -5,12 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { components } from "@ject/api-types/core";
 import { Dialog, LabelButton, toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { authApi } from "@/apis/auth/api";
+import { authApi, type VerifyAuthCodeRequest } from "@/apis/auth/api";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
@@ -112,8 +111,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
   });
 
   const verifyMutation = useMutation({
-    mutationFn: (request: components["schemas"]["VerifyAuthCodeRequest"]) =>
-      authApi.verifyAuthCode(request, "AUTH_CODE"),
+    mutationFn: (request: VerifyAuthCodeRequest) => authApi.verifyAuthCode(request, "AUTH_CODE"),
     onError: (error) => {
       if (hasErrorCode(error, "AUTH-1") || hasErrorCode(error, "AUTH-2")) {
         setIsAuthCodeMismatch(true);

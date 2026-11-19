@@ -1,12 +1,11 @@
-import type { components } from "@ject/api-types/core";
 import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
-import { applyApi } from "@/apis/apply/api";
+import { applyApi, type ApplyTemporaryRequest } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
 
 interface SaveTempApplicationVariables {
   recruitId: number;
-  request: components["schemas"]["ApplyTemporaryRequest"];
+  request: ApplyTemporaryRequest;
 }
 
 export function useSaveTempApplicationMutation(

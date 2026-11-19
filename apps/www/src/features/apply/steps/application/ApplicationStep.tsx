@@ -4,12 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { components } from "@ject/api-types/core";
 import { BlockButton, Dialog, toastController } from "@jects/jds";
 import { useIsMutating, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { applyApi } from "@/apis/apply/api";
+import { applyApi, type SubmitApplicationRequest } from "@/apis/apply/api";
 import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { JECT_EMAIL } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
@@ -55,7 +54,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
 
   const saveTempMutation = useSaveTempApplicationMutation();
   const submitMutation = useMutation({
-    mutationFn: (request: components["schemas"]["SubmitApplicationRequest"]) =>
+    mutationFn: (request: SubmitApplicationRequest) =>
       applyApi.submitApplication(recruitId, request),
   });
   const isUploading = useIsMutating({ mutationKey: applyMutationKeys.uploadPortfolio() }) > 0;
