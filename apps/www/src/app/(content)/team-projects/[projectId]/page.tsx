@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 import { TeamProjectDetail } from "@/components/team-project";
 import { getProject } from "@/components/team-project/getProject";
-import { BASE_OPEN_GRAPH } from "@/constants/metadata";
+import { createPageMetadata } from "@/constants/metadata";
+import { routeTo } from "@/constants/routes";
 
 export const revalidate = 3600;
 
@@ -13,23 +14,23 @@ export function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps<"/team-projects/[projectId]">): Promise<Metadata> {
-  const { name, bannerImageUrl } = await getProject((await params).projectId);
+  const { projectId } = await params;
+  const { name, description, bannerImageUrl } = await getProject(projectId);
 
-  return {
+  return createPageMetadata({
     title: name,
-    openGraph: {
-      ...BASE_OPEN_GRAPH,
-      ...(bannerImageUrl && {
-        images: [
-          {
-            url: bannerImageUrl.imageUrl,
-            width: bannerImageUrl.width,
-            height: bannerImageUrl.height,
-          },
-        ],
-      }),
-    },
-  };
+    description,
+    path: routeTo.projectDetail(projectId),
+    ...(bannerImageUrl && {
+      images: [
+        {
+          url: bannerImageUrl.imageUrl,
+          width: bannerImageUrl.width,
+          height: bannerImageUrl.height,
+        },
+      ],
+    }),
+  });
 }
 
 export default async function TeamProjectDetailPage({
