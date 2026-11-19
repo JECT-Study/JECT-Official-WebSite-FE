@@ -1,13 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
-
-import { BlockButton } from "@jects/jds";
 
 import joinImage from "@/assets/images/landing/join-section.webp";
 import { Phrases } from "@/components/common/phrases";
 import { SPONSORS } from "@/constants/landing";
-import { ROUTES } from "@/constants/routes";
 
+import { JoinApplyButton } from "./JoinApplyButton";
 import { SectionTitle } from "./SectionTitle";
 
 function SponsorList() {
@@ -50,9 +47,7 @@ export function JoinSection() {
                 모든 구성원들의 몰입과 성장을 위해.
               </p>
             </div>
-            <BlockButton asChild hierarchy="accent" size="lg" suffixIcon="arrow-right">
-              <Link href={ROUTES.applyList}>지원하러 가기</Link>
-            </BlockButton>
+            <JoinApplyButton />
           </div>
           <Image
             src={joinImage}

@@ -28,6 +28,15 @@ function extractUTMParams() {
   return utmParams;
 }
 
+function getStoredUTMParams(): UTMParams {
+  try {
+    const stored = sessionStorage.getItem(UTM_STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as UTMParams) : {};
+  } catch {
+    return {};
+  }
+}
+
 function trackUTMParams() {
   const utmParams = extractUTMParams();
 
@@ -55,4 +64,16 @@ export function initAnalytics() {
   amplitude.add(sessionReplayPlugin({ sampleRate: 1 }));
 
   trackUTMParams();
+}
+
+function trackEvent(eventName: string, eventProperties: Record<string, unknown> = {}) {
+  if (!amplitudeApiKey) {
+    return;
+  }
+
+  amplitude.track(eventName, { ...eventProperties, ...getStoredUTMParams() });
+}
+
+export function trackApplyStart(source: string) {
+  trackEvent("apply_start", { source });
 }
