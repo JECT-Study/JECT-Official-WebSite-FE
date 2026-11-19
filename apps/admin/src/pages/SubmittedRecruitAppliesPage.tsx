@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
-import type { CareerDetails, SelectionResult } from "@/apis/apply/schemas";
+import type { CareerDetails, SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
@@ -41,12 +41,75 @@ function toFilterCondition(filterValues: FilterValues) {
   };
 }
 
-export default function SubmittedRecruitAppliesPage() {
-  const recruitId = Number(useParams().recruitId);
+interface ApplyListProps {
+  applies: SubmittedApply[];
+  isLoading: boolean;
+  isError: boolean;
+  isEmpty: boolean;
+  isFiltered: boolean;
+  hasNextPage: boolean;
+  isFetching: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
+}
 
-  if (!Number.isInteger(recruitId) || recruitId <= 0) return <NotFoundPage />;
+function ApplyList({
+  applies,
+  isLoading,
+  isError,
+  isEmpty,
+  isFiltered,
+  hasNextPage,
+  isFetching,
+  isFetchingNextPage,
+  onLoadMore,
+}: ApplyListProps) {
+  if (isLoading) {
+    return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+  }
 
-  return <SubmittedRecruitApplies key={recruitId} recruitId={recruitId} />;
+  if (isError) {
+    return (
+      <EmptyState header="지원서 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+    );
+  }
+
+  if (isEmpty && isFiltered) {
+    return (
+      <EmptyState
+        header="선택한 조건에 맞는 지원서가 없습니다"
+        body="필터 조건을 바꾸거나 해제해 보세요."
+      />
+    );
+  }
+
+  if (isEmpty) {
+    return (
+      <EmptyState
+        header="제출 완료된 지원서가 없습니다"
+        body="지원서가 제출되면 확인할 수 있어요."
+      />
+    );
+  }
+
+  return (
+    <>
+      <SubmittedAppliesTable applies={applies} />
+      {hasNextPage && (
+        <BlockButton
+          hierarchy="primary"
+          variant="hollow"
+          size="md"
+          suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
+          className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
+          disabled={isFetching}
+          onClick={onLoadMore}
+        >
+          목록 더보기
+        </BlockButton>
+      )}
+    </>
+  );
 }
 
 interface SubmittedRecruitAppliesProps {
@@ -133,45 +196,27 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           </div>
         </div>
         <div className="flex flex-col items-center gap-10">
-          {isPending || isPlaceholderData ? (
-            <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />
-          ) : isError && !data ? (
-            <EmptyState
-              header="지원서 목록을 불러오지 못했습니다"
-              body="잠시 후 다시 시도해 주세요."
-            />
-          ) : data?.pages[0].content.length === 0 ? (
-            isFiltered ? (
-              <EmptyState
-                header="선택한 조건에 맞는 지원서가 없습니다"
-                body="필터 조건을 바꾸거나 해제해 보세요."
-              />
-            ) : (
-              <EmptyState
-                header="제출 완료된 지원서가 없습니다"
-                body="지원서가 제출되면 확인할 수 있어요."
-              />
-            )
-          ) : (
-            <>
-              <SubmittedAppliesTable applies={applies} />
-              {hasNextPage && (
-                <BlockButton
-                  hierarchy="primary"
-                  variant="hollow"
-                  size="md"
-                  suffixIcon={isFetchingNextPage ? "loader-circle" : "chevron-down"}
-                  className={isFetchingNextPage ? "[&_svg]:animate-spin" : undefined}
-                  disabled={isFetching}
-                  onClick={handleLoadMore}
-                >
-                  목록 더보기
-                </BlockButton>
-              )}
-            </>
-          )}
+          <ApplyList
+            applies={applies}
+            isLoading={isPending || isPlaceholderData}
+            isError={isError && !data}
+            isEmpty={data?.pages[0].content.length === 0}
+            isFiltered={isFiltered}
+            hasNextPage={hasNextPage}
+            isFetching={isFetching}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={handleLoadMore}
+          />
         </div>
       </div>
     </section>
   );
+}
+
+export default function SubmittedRecruitAppliesPage() {
+  const recruitId = Number(useParams().recruitId);
+
+  if (!Number.isInteger(recruitId) || recruitId <= 0) return <NotFoundPage />;
+
+  return <SubmittedRecruitApplies key={recruitId} recruitId={recruitId} />;
 }
