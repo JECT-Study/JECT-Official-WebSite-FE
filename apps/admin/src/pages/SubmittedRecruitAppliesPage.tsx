@@ -5,9 +5,9 @@ import { BlockButton, EmptyState, useToast } from "@jects/jds";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
-import { applyApi } from "@/apis/apply/api";
+import { applyApi, type SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueryKeys } from "@/apis/apply/queryKeys";
-import type { CareerDetails, SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
+import type { SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
 import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
@@ -26,10 +26,10 @@ const FILTER_FIELDS: FilterField[] = [
 ];
 
 // 옵션 값이 FILTER_FIELDS에서 오므로 각 필드의 타입으로 좁힌다.
-interface SubmittedAppliesFilterValues {
-  careerDetails?: CareerDetails[];
-  selectionResults?: SelectionResult[];
-}
+type SubmittedAppliesFilterValues = Pick<
+  SubmittedAppliesCondition,
+  "careerDetails" | "selectionResults"
+>;
 
 // 칩만 추가하고 고르지 않은 필터는 조건에서 빼야 같은 쿼리 키로 유지된다.
 function toFilterCondition(filterValues: FilterValues) {
