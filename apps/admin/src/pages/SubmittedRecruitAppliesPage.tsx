@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, EmptyState, useToast } from "@jects/jds";
+import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -186,10 +186,13 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
       <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
         <div className="rounded-10 border border-stroke-subtle">
           <div className="flex border-b border-stroke-subtle px-16 py-12">
-            <p className="flex gap-2 rounded-6 border border-stroke-alpha-subtle px-12 py-6 text-label-md text-object-alternative">
-              <span className="font-label-bold">전체</span>
-              {totalCount !== undefined && <span className="font-label-subtle">{totalCount}</span>}
-            </p>
+            <Tabs.Root variant="content" value="all">
+              <Tabs.List>
+                <Tabs.Trigger value="all" badge={totalCount}>
+                  전체
+                </Tabs.Trigger>
+              </Tabs.List>
+            </Tabs.Root>
           </div>
           <div className="min-h-48 px-16 py-10">
             <Filter fields={FILTER_FIELDS} values={filterValues} onValuesChange={setFilterValues} />
