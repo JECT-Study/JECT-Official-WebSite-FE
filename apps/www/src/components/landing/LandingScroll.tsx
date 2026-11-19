@@ -35,7 +35,7 @@ function SectionSnap({ containerRef }: SectionSnapProps) {
     snap.addElements(sections, { align: ["start"] });
 
     const offVirtualScroll = lenis.on("virtual-scroll", ({ deltaY }) => {
-      const scroll = lenis.scroll + deltaY;
+      const scroll = lenis.targetScroll + deltaY;
       const isSectionTopVisible = sections.some((section) => {
         const distance = section.offsetTop - scroll;
 
