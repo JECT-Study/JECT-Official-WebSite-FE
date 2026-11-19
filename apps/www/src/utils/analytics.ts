@@ -1,7 +1,7 @@
 import * as amplitude from "@amplitude/analytics-browser";
 import { sessionReplayPlugin } from "@amplitude/plugin-session-replay-browser";
 
-import type { JobFamily } from "@/apis/recruit/schemas";
+import type { JobFamily, RecruitType } from "@/apis/recruit/schemas";
 
 const isAnalyticsEnvironment =
   process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "true";
@@ -74,6 +74,14 @@ function trackEvent(eventName: string, eventProperties: Record<string, unknown> 
   }
 
   amplitude.track(eventName, { ...eventProperties, ...getStoredUTMParams() });
+}
+
+export function trackRecruitmentAlertClick() {
+  trackEvent("recruitment_alert_click");
+}
+
+export function trackTalentPoolClick(recruitType: RecruitType) {
+  trackEvent("talent_pool_click", { recruit_type: recruitType });
 }
 
 export function trackApplyStart(source: string) {
