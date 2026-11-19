@@ -5,8 +5,8 @@ import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
-import { applyApi, type SubmittedAppliesCondition } from "@/apis/apply/api";
-import { applyQueryKeys } from "@/apis/apply/queryKeys";
+import type { SubmittedAppliesCondition } from "@/apis/apply/api";
+import { applyQueries } from "@/apis/apply/queries";
 import type { SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
@@ -135,10 +135,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     isFetchingNextPage,
     fetchNextPage,
   } = useInfiniteQuery({
-    queryKey: applyQueryKeys.submittedApplies(condition),
-    queryFn: ({ pageParam }) => applyApi.getSubmittedApplies({ ...condition, cursor: pageParam }),
-    initialPageParam: undefined as number | undefined,
-    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
+    ...applyQueries.submittedApplies(condition),
     // 필터를 바꾸는 동안 전체 개수를 유지하려고 이전 결과를 남긴다. 목록은 로딩 화면을 표시한다.
     placeholderData: keepPreviousData,
   });
