@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
+import { after } from "next/server";
+
 interface SentryIssue {
   title: string;
   culprit: string;
@@ -41,6 +43,8 @@ const ALERT_COLORS: Record<AlertType, number> = {
 
 const DEFAULT_COLOR = 0x9e9e9e;
 
+const EMBED_TITLE_MAX_LENGTH = 256;
+
 function getAlertType({ action, data }: SentryWebhookPayload): AlertType | null {
   if (action === "created" || action === "triggered") {
     return action;
@@ -66,7 +70,7 @@ function truncate(value: string, max: number) {
 
 function createIssueEmbed(issue: SentryIssue, alertType: AlertType, actorName: string) {
   return {
-    title: `[${alertType.toUpperCase()}] ${issue.title}`,
+    title: truncate(`[${alertType.toUpperCase()}] ${issue.title}`, EMBED_TITLE_MAX_LENGTH),
     description: issue.culprit || "No culprit information",
     color: ALERT_COLORS[alertType],
     ...(issue.web_url && { url: issue.web_url }),
@@ -83,7 +87,7 @@ function createEventEmbed(event: SentryEvent, triggeredRule: string) {
   const tags = Object.fromEntries(event.tags);
 
   return {
-    title: `[ERROR] ${event.title}`,
+    title: truncate(`[ERROR] ${event.title}`, EMBED_TITLE_MAX_LENGTH),
     description: triggeredRule ? `Rule: ${triggeredRule}` : "Sentry Alert",
     color: ALERT_COLORS.triggered,
     ...(event.web_url && { url: event.web_url }),
@@ -149,18 +153,24 @@ export async function POST(request: Request) {
     footer: { text: "Sentry" },
   };
 
-  const sent = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ embeds: [embed] }),
-  }).then(
-    (response) => response.ok,
-    () => false
-  );
+  // Sentry는 1초 안에 응답하지 않으면 타임아웃으로 처리하므로 응답한 뒤에 전송한다.
+  after(async () => {
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ embeds: [embed] }),
+      });
 
-  if (!sent) {
-    return Response.json({ error: "Discord webhook failed" }, { status: 502 });
-  }
+      if (!response.ok) {
+        // eslint-disable-next-line no-console
+        console.error(`Discord 웹훅 전송에 실패했습니다. (${response.status})`);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Discord 웹훅 전송에 실패했습니다.", error);
+    }
+  });
 
   return Response.json({ ok: true });
 }
