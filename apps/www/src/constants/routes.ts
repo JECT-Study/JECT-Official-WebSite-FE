@@ -1,13 +1,11 @@
 export const ROUTES = {
   main: "/",
   vision: "/vision",
-  activity: "/activity",
   curriculum: "/curriculum",
   miniStudy: "/mini-study",
   teamProject: "/team-projects",
   faq: "/faq",
 
-  apply: "/apply",
   applyList: "/apply/list",
   applyGuide: "/apply/guide",
   applyFunnel: "/apply/funnel",

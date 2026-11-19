@@ -17,10 +17,6 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      { source: "/apply/verify", destination: "/apply", permanent: true },
-      { source: "/apply/applicant-info", destination: "/apply", permanent: true },
-      { source: "/apply/registration", destination: "/apply", permanent: true },
-      { source: "/apply/complete", destination: "/apply", permanent: true },
       { source: "/project/:projectId", destination: "/team-projects/:projectId", permanent: true },
     ];
   },
