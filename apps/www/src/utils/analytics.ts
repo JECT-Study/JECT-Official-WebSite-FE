@@ -46,7 +46,11 @@ function trackUTMParams() {
     return;
   }
 
-  sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
+  try {
+    sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
+  } catch {
+    // 저장소 접근이 차단되면 저장하지 않고 사용자 속성만 설정한다.
+  }
 
   const identify = new amplitude.Identify();
   Object.entries(utmParams).forEach(([key, value]) => {
