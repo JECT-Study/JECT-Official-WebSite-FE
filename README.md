@@ -2,11 +2,6 @@
 
 젝트 메이커스 1팀에서 관리하는 공식 홈페이지 및 백오피스 애플리케이션을 포함한 모노레포입니다.
 
-> [!IMPORTANT]
-> 공식 홈페이지는 마이그레이션이 진행 중입니다. 현재 운영 중인 사이트는
-> [JECT-Official-WebSite-Client](https://github.com/JECT-Study/JECT-Official-WebSite-Client)에서
-> 관리하며, `apps/www`는 Next.js 마이그레이션을 위한 작업 공간입니다.
-
 ## 구성
 
 | 워크스페이스          | 패키지             | 설명                              |

@@ -11,7 +11,7 @@
 
 앱 안에서 작업할 때는 그 앱의 `AGENTS.md`를 추가로 읽습니다.
 
-- `apps/www/AGENTS.md`: 공식 홈페이지 (Next.js, 마이그레이션 진행 중)
+- `apps/www/AGENTS.md`: 공식 홈페이지 (Next.js)
 - `apps/admin/AGENTS.md`: 백오피스 (Vite SPA)
 
 ## 핵심 규칙
