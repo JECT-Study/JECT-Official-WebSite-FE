@@ -56,8 +56,8 @@ e2e/                  # Playwright 스펙 (docs/e2e-testing.md 참고)
   `server.ts`는 `import "server-only"`로 클라이언트 번들 유입을 빌드 단계에서 막습니다.
 - **서버에서 쿼리 정의 사용**: `queries.ts`의 `queryFn`은 클라이언트용 API를 사용합니다.
   따라서 서버 컴포넌트에서 prefetch할 때는 쿼리 정의를 펼친 뒤 `queryFn`만 `api.server.ts`의
-  함수로 재정의합니다. 쿼리 키는 기존 정의를 그대로 사용하므로 클라이언트와 동일한 캐시를
-  공유할 수 있습니다.
+  함수로 재정의합니다. 쿼리 키는 기존 정의를 그대로 사용하고, prefetch한 클라이언트를
+  `dehydrate`해 `HydrationBoundary`로 전달하면 클라이언트가 같은 키로 해당 데이터를 사용합니다.
 - **레이아웃 너비**: 본문 열 최대 너비는 `src/styles/globals.css`의 `@theme`에 두고
   `max-w-content`(922px), `max-w-narrow`(656px)로 씁니다. JDS 토큰이 아니라 이 앱의 값이므로
   여기서 정합니다. 페이지마다 `max-w-[922px]` 등을 다시 작성하지 않습니다.
