@@ -6,8 +6,7 @@ import Link from "next/link";
 import { Card, Icon, SelectField, type SelectOption } from "@jects/jds";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { projectApi } from "@/apis/project/api";
-import { projectQueryKeys } from "@/apis/project/queryKeys";
+import { projectQueries } from "@/apis/project/queries";
 import type { ProjectPage, ProjectSummary } from "@/apis/project/schemas";
 import { routeTo } from "@/constants/routes";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -59,10 +58,7 @@ export function TeamProjectList({ summary, initialPage }: TeamProjectListProps) 
 
   const { data, isPending, hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage } =
     useInfiniteQuery({
-      queryKey: projectQueryKeys.list(category),
-      queryFn: ({ pageParam }) => projectApi.getProjects(category, pageParam),
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+      ...projectQueries.list(category),
       initialData: category === null ? { pages: [initialPage], pageParams: [0] } : undefined,
       throwOnError: (_, query) => query.state.data === undefined,
     });

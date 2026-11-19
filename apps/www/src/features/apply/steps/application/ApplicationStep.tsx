@@ -5,19 +5,18 @@ import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BlockButton, Dialog, toastController } from "@jects/jds";
-import { useIsMutating } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { applyMutationKeys } from "@/apis/apply/queryKeys";
+import { applyApi, type SubmitApplicationRequest } from "@/apis/apply/api";
+import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { JECT_EMAIL } from "@/constants/links";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
-import { useApplicationSuspenseQueries } from "@/hooks/apply/useApplicationSuspenseQueries";
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
-import { useSubmitApplicationMutation } from "@/hooks/apply/useSubmitApplicationMutation";
 
 import { ApplicationField } from "./ApplicationField";
 import {
@@ -34,7 +33,13 @@ interface ApplicationStepProps {
 
 export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
   const router = useRouter();
-  const { questions, tempApplication } = useApplicationSuspenseQueries(recruitId);
+  const { questions, tempApplication } = useSuspenseQueries({
+    queries: [applyQueries.questions(recruitId), applyQueries.tempApplication(recruitId)],
+    combine: ([questions, tempApplication]) => ({
+      questions: questions.data.questionResponses,
+      tempApplication: tempApplication.data,
+    }),
+  });
 
   const [pendingApplication, setPendingApplication] = useState<ApplicationFormValues | null>(null);
   const [isClosedDialogOpen, setIsClosedDialogOpen] = useState(false);
@@ -48,8 +53,11 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
   const { isValid } = form.formState;
 
   const saveTempMutation = useSaveTempApplicationMutation();
-  const submitMutation = useSubmitApplicationMutation();
-  const isUploading = useIsMutating({ mutationKey: applyMutationKeys.uploadPortfolio }) > 0;
+  const submitMutation = useMutation({
+    mutationFn: (request: SubmitApplicationRequest) =>
+      applyApi.submitApplication(recruitId, request),
+  });
+  const isUploading = useIsMutating({ mutationKey: applyMutationKeys.uploadPortfolio() }) > 0;
   const isPending = saveTempMutation.isPending || submitMutation.isPending || isUploading;
 
   const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));
@@ -82,27 +90,24 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
       return;
     }
 
-    submitMutation.mutate(
-      { recruitId, request: toApplicationRequest(pendingApplication) },
-      {
-        onSuccess: onNext,
-        onError: (error) => {
-          if (hasErrorCode(error, "APPLY-2")) {
-            setIsSubmittedDialogOpen(true);
-            return;
-          }
+    submitMutation.mutate(toApplicationRequest(pendingApplication), {
+      onSuccess: onNext,
+      onError: (error) => {
+        if (hasErrorCode(error, "APPLY-2")) {
+          setIsSubmittedDialogOpen(true);
+          return;
+        }
 
-          if (isRecruitClosedError(error)) {
-            setIsClosedDialogOpen(true);
-            return;
-          }
+        if (isRecruitClosedError(error)) {
+          setIsClosedDialogOpen(true);
+          return;
+        }
 
-          toastController.destructive("지원서 제출 실패", {
-            description: `일시적 오류일 수 있으니 임시 저장 후 다시 시도해주세요.`,
-          });
-        },
-      }
-    );
+        toastController.destructive("지원서 제출 실패", {
+          description: `일시적 오류일 수 있으니 임시 저장 후 다시 시도해주세요.`,
+        });
+      },
+    });
     setPendingApplication(null);
   };
 

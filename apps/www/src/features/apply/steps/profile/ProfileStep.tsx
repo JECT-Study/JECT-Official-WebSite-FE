@@ -4,14 +4,15 @@ import { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, toastController } from "@jects/jds";
+import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
+import { applyApi, type ApplyProfileRequest } from "@/apis/apply/api";
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
-import { useSaveProfileMutation } from "@/hooks/apply/useSaveProfileMutation";
 
 import { InterestedDomainsField } from "./InterestedDomainsField";
 import { NameField } from "./NameField";
@@ -37,7 +38,9 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
     defaultValues: { name: "", phoneNumber: "", interestedDomains: [] },
   });
 
-  const saveMutation = useSaveProfileMutation();
+  const saveMutation = useMutation({
+    mutationFn: (request: ApplyProfileRequest) => applyApi.saveProfile(recruitId, request),
+  });
 
   const handleConfirm = () => {
     if (pendingProfile === null) {
@@ -45,7 +48,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
     }
 
     saveMutation.mutate(
-      { recruitId, request: { ...pendingProfile, jobFamily } },
+      { ...pendingProfile, jobFamily },
       {
         onSuccess: onNext,
         onError: (error) => {

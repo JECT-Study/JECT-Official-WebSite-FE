@@ -73,11 +73,39 @@ pnpm e2e --filter=@ject/www
   경로 문자열을 컴포넌트에 하드코딩하지 않습니다.
 - **폼과 검증**: React Hook Form과 Zod를 사용합니다. Zod 스키마를 단일 출처로 두고
   `z.infer<typeof schema>`로 타입을 파생합니다.
-- **API 계층**: 공용 클라이언트는 `src/apis/`의 `httpClient`이고, 도메인별 호출은
-  `src/apis/<도메인>/`의 `api.ts`, `schemas.ts`, `queryKeys.ts`에 둡니다. 응답은 zod
-  스키마로 파싱합니다. 쿼리 키는 계층형 팩토리(`xxxQueryKeys.all`에서 세분화)로 정의하고,
-  훅 내부에 배열 키를 직접 작성하지 않습니다. `apps/www`는 서버용과 클라이언트용을 나눠
-  두므로 해당 앱 문서를 함께 확인합니다.
+- **API 계층**: 공용 HTTP 클라이언트는 `src/apis/`의 `httpClient`를 사용하고, 도메인별 API
+  호출은 `src/apis/<도메인>/`의 `api.ts`, `schemas.ts`, `queries.ts`에 정의합니다. 응답은
+  Zod 스키마로 파싱합니다. `apps/www`는 서버용과 클라이언트용 API를 구분하므로 해당 앱의
+  문서도 함께 확인합니다.
+- **쿼리 정의**: `queries.ts`의 `xxxQueries`에서 각 조회에 `queryOptions`를 사용해 쿼리 키와
+  `queryFn`을 함께 정의합니다. 무한 스크롤에는 `infiniteQueryOptions`를 사용합니다. 쿼리
+  키는 `all()`을 기준으로 계층화하며, 여러 조회를 함께 무효화해야 하는 경우 `lists()`처럼
+  키만 반환하는 단계를 추가합니다. 특정 조회 하나만 무효화할 때는
+  `xxxQueries.detail(id).queryKey`처럼 기존 정의의 키를 사용합니다. 호출부에서는 쿼리 정의를
+  펼쳐 사용하고, 화면에 따라 달라지는 옵션만 추가합니다. 호출부나 훅에서 쿼리 키 배열을
+  직접 작성하지 않습니다. Mutation 키가 필요한 경우 같은 파일에 `xxxMutationKeys`로
+  정의합니다.
+
+  ```ts
+  export const accountQueries = {
+    all: () => ["account"] as const,
+    lists: () => [...accountQueries.all(), "list"] as const,
+    list: (params: AccountListParams) =>
+      queryOptions({
+        queryKey: [...accountQueries.lists(), params],
+        queryFn: () => accountApi.getAccounts(params),
+      }),
+  };
+
+  useQuery({ ...accountQueries.list(params), placeholderData: keepPreviousData });
+  queryClient.invalidateQueries({ queryKey: accountQueries.lists() });
+  ```
+
+- **쿼리와 뮤테이션 훅**: 여러 곳에서 재사용하거나 무효화, 공통 에러 처리 등의 정책을
+  캡슐화해야 하는 경우에만 `src/hooks/<도메인>/`에 훅으로 분리합니다. `queryFn`이나
+  `mutationFn`만 감싸는 훅은 만들지 않습니다. 이런 훅은 실제 동작을 파악하기 위해 호출부에서
+  훅의 구현까지 확인해야 하므로, 별도 추상화 없이 컴포넌트에서 `useQuery`, `useMutation`을
+  직접 사용합니다.
 - **공통 응답 형식**: 백엔드는 모든 응답을 `{ status, data, timestamp }`로 감쌉니다.
   `httpClient`가 `data`만 꺼내 반환하므로 도메인 코드와 zod 스키마는 바깥 형식을 다루지
   않습니다. `status`가 `SUCCESS`가 아니면 `ApiError`를 던집니다.
@@ -88,7 +116,8 @@ pnpm e2e --filter=@ject/www
   토큰 재발급은 `@ject/api-client/auth`가 담당합니다.
 - **API 타입**: 요청과 응답 타입은 `@ject/api-types`에서 가져옵니다. 손으로 정의하지
   않습니다. zod 스키마는 런타임 검증을 위해 직접 작성하되, 생성된 타입을 `z.ZodType`에
-  지정해 스펙과 어긋나면 컴파일 단계에서 드러나게 합니다.
+  지정해 스펙과 어긋나면 컴파일 단계에서 드러나게 합니다. 컴포넌트와 훅에서는
+  `@ject/api-types`를 직접 가져오지 않고, 도메인 `api.ts`에서 export한 타입을 사용합니다.
 
   ```ts
   import type { components } from "@ject/api-types/core";

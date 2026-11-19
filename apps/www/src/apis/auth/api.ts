@@ -3,6 +3,10 @@ import { z } from "zod";
 
 import { httpClient } from "@/apis/httpClient/client";
 
+export type PinLoginRequest = components["schemas"]["PinLoginRequest"];
+
+export type VerifyAuthCodeRequest = components["schemas"]["VerifyAuthCodeRequest"];
+
 export type EmailTemplate = operations["sendAuthEmail"]["parameters"]["query"]["sendGroupCode"];
 
 export const authApi = {
@@ -20,10 +24,7 @@ export const authApi = {
     });
   },
 
-  verifyAuthCode: async (
-    request: components["schemas"]["VerifyAuthCodeRequest"],
-    template: EmailTemplate
-  ) => {
+  verifyAuthCode: async (request: VerifyAuthCodeRequest, template: EmailTemplate) => {
     const { data } = await httpClient.POST("/auth/code", {
       params: { query: { template } },
       body: request,
@@ -32,7 +33,7 @@ export const authApi = {
     return z.boolean().parse(data);
   },
 
-  loginWithPin: async (request: components["schemas"]["PinLoginRequest"]) => {
+  loginWithPin: async (request: PinLoginRequest) => {
     const { data } = await httpClient.POST("/auth/login/pin", { body: request });
 
     return z.boolean().parse(data);

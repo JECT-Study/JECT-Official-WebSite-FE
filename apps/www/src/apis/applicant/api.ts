@@ -3,8 +3,10 @@ import { z } from "zod";
 
 import { httpClient } from "@/apis/httpClient/client";
 
+export type RegisterRequest = components["schemas"]["RegisterRequest"];
+
 export const applicantApi = {
-  register: async (request: components["schemas"]["RegisterRequest"]) => {
+  register: async (request: RegisterRequest) => {
     const { data } = await httpClient.POST("/applicants/apply", { body: request });
 
     return z.boolean().parse(data);

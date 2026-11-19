@@ -1,10 +1,7 @@
-import type { components } from "@ject/api-types/core";
 import { useMutation, type UseMutationOptions, useQueryClient } from "@tanstack/react-query";
 
-import { applicantApi } from "@/apis/applicant/api";
-import { applyQueryKeys } from "@/apis/apply/queryKeys";
-
-type RegisterRequest = components["schemas"]["RegisterRequest"];
+import { applicantApi, type RegisterRequest } from "@/apis/applicant/api";
+import { applyQueries } from "@/apis/apply/queries";
 
 export function useRegisterApplicantMutation(
   options?: Omit<UseMutationOptions<boolean, Error, RegisterRequest>, "mutationFn">
@@ -15,7 +12,7 @@ export function useRegisterApplicantMutation(
     ...options,
     mutationFn: applicantApi.register,
     onSuccess: (data, variables, ...rest) => {
-      queryClient.removeQueries({ queryKey: applyQueryKeys.tempApplications() });
+      queryClient.removeQueries({ queryKey: applyQueries.tempApplications() });
       options?.onSuccess?.(data, variables, ...rest);
     },
   });

@@ -7,12 +7,17 @@ import {
   portfolioUploadUrlsSchema,
   questionsSchema,
   tempApplicationSchema,
+  type UploadedPortfolio,
 } from "./schemas";
 
 type Schemas = components["schemas"];
 
+export type ApplyProfileRequest = Schemas["ApplyProfileRequest"];
+export type ApplyTemporaryRequest = Schemas["ApplyTemporaryRequest"];
+export type SubmitApplicationRequest = Schemas["SubmitApplicationRequest"];
+
 export const applyApi = {
-  saveProfile: async (recruitId: number, request: Schemas["ApplyProfileRequest"]) => {
+  saveProfile: async (recruitId: number, request: ApplyProfileRequest) => {
     await httpClient.POST("/apply/profile", {
       params: { query: { recruitId } },
       body: request,
@@ -43,14 +48,14 @@ export const applyApi = {
     return tempApplicationSchema.parse(data);
   },
 
-  saveTempApplication: async (recruitId: number, request: Schemas["ApplyTemporaryRequest"]) => {
+  saveTempApplication: async (recruitId: number, request: ApplyTemporaryRequest) => {
     await httpClient.POST("/apply/temp", {
       params: { query: { recruitId } },
       body: request,
     });
   },
 
-  submitApplication: async (recruitId: number, request: Schemas["SubmitApplicationRequest"]) => {
+  submitApplication: async (recruitId: number, request: SubmitApplicationRequest) => {
     await httpClient.POST("/apply/submit", {
       params: { query: { recruitId } },
       body: request,
@@ -76,5 +81,19 @@ export const applyApi = {
     if (!response.ok) {
       throw new Error(`파일 업로드에 실패했습니다. (${response.status})`);
     }
+  },
+
+  uploadPortfolio: async (file: File): Promise<UploadedPortfolio> => {
+    const [uploadUrl] = await applyApi.createPortfolioUploadUrls([
+      { name: file.name, contentType: file.type, contentLength: file.size },
+    ]);
+
+    if (!uploadUrl) {
+      throw new Error("업로드 주소를 발급받지 못했습니다.");
+    }
+
+    await applyApi.uploadToPresignedUrl(uploadUrl.presignedUrl, file);
+
+    return { fileUrl: uploadUrl.cdnUrl, fileName: file.name, fileSize: String(file.size) };
   },
 } as const;
