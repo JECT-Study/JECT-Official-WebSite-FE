@@ -41,7 +41,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
   }, [funnel.step, jobFamily]);
 
   useEffect(() => {
-    dismissDialog();
+    return () => dismissDialog();
   }, [funnel.step]);
 
   return (
