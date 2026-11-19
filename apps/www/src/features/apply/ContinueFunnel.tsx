@@ -54,7 +54,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
           <IdentityVerificationStep
             recruitId={recruitId}
             // 본인 확인 후 뒤로 가기로 본인 확인 단계에 돌아오지 않게 한다.
-            onNext={(step) => history.replace(step, {})}
+            onNext={(step) => {
+              trackApplyStepComplete("identityVerification", jobFamily);
+              void history.replace(step, {});
+            }}
           />
         )}
         profile={({ history }) => (
