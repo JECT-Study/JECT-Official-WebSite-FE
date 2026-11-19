@@ -2,7 +2,12 @@ import type { components } from "@ject/api-types/core";
 
 import { httpClient } from "@/apis/httpClient/client";
 
-import { portfolioUploadUrlsSchema, questionsSchema, tempApplicationSchema } from "./schemas";
+import {
+  applyStatusResponseSchema,
+  portfolioUploadUrlsSchema,
+  questionsSchema,
+  tempApplicationSchema,
+} from "./schemas";
 
 type Schemas = components["schemas"];
 
@@ -12,6 +17,14 @@ export const applyApi = {
       params: { query: { recruitId } },
       body: request,
     });
+  },
+
+  getApplyStatus: async (recruitId: number) => {
+    const { data } = await httpClient.GET("/apply/status", {
+      params: { query: { recruitId } },
+    });
+
+    return applyStatusResponseSchema.parse(data).status;
   },
 
   getQuestions: async (recruitId: number) => {

@@ -31,4 +31,10 @@ export const authApi = {
 
     return z.boolean().parse(data);
   },
+
+  loginWithPin: async (request: components["schemas"]["PinLoginRequest"]) => {
+    const { data } = await httpClient.POST("/auth/login/pin", { body: request });
+
+    return z.boolean().parse(data);
+  },
 } as const;

@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useSyncExternalStore } from "react";
+import { Suspense } from "react";
 
 import { useFunnel } from "@use-funnel/browser";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
+import { useIsClient } from "@/hooks/useIsClient";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
 import { ApplyProgress } from "./ApplyProgress";
@@ -23,10 +24,6 @@ interface ApplyFunnelProps {
   jobFamilyName: string;
 }
 
-function subscribe() {
-  return () => {};
-}
-
 function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunnelProps) {
   const funnel = useFunnel<{
     emailVerification: object;
@@ -40,7 +37,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader recruitId={recruitId} recruitTitle={recruitTitle}>
+      <ApplyFunnelHeader recruitId={recruitId} navigationTitle={recruitTitle}>
         {funnel.step !== "complete" && <ApplyProgress current={PROGRESS_INDEX[funnel.step]} />}
       </ApplyFunnelHeader>
       <funnel.Render
@@ -76,11 +73,7 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ApplyFunn
 
 export function ApplyFunnel(props: ApplyFunnelProps) {
   // use-funnel의 step은 브라우저 히스토리에 저장되어 서버에서 알 수 없으므로 클라이언트에서만 렌더링한다.
-  const isClient = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false
-  );
+  const isClient = useIsClient();
 
   if (!isClient) {
     return null;
