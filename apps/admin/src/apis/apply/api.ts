@@ -1,5 +1,6 @@
 import type { components } from "@ject/api-types/admin";
 
+import { conditionQuerySerializer } from "@/apis/condition";
 import { httpClient } from "@/apis/httpClient";
 
 import { submittedAppliesSchema } from "./schemas";
@@ -10,23 +11,11 @@ export type SubmittedAppliesCondition = Omit<
   "sizeOrDefault"
 >;
 
-// 스펙의 condition은 form 방식이라 키를 펼쳐 보내야 하는데, openapi-fetch는 객체 안의 배열을 직렬화하지 못한다.
-function serializeCondition({ condition }: { condition: SubmittedAppliesCondition }) {
-  const params = new URLSearchParams();
-
-  Object.entries(condition).forEach(([key, value]) => {
-    if (value === undefined) return;
-    [value].flat().forEach((item) => params.append(key, String(item)));
-  });
-
-  return params.toString();
-}
-
 export const applyApi = {
   getSubmittedApplies: async (condition: SubmittedAppliesCondition) => {
     const { data } = await httpClient.GET("/admin/applies/submitted", {
       params: { query: { condition } },
-      querySerializer: serializeCondition,
+      querySerializer: conditionQuerySerializer,
     });
 
     return submittedAppliesSchema.parse(data);
