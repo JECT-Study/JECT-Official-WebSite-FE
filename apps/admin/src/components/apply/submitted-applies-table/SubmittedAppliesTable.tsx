@@ -69,6 +69,8 @@ const columns = columnHelper.columns([
   }),
 ]);
 
+const getApplyRowId = (apply: SubmittedApply) => String(apply.applyId);
+
 interface SubmittedAppliesTableProps {
   applies: SubmittedApply[];
 }
@@ -79,7 +81,7 @@ export default function SubmittedAppliesTable({ applies }: SubmittedAppliesTable
   const table = useDataTable({
     data: applies,
     columns: isMobile ? mobileColumns : columns,
-    getRowId: (apply) => String(apply.applyId),
+    getRowId: getApplyRowId,
   });
 
   return <DataTable table={table} />;
