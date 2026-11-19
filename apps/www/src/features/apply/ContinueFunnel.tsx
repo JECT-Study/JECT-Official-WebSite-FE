@@ -6,6 +6,7 @@ import { useFunnel } from "@use-funnel/browser";
 
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { useIsClient } from "@/hooks/useIsClient";
+import { dismissDialog } from "@/stores/dialogStore";
 import { trackApplyComplete, trackApplyStepComplete, trackApplyStepView } from "@/utils/analytics";
 
 import { ApplyFunnelHeader } from "./ApplyFunnelHeader";
@@ -38,6 +39,10 @@ function Funnel({ recruitId, recruitTitle, jobFamily, jobFamilyName }: ContinueF
   useEffect(() => {
     trackApplyStepView(funnel.step, jobFamily);
   }, [funnel.step, jobFamily]);
+
+  useEffect(() => {
+    dismissDialog();
+  }, [funnel.step]);
 
   return (
     <div className="flex flex-col gap-48">
