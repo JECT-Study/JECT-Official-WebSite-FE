@@ -4,7 +4,8 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "passThroughEnv": ["CI", "SENTRY_ORG", "SENTRY_PROJECT", "SENTRY_AUTH_TOKEN"]
+      "env": ["SENTRY_ORG", "SENTRY_PROJECT"],
+      "passThroughEnv": ["CI", "SENTRY_AUTH_TOKEN"]
     },
     "dev": {
       "cache": false,
