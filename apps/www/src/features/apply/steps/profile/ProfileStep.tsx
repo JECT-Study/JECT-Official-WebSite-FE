@@ -11,6 +11,7 @@ import { applyApi, type ApplyProfileRequest } from "@/apis/apply/api";
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
@@ -59,6 +60,16 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
                 }
               }
             );
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-12")) {
+            void showDialog(DIALOG_CONTENT.applicationInProgress);
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-18")) {
+            void showDialog(DIALOG_CONTENT.activeMember);
             return;
           }
 

@@ -78,6 +78,16 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
             return;
           }
 
+          if (hasErrorCode(error, "APPLY-12")) {
+            void showDialog(DIALOG_CONTENT.applicationInProgress);
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-18")) {
+            void showDialog(DIALOG_CONTENT.activeMember);
+            return;
+          }
+
           toastController.destructive("임시 저장 실패", {
             description: "일시적 오류일 수 있으니 데이터 백업 후 다시 시도해주세요.",
           });
@@ -109,6 +119,16 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
               }
             }
           );
+          return;
+        }
+
+        if (hasErrorCode(error, "APPLY-12")) {
+          void showDialog(DIALOG_CONTENT.applicationInProgress);
+          return;
+        }
+
+        if (hasErrorCode(error, "APPLY-18")) {
+          void showDialog(DIALOG_CONTENT.activeMember);
           return;
         }
 

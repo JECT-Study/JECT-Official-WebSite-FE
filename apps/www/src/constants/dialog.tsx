@@ -84,4 +84,15 @@ export const DIALOG_CONTENT = {
     ),
     primaryLabel: "확인",
   },
+  activeMember: {
+    header: "활동 중인 구성원은 지원할 수 없어요",
+    body: (
+      <>
+        현재 활동 중인 구성원은 이 공고에 지원할 수 없어요.
+        <br />
+        지원 관련 도움이 필요하시다면 {JECT_EMAIL} 로 문의해주세요.
+      </>
+    ),
+    primaryLabel: "확인",
+  },
 } satisfies Record<string, DialogContent | ((...args: never[]) => DialogContent)>;

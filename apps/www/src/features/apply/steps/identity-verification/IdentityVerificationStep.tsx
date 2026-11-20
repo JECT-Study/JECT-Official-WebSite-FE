@@ -116,6 +116,11 @@ export function IdentityVerificationStep({ recruitId, onNext }: IdentityVerifica
             return;
           }
 
+          if (hasErrorCode(error, "APPLY-18")) {
+            void showDialog(DIALOG_CONTENT.activeMember);
+            return;
+          }
+
           toastController.destructive("본인 확인 실패", {
             description: "일시적 오류일 수 있으니 다시 시도해주세요.",
           });
