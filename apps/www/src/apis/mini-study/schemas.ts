@@ -1,8 +1,6 @@
 import type { components } from "@ject/api-types/core";
 import { z } from "zod";
 
-import type { NullableFields } from "@/apis/types";
-
 type Schemas = components["schemas"];
 
 export const miniStudySchema = z.object({
@@ -12,14 +10,10 @@ export const miniStudySchema = z.object({
   imageUrl: z.string().nullable(),
   summary: z.string(),
   tag: z.string(),
-}) satisfies z.ZodType<NullableFields<Schemas["MiniStudyResponse"]>>;
-
-interface MiniStudyPageResponse extends Omit<Schemas["PageMiniStudyResponse"], "content"> {
-  content?: NullableFields<Schemas["MiniStudyResponse"]>[];
-}
+}) satisfies z.ZodType<Schemas["MiniStudyResponse"]>;
 
 export const miniStudyPageSchema = z.object({
   content: z.array(miniStudySchema),
-}) satisfies z.ZodType<MiniStudyPageResponse>;
+}) satisfies z.ZodType<Pick<Schemas["PageMiniStudyResponse"], "content">>;
 
 export type MiniStudy = z.infer<typeof miniStudySchema>;

@@ -2,7 +2,6 @@ import type { components } from "@ject/api-types/core";
 import { z } from "zod";
 
 import { jobFamilySchema } from "@/apis/recruit/schemas";
-import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
 
@@ -80,7 +79,7 @@ export const questionSchema = z.object({
   inputHint: z.string().nullable(),
   maxTextLength: z.number().nullable(),
   maxFileSize: z.number().nullable(),
-}) satisfies z.ZodType<NullableFields<Schemas["QuestionResponse"]>>;
+}) satisfies z.ZodType<Schemas["QuestionResponse"]>;
 
 export const questionsSchema = z.object({
   questionResponses: z.array(questionSchema),

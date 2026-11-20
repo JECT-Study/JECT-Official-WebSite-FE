@@ -2,7 +2,6 @@ import type { components } from "@ject/api-types/admin";
 import { z } from "zod";
 
 import { localDateTimeSchema } from "@/apis/schemas";
-import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
 
@@ -36,7 +35,7 @@ const applyManagementRecruitSchema = z.object({
   passedCount: z.number(),
   failedCount: z.number(),
   waitlistedCount: z.number(),
-}) satisfies z.ZodType<NullableFields<Schemas["ApplyManagementRecruitResponse"]>>;
+}) satisfies z.ZodType<Schemas["ApplyManagementRecruitResponse"]>;
 
 const recruitTypeCountSchema = z.object({
   recruitType: recruitTypeSchema,
@@ -53,7 +52,7 @@ export const applyManagementRecruitsSchema = z.object({
     nextCursor: z.number().nullable(),
     totalCount: z.number(),
   }) satisfies z.ZodType<
-    NullableFields<Omit<Schemas["CursorPageResponseApplyManagementRecruitResponse"], "content">>
+    Omit<Schemas["CursorPageResponseApplyManagementRecruitResponse"], "content">
   >,
 });
 

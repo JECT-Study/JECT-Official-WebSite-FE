@@ -2,7 +2,6 @@ import type { components } from "@ject/api-types/core";
 import { z } from "zod";
 
 import { localDateTimeSchema } from "@/apis/schemas";
-import type { NullableFields } from "@/apis/types";
 
 type Schemas = components["schemas"];
 
@@ -43,7 +42,7 @@ const recruitBaseSchema = z.object({
 
 export const activeRecruitmentSchema = recruitBaseSchema.extend({
   summary: z.string().nullable(),
-}) satisfies z.ZodType<NullableFields<Schemas["ActiveRecruitmentResponse"]>>;
+}) satisfies z.ZodType<Schemas["ActiveRecruitmentResponse"]>;
 
 export const activeRecruitmentsSchema = z.object({
   recruitments: z.array(activeRecruitmentSchema),
@@ -58,7 +57,7 @@ export const recruitSchema = recruitBaseSchema.extend({
   recruitInformation: z.string().nullable(),
   notice: z.string().nullable(),
   faqs: z.array(recruitFaqSchema),
-}) satisfies z.ZodType<NullableFields<Schemas["RecruitResponse"]>>;
+}) satisfies z.ZodType<Schemas["RecruitResponse"]>;
 
 export type JobFamily = z.infer<typeof jobFamilySchema>;
 export type RecruitType = z.infer<typeof recruitTypeSchema>;
