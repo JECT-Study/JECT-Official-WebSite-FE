@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 import { getActiveRecruit, getActiveRecruitId, getActiveRecruits } from "./helpers/recruit";
 import {
@@ -14,6 +14,27 @@ import {
 // 모든 테스트가 testbot 계정 하나를 초기화해 사용하므로 동시에 실행하지 않는다.
 test.describe.configure({ mode: "serial" });
 
+async function registerInFunnel(page: Page) {
+  await test.step("이메일 인증", async () => {
+    await page.getByRole("textbox", { name: "이메일" }).fill(TESTBOT_EMAIL);
+    await page.getByRole("button", { name: "인증번호 받기" }).click();
+    await page.getByRole("textbox", { name: "인증번호" }).fill(TESTBOT_AUTH_CODE);
+    await page.getByRole("button", { name: "인증하기" }).click();
+
+    await expect(page.getByText("인증에 성공했습니다.")).toBeVisible();
+  });
+
+  await test.step("PIN 설정과 약관 동의", async () => {
+    await page.getByLabel("PIN 설정").fill(TESTBOT_PIN);
+
+    for (const checkbox of await page.getByRole("checkbox").all()) {
+      await checkbox.check();
+    }
+
+    await page.getByRole("button", { name: "다음 단계로 진행하기" }).click();
+  });
+}
+
 test.describe("지원 퍼널", () => {
   test.beforeEach(async ({ request }) => {
     await resetTestbot(request);
@@ -24,24 +45,7 @@ test.describe("지원 퍼널", () => {
 
     await page.goto(`/apply/funnel/${recruitId}`);
 
-    await test.step("이메일 인증", async () => {
-      await page.getByRole("textbox", { name: "이메일" }).fill(TESTBOT_EMAIL);
-      await page.getByRole("button", { name: "인증번호 받기" }).click();
-      await page.getByRole("textbox", { name: "인증번호" }).fill(TESTBOT_AUTH_CODE);
-      await page.getByRole("button", { name: "인증하기" }).click();
-
-      await expect(page.getByText("인증에 성공했습니다.")).toBeVisible();
-    });
-
-    await test.step("PIN 설정과 약관 동의", async () => {
-      await page.getByLabel("PIN 설정").fill(TESTBOT_PIN);
-
-      for (const checkbox of await page.getByRole("checkbox").all()) {
-        await checkbox.check();
-      }
-
-      await page.getByRole("button", { name: "다음 단계로 진행하기" }).click();
-    });
+    await registerInFunnel(page);
 
     await test.step("프로필 작성", async () => {
       await expect(page.getByRole("heading", { name: "프로필 작성" })).toBeVisible();
