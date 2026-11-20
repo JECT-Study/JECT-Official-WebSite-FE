@@ -82,6 +82,29 @@ test.describe("지원 퍼널", () => {
 
     await expect(page.getByRole("heading", { name: "지원이 완료되었습니다" })).toBeVisible();
   });
+
+  test("다른 공고에 작성 중인 지원서가 있으면 지원할 수 없다고 안내한다", async ({
+    page,
+    request,
+  }) => {
+    const [inProgressRecruit, recruit] = await getActiveRecruits(request);
+    expect(recruit, "모집 중인 공고가 두 개 이상 필요합니다.").toBeDefined();
+
+    await registerTestbot(request, inProgressRecruit.recruitId);
+    await saveTestbotProfile(request, inProgressRecruit.recruitId, inProgressRecruit.jobFamily);
+    await saveTestbotTempAnswer(
+      request,
+      inProgressRecruit.recruitId,
+      "다른 공고에 작성 중인 답변입니다."
+    );
+
+    await page.goto(`/apply/funnel/${recruit.recruitId}`);
+    await registerInFunnel(page);
+
+    await expect(
+      page.getByRole("dialog").getByText("다른 공고에 지원한 내역이 있어요")
+    ).toBeVisible();
+  });
 });
 
 test.describe("이어서 작성하기", () => {
