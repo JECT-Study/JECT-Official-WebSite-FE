@@ -205,7 +205,7 @@
         ],
         "summary": "모집 정보 강제 수정",
         "description": "마감 여부와 관계없이 모집 정보를 강제로 수정합니다.",
-        "operationId": "updateRecruit",
+        "operationId": "updateRecruit_1",
         "parameters": [
           {
             "name": "recruitId",
@@ -3496,7 +3496,7 @@
         ],
         "summary": "단체 메일 수신자별 결과 조회",
         "description": "관리자 본인의 발송 작업에서 수신자별 결과와 시도 횟수·다음 재시도 시각·마지막 시도 오류를\n상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.\nOutbox 없는 과거 이력의 재시도 정보는 null입니다.\n",
-        "operationId": "searchTargets",
+        "operationId": "searchTargets_1",
         "parameters": [
           {
             "name": "dispatchJobId",

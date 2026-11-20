@@ -40,7 +40,7 @@ export interface paths {
          * 모집 정보 강제 수정
          * @description 마감 여부와 관계없이 모집 정보를 강제로 수정합니다.
          */
-        put: operations["updateRecruit"];
+        put: operations["updateRecruit_1"];
         post?: never;
         delete?: never;
         options?: never;
@@ -826,7 +826,7 @@ export interface paths {
          *     상태로 필터링해 조회합니다. 예약에서 제외된 대상은 EXCLUDED와 exclusionReason으로 확인합니다.
          *     Outbox 없는 과거 이력의 재시도 정보는 null입니다.
          */
-        get: operations["searchTargets"];
+        get: operations["searchTargets_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2095,7 +2095,7 @@ export interface operations {
             };
         };
     };
-    updateRecruit: {
+    updateRecruit_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3904,7 +3904,7 @@ export interface operations {
             };
         };
     };
-    searchTargets: {
+    searchTargets_1: {
         parameters: {
             query: {
                 status?: components["schemas"]["MailDispatchTargetStatus"];
