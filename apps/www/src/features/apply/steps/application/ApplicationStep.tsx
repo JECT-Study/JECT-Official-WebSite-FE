@@ -14,6 +14,7 @@ import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
 import { showDialog } from "@/stores/dialogStore";
 
@@ -45,7 +46,8 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
     mode: "onTouched",
     defaultValues: createDefaultValues(questions, tempApplication),
   });
-  const { isValid } = form.formState;
+  const { isValid, isDirty } = form.formState;
+  useLeaveConfirm(isDirty);
 
   const saveTempMutation = useSaveTempApplicationMutation();
   const submitMutation = useMutation({

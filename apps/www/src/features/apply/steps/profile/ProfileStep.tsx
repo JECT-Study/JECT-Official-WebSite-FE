@@ -15,6 +15,7 @@ import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
+import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
 import { showDialog } from "@/stores/dialogStore";
 
 import { InterestedDomainsField } from "./InterestedDomainsField";
@@ -46,6 +47,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
       interestedDomains: [],
     },
   });
+  useLeaveConfirm(form.formState.isDirty);
 
   const saveMutation = useMutation({
     mutationFn: (request: ApplyProfileRequest) => applyApi.saveProfile(recruitId, request),
