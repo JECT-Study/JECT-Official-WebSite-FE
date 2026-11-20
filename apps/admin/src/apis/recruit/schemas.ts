@@ -50,7 +50,7 @@ export const applyManagementRecruitsSchema = z.object({
     content: z.array(applyManagementRecruitSchema),
     size: z.number(),
     hasNext: z.boolean(),
-    nextCursor: z.number().nullish(),
+    nextCursor: z.number().nullable(),
     totalCount: z.number(),
   }) satisfies z.ZodType<
     NullableFields<Omit<Schemas["CursorPageResponseApplyManagementRecruitResponse"], "content">>
