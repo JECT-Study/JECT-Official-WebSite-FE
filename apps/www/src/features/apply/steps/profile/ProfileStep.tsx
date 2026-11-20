@@ -37,7 +37,14 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     mode: "onTouched",
-    defaultValues: { name: "", phoneNumber: "", interestedDomains: [] },
+    defaultValues: {
+      name: "",
+      phoneNumber: "",
+      careerDetails: undefined,
+      region: undefined,
+      experiencePeriod: undefined,
+      interestedDomains: [],
+    },
   });
 
   const saveMutation = useMutation({
