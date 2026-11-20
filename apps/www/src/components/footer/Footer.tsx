@@ -1,48 +1,17 @@
-import Link from "next/link";
-
-import { Divider, MenuAnchor, MenuCategory, MenuContent, MenuGroup, MenuRoot } from "@jects/jds";
+import { Divider, MenuCategory, MenuContent, MenuGroup, MenuRoot } from "@jects/jds";
 
 import { Logo } from "@/components/common/logo";
 import { EXTERNAL_LINKS, JECT_EMAIL } from "@/constants/links";
-import {
-  NAVIGATION_SECTIONS,
-  type NavigationLink,
-  type NavigationSection,
-} from "@/constants/navigation";
+import { NAVIGATION_SECTIONS, type NavigationSection } from "@/constants/navigation";
 
 import { FooterLink } from "./FooterLink";
+import { FooterMenuLink } from "./FooterMenuLink";
 
 const BOTTOM_LINKS = [
   { label: "개인정보처리방침", href: EXTERNAL_LINKS.privacyPolicy },
   { label: "GitHub", href: EXTERNAL_LINKS.github },
   { label: "Instagram", href: EXTERNAL_LINKS.instagram },
 ];
-
-interface FooterMenuLinkProps {
-  link: NavigationLink;
-}
-
-function FooterMenuLink({ link }: FooterMenuLinkProps) {
-  if (link.isExternal) {
-    return (
-      <MenuAnchor
-        href={link.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        suffixIcon="external-link"
-        suffixIconVisible
-      >
-        {link.label}
-      </MenuAnchor>
-    );
-  }
-
-  return (
-    <MenuAnchor asChild>
-      <Link href={link.href}>{link.label}</Link>
-    </MenuAnchor>
-  );
-}
 
 interface FooterMenuProps {
   section: NavigationSection;
