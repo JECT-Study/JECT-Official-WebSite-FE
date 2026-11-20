@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
-
 import { MenuAnchor } from "@jects/jds";
 
+import { LeaveConfirmLink } from "@/components/common/leave-confirm-link/LeaveConfirmLink";
 import type { NavigationLink } from "@/constants/navigation";
 
 interface FooterMenuLinkProps {
@@ -27,7 +26,7 @@ export function FooterMenuLink({ link }: FooterMenuLinkProps) {
 
   return (
     <MenuAnchor asChild>
-      <Link href={link.href}>{link.label}</Link>
+      <LeaveConfirmLink href={link.href}>{link.label}</LeaveConfirmLink>
     </MenuAnchor>
   );
 }
