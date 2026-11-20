@@ -1,8 +1,6 @@
 import type { components } from "@ject/api-types/core";
 import { z } from "zod";
 
-import type { NullableFields } from "@/apis/types";
-
 type Schemas = components["schemas"];
 
 export const projectSchema = z.object({
@@ -12,17 +10,13 @@ export const projectSchema = z.object({
   summary: z.string(),
   description: z.string(),
   serviceType: z.string(),
-}) satisfies z.ZodType<NullableFields<Schemas["ProjectResponse"]>>;
-
-interface ProjectPageResponse extends Omit<Schemas["PageProjectResponse"], "content"> {
-  content?: NullableFields<Schemas["ProjectResponse"]>[];
-}
+}) satisfies z.ZodType<Schemas["ProjectResponse"]>;
 
 export const projectPageSchema = z.object({
   content: z.array(projectSchema),
   number: z.number(),
   last: z.boolean(),
-}) satisfies z.ZodType<ProjectPageResponse>;
+}) satisfies z.ZodType<Pick<Schemas["PageProjectResponse"], "content" | "number" | "last">>;
 
 export const projectSummarySchema = z.object({
   categorySummaries: z.array(z.object({ categoryName: z.string(), count: z.number() })),
@@ -56,7 +50,7 @@ export const projectDetailSchema = z.object({
   bannerImageUrl: projectImageSchema.nullable(),
   sampleImageUrls: z.array(projectImageSchema),
   descriptionImageUrls: z.array(projectImageSchema),
-}) satisfies z.ZodType<NullableFields<Schemas["ProjectDetailResponse"]>>;
+}) satisfies z.ZodType<Schemas["ProjectDetailResponse"]>;
 
 export type ProjectDetail = z.infer<typeof projectDetailSchema>;
 export type TeamMemberNames = ProjectDetail["teamMemberNames"];
