@@ -2,13 +2,15 @@
 
 import { useId } from "react";
 
-import { FileField, Textarea, TextField, toastController } from "@jects/jds";
+import { FileField, Textarea, TextField } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { useController, useFormContext } from "react-hook-form";
 
 import { applyApi } from "@/apis/apply/api";
 import { applyMutationKeys } from "@/apis/apply/queries";
 import type { Question } from "@/apis/apply/schemas";
+import { TOAST_CONTENT } from "@/constants/toast";
+import { showToast } from "@/utils/showToast";
 
 import { type ApplicationFormValues, DEFAULT_MAX_FILE_SIZE_MB, toAnswerKey } from "./schemas";
 
@@ -139,23 +141,17 @@ function PortfolioFileField({ question, titleId }: FieldContentProps) {
           uploadMutation.mutate(file, {
             onSuccess: onChange,
             onError: () => {
-              toastController.destructive("파일 업로드 실패", {
-                description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-              });
+              showToast(TOAST_CONTENT.uploadFileFailed);
             },
           });
         }}
         onError={({ type }) => {
           if (type === "FILE_TOO_LARGE") {
-            toastController.destructive("파일 최대 용량 초과", {
-              description: `${maxFileSizeMb}MB 이하의 파일만 첨부할 수 있어요.`,
-            });
+            showToast(TOAST_CONTENT.fileSizeExceeded(maxFileSizeMb));
             return;
           }
 
-          toastController.destructive("파일 형식 오류", {
-            description: "PDF 파일만 첨부할 수 있어요.",
-          });
+          showToast(TOAST_CONTENT.invalidFileType);
         }}
       />
       <FileField.Footer>

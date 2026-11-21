@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LabelButton, toastController } from "@jects/jds";
+import { LabelButton } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -12,6 +12,7 @@ import { authApi } from "@/apis/auth/api";
 import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { AuthCodeField } from "@/features/apply/AuthCodeField";
@@ -21,6 +22,7 @@ import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
 import { useAuthCodeVerification } from "@/hooks/auth/useAuthCodeVerification";
 import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 import { TermsField } from "./TermsField";
@@ -72,9 +74,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
         verification.send(email);
       },
       onError: () => {
-        toastController.destructive("인증번호 발송 실패", {
-          description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-        });
+        showToast(TOAST_CONTENT.sendAuthCodeFailed);
       },
     });
   };
@@ -106,9 +106,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
             return;
           }
 
-          toastController.destructive("PIN 설정 실패", {
-            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-          });
+          showToast(TOAST_CONTENT.setPinFailed);
         },
       }
     );

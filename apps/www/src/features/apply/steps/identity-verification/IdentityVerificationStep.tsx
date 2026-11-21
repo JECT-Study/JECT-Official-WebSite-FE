@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LabelButton, toastController } from "@jects/jds";
+import { LabelButton } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -13,6 +13,7 @@ import { applyApi } from "@/apis/apply/api";
 import type { ApplyStatus } from "@/apis/apply/schemas";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
@@ -20,6 +21,7 @@ import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useLoginWithPinMutation } from "@/hooks/auth/useLoginWithPinMutation";
 import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
 import { EmailField } from "./EmailField";
 import { identityVerificationFormSchema, type IdentityVerificationFormValues } from "./schemas";
@@ -53,9 +55,7 @@ export function IdentityVerificationStep({ recruitId, onNext }: IdentityVerifica
   const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));
 
   const moveToStep = (step: ContinueStep) => {
-    toastController.positive("본인 확인 완료", {
-      description: "이제 지원서를 이어서 작성할 수 있어요.",
-    });
+    showToast(TOAST_CONTENT.identityVerified);
     onNext(step);
   };
 
@@ -93,9 +93,7 @@ export function IdentityVerificationStep({ recruitId, onNext }: IdentityVerifica
           return;
         }
 
-        toastController.destructive("지원 상태 확인 실패", {
-          description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-        });
+        showToast(TOAST_CONTENT.checkApplyStatusFailed);
       },
     });
   };
@@ -121,9 +119,7 @@ export function IdentityVerificationStep({ recruitId, onNext }: IdentityVerifica
             return;
           }
 
-          toastController.destructive("본인 확인 실패", {
-            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-          });
+          showToast(TOAST_CONTENT.verifyIdentityFailed);
         },
       }
     );
