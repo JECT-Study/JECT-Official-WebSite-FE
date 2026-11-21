@@ -83,7 +83,11 @@ export function IdentityVerificationStep({ recruitId, onNext }: IdentityVerifica
         }
 
         if (isRecruitClosedError(error)) {
-          void showDialog(DIALOG_CONTENT.recruitClosed).then(moveToGuide);
+          void showDialog(DIALOG_CONTENT.recruitClosed).then((action) => {
+            if (action === "primary") {
+              moveToGuide();
+            }
+          });
           return;
         }
 

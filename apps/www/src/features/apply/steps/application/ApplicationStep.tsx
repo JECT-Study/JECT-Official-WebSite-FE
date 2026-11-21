@@ -68,7 +68,11 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
         },
         onError: (error) => {
           if (isRecruitClosedError(error)) {
-            void showDialog(DIALOG_CONTENT.recruitClosed).then(moveToGuide);
+            void showDialog(DIALOG_CONTENT.recruitClosed).then((action) => {
+              if (action === "primary") {
+                moveToGuide();
+              }
+            });
             return;
           }
 
@@ -85,12 +89,20 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
       onSuccess: onNext,
       onError: (error) => {
         if (hasErrorCode(error, "APPLY-2")) {
-          void showDialog(DIALOG_CONTENT.alreadySubmitted).then(moveToGuide);
+          void showDialog(DIALOG_CONTENT.alreadySubmitted).then((action) => {
+            if (action === "primary") {
+              moveToGuide();
+            }
+          });
           return;
         }
 
         if (isRecruitClosedError(error)) {
-          void showDialog(DIALOG_CONTENT.recruitClosed).then(moveToGuide);
+          void showDialog(DIALOG_CONTENT.recruitClosed).then((action) => {
+            if (action === "primary") {
+              moveToGuide();
+            }
+          });
           return;
         }
 
