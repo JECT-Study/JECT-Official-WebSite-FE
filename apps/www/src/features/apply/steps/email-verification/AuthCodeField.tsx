@@ -5,10 +5,9 @@ import { useFormContext, useFormState, useWatch } from "react-hook-form";
 
 import { FieldTimer } from "@/components/common/field-timer";
 import { TextFieldWithButton } from "@/components/common/text-field-with-button";
+import type { AuthCodeStatus } from "@/hooks/auth/useAuthCodeVerification";
 
 import { authCodeSchema, type EmailVerificationFormValues } from "./schemas";
-
-export type AuthCodeStatus = "idle" | "pending" | "verified" | "expired" | "mismatch";
 
 interface AuthCodeFeedback {
   status: TextFieldProps["status"];
