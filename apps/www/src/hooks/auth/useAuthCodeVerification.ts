@@ -1,16 +1,15 @@
 import { useState } from "react";
 
-import { toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 
 import { authApi, type EmailTemplate, type VerifyAuthCodeRequest } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS, RESEND_COOLDOWN_SECONDS } from "@/constants/auth";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
+import { showToast } from "@/utils/showToast";
 
 import { useSendAuthCodeMutation } from "./useSendAuthCodeMutation";
-
-export const AUTH_CODE_VALID_SECONDS = 300;
-const RESEND_COOLDOWN_SECONDS = 180;
 
 export type AuthCodeStatus = "idle" | "pending" | "verified" | "expired" | "mismatch";
 
@@ -46,12 +45,6 @@ function getAuthCodeStatus({
   return "idle";
 }
 
-function showSendFailureToast() {
-  toastController.destructive("인증번호 발송 실패", {
-    description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-  });
-}
-
 interface UseAuthCodeVerificationOptions {
   recruitId: number;
   template: EmailTemplate;
@@ -77,11 +70,9 @@ export function useAuthCodeVerification({
       setIsVerified(false);
       setIsMismatch(false);
       onSent();
-      toastController.basic("인증번호 발송됨", {
-        description: `재발송 요청은 ${RESEND_COOLDOWN_SECONDS / 60}분 뒤에 가능합니다.`,
-      });
+      showToast(TOAST_CONTENT.authCodeSent);
     },
-    onError: showSendFailureToast,
+    onError: () => showToast(TOAST_CONTENT.sendAuthCodeFailed),
   });
 
   const verifyMutation = useMutation({
@@ -92,9 +83,7 @@ export function useAuthCodeVerification({
         return;
       }
 
-      toastController.destructive("인증 시도 실패", {
-        description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-      });
+      showToast(TOAST_CONTENT.verifyAuthCodeFailed);
     },
   });
 

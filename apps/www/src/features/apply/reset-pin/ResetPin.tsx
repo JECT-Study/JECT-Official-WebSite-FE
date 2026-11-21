@@ -5,22 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlockButton, LabelButton, toastController } from "@jects/jds";
+import { BlockButton, LabelButton } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
 import { applicantApi } from "@/apis/applicant/api";
 import { authApi } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { ApplyFunnelHeader } from "@/features/apply/ApplyFunnelHeader";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { AuthCodeField } from "@/features/apply/AuthCodeField";
 import { EmailField } from "@/features/apply/EmailField";
 import { PinField } from "@/features/apply/PinField";
-import {
-  AUTH_CODE_VALID_SECONDS,
-  useAuthCodeVerification,
-} from "@/hooks/auth/useAuthCodeVerification";
+import { useAuthCodeVerification } from "@/hooks/auth/useAuthCodeVerification";
+import { showToast } from "@/utils/showToast";
 
 import { resetPinFormSchema, type ResetPinFormValues } from "./schemas";
 
@@ -69,9 +69,7 @@ export function ResetPin({ recruitId }: ResetPinProps) {
         verification.send(email);
       },
       onError: () => {
-        toastController.destructive("인증번호 발송 실패", {
-          description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-        });
+        showToast(TOAST_CONTENT.sendAuthCodeFailed);
       },
     });
   };
@@ -87,15 +85,11 @@ export function ResetPin({ recruitId }: ResetPinProps) {
       { pin },
       {
         onSuccess: () => {
-          toastController.positive("PIN 재설정 완료", {
-            description: "새로운 PIN을 입력해 본인 확인을 다시 진행해주세요.",
-          });
+          showToast(TOAST_CONTENT.resetPinCompleted);
           router.replace(routeTo.applyContinue(recruitId));
         },
         onError: () => {
-          toastController.destructive("PIN 재설정 실패", {
-            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-          });
+          showToast(TOAST_CONTENT.resetPinFailed);
         },
       }
     );
