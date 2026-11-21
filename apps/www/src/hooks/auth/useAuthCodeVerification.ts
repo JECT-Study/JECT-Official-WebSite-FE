@@ -4,13 +4,11 @@ import { toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 
 import { authApi, type EmailTemplate, type VerifyAuthCodeRequest } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS, RESEND_COOLDOWN_SECONDS } from "@/constants/auth";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 
 import { useSendAuthCodeMutation } from "./useSendAuthCodeMutation";
-
-export const AUTH_CODE_VALID_SECONDS = 300;
-const RESEND_COOLDOWN_SECONDS = 180;
 
 export type AuthCodeStatus = "idle" | "pending" | "verified" | "expired" | "mismatch";
 
