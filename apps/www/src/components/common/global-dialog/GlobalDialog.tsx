@@ -17,6 +17,7 @@ export function GlobalDialog() {
       onOpenChange={(nextOpen) => !nextOpen && dismiss()}
       header={content.header}
       body={content.body}
+      closeOnInteractOutside={content.closeOnInteractOutside}
       primaryAction={{ children: content.primaryLabel, onClick: () => selectAction("primary") }}
       secondaryAction={
         content.secondaryLabel

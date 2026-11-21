@@ -2,7 +2,10 @@ import type { DialogProps } from "@jects/jds";
 
 import { JECT_EMAIL } from "@/constants/links";
 
-export interface DialogContent extends Pick<DialogProps, "header" | "body"> {
+export interface DialogContent extends Pick<
+  DialogProps,
+  "header" | "body" | "closeOnInteractOutside"
+> {
   primaryLabel: string;
   secondaryLabel?: string;
 }
