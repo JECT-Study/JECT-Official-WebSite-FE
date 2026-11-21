@@ -74,6 +74,7 @@ export function useAuthCodeVerification({
     onSuccess: (_, { email }) => {
       setSentEmail(email);
       setSentAt(Date.now());
+      setIsVerified(false);
       setIsMismatch(false);
       onSent();
       toastController.basic("인증번호 발송됨", {
