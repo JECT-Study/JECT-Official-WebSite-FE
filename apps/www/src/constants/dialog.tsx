@@ -2,10 +2,7 @@ import type { DialogProps } from "@jects/jds";
 
 import { JECT_EMAIL } from "@/constants/links";
 
-export interface DialogContent extends Pick<
-  DialogProps,
-  "header" | "body" | "closeOnInteractOutside"
-> {
+export interface DialogContent extends Pick<DialogProps, "header" | "body"> {
   primaryLabel: string;
   secondaryLabel?: string;
 }
@@ -21,7 +18,6 @@ export const DIALOG_CONTENT = {
       </>
     ),
     primaryLabel: "확인",
-    closeOnInteractOutside: false,
   },
   startApply: (jobFamilyName: string) => ({
     header: `${jobFamilyName} 공고로 지원을 시작할까요?`,
@@ -57,7 +53,6 @@ export const DIALOG_CONTENT = {
       </>
     ),
     primaryLabel: "확인",
-    closeOnInteractOutside: false,
   },
   existingApplicant: {
     header: "페이지를 이동해 지원서를 이어서 작성합니다",

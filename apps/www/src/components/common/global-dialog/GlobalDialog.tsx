@@ -5,7 +5,7 @@ import { Dialog } from "@jects/jds";
 import { useDialogStore } from "@/stores/dialogStore";
 
 export function GlobalDialog() {
-  const { open, content, selectAction, dismiss } = useDialogStore();
+  const { open, content, options, selectAction, dismiss } = useDialogStore();
 
   if (content === null) {
     return null;
@@ -17,7 +17,7 @@ export function GlobalDialog() {
       onOpenChange={(nextOpen) => !nextOpen && dismiss()}
       header={content.header}
       body={content.body}
-      closeOnInteractOutside={content.closeOnInteractOutside}
+      closeOnInteractOutside={options.closeOnInteractOutside}
       primaryAction={{ children: content.primaryLabel, onClick: () => selectAction("primary") }}
       secondaryAction={
         content.secondaryLabel

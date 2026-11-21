@@ -52,11 +52,13 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
         onSuccess: onNext,
         onError: (error) => {
           if (isRecruitClosedError(error)) {
-            void showDialog(DIALOG_CONTENT.recruitClosed).then((action) => {
-              if (action === "primary") {
-                moveToGuide();
+            void showDialog(DIALOG_CONTENT.recruitClosed, { closeOnInteractOutside: false }).then(
+              (action) => {
+                if (action === "primary") {
+                  moveToGuide();
+                }
               }
-            });
+            );
             return;
           }
 
