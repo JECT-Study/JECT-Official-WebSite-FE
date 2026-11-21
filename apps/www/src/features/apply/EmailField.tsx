@@ -4,9 +4,7 @@ import { BlockButton, TextField } from "@jects/jds";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 
 import { TextFieldWithButton } from "@/components/common/text-field-with-button";
-import { emailSchema } from "@/features/apply/schemas";
-
-import type { EmailVerificationFormValues } from "./schemas";
+import { type EmailAuthFormValues, emailSchema } from "@/features/apply/schemas";
 
 interface EmailFieldProps {
   isVerified: boolean;
@@ -16,7 +14,7 @@ interface EmailFieldProps {
 }
 
 export function EmailField({ isVerified, coolingDownEmail, isPending, onSend }: EmailFieldProps) {
-  const { control, register } = useFormContext<EmailVerificationFormValues>();
+  const { control, register } = useFormContext<EmailAuthFormValues>();
   const email = useWatch({ control, name: "email" });
   const { errors } = useFormState({ control, name: "email" });
 

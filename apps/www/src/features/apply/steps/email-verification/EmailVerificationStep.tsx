@@ -13,6 +13,8 @@ import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { AuthCodeField } from "@/features/apply/AuthCodeField";
+import { EmailField } from "@/features/apply/EmailField";
 import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
@@ -22,8 +24,6 @@ import {
 } from "@/hooks/auth/useAuthCodeVerification";
 import { showDialog } from "@/stores/dialogStore";
 
-import { AuthCodeField } from "./AuthCodeField";
-import { EmailField } from "./EmailField";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 import { TermsField } from "./TermsField";
 
