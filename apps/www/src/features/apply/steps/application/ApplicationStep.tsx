@@ -60,10 +60,13 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
   const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));
 
   const handleSaveTemp = () => {
+    const values = form.getValues();
+
     saveTempMutation.mutate(
-      { recruitId, request: toApplicationRequest(form.getValues()) },
+      { recruitId, request: toApplicationRequest(values) },
       {
         onSuccess: () => {
+          form.resetDefaultValues(values);
           toastController.positive("임시 저장 완료", {
             description: "작성 중인 지원서를 저장했어요.",
           });
