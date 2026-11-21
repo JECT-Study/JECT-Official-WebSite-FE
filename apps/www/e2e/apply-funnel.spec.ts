@@ -195,3 +195,62 @@ test.describe("이어서 작성하기", () => {
     ).toBeVisible();
   });
 });
+
+test.describe("PIN 재설정", () => {
+  test.beforeEach(async ({ request }) => {
+    await resetTestbot(request);
+  });
+
+  test("PIN을 재설정하면 새 PIN으로 본인 확인을 진행할 수 있다", async ({ page, request }) => {
+    const newPin = "654321";
+    const recruitId = await getActiveRecruitId(request);
+    await registerTestbot(request, recruitId);
+
+    await page.goto(`/apply/continue/${recruitId}`);
+    await page.getByRole("link", { name: "PIN 번호를 잊어버리셨나요?" }).click();
+    await expect(page.getByRole("heading", { name: "이메일 인증" })).toBeVisible();
+
+    await test.step("이메일 인증", async () => {
+      await page.getByRole("textbox", { name: "이메일" }).fill(TESTBOT_EMAIL);
+      await page.getByRole("button", { name: "인증번호 받기" }).click();
+      await page.getByRole("textbox", { name: "인증번호" }).fill(TESTBOT_AUTH_CODE);
+      await page.getByRole("button", { name: "인증하기" }).click();
+
+      await expect(page.getByText("인증에 성공했습니다.")).toBeVisible();
+    });
+
+    await test.step("새 PIN 설정", async () => {
+      await page.getByLabel("새로운 PIN 설정").fill(newPin);
+      await page.getByRole("button", { name: "PIN 재설정 완료하기" }).click();
+    });
+
+    await test.step("새 PIN으로 본인 확인", async () => {
+      await expect(page.getByRole("heading", { name: "지원자 본인 확인" })).toBeVisible();
+
+      await page.getByRole("textbox", { name: "이메일" }).fill(TESTBOT_EMAIL);
+      await page.getByLabel("PIN", { exact: true }).fill(newPin);
+      await page.getByRole("button", { name: "다음 단계로 진행하기" }).click();
+
+      await expect(page.getByRole("heading", { name: "프로필 작성" })).toBeVisible();
+    });
+  });
+
+  test("등록되지 않은 이메일로 PIN을 재설정하면 새 지원서 작성을 안내한다", async ({
+    page,
+    request,
+  }) => {
+    const recruitId = await getActiveRecruitId(request);
+
+    await page.goto(`/apply/continue/${recruitId}`);
+    await page.getByRole("link", { name: "PIN 번호를 잊어버리셨나요?" }).click();
+    await expect(page.getByRole("heading", { name: "이메일 인증" })).toBeVisible();
+    await page.getByRole("textbox", { name: "이메일" }).fill(TESTBOT_EMAIL);
+    await page.getByRole("button", { name: "인증번호 받기" }).click();
+
+    await expect(page.getByText("등록되지 않은 이메일 주소입니다.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "새로운 지원서를 작성할까요?" })).toHaveAttribute(
+      "href",
+      `/apply/funnel/${recruitId}`
+    );
+  });
+});
