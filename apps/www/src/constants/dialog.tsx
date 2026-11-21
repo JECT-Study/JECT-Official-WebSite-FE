@@ -23,7 +23,7 @@ export const DIALOG_CONTENT = {
     header: `${jobFamilyName} 공고로 지원을 시작할까요?`,
     body: (
       <>
-        프로필을 등록하면 이 이메일로는 다른 공고에 지원할 수 없어요.
+        지원서를 임시 저장하거나 제출하면 이 이메일로는 모집 중인 다른 공고에 지원할 수 없어요.
         <br />
         지원하려는 공고가 맞는지 확인해주세요.
       </>
@@ -74,12 +74,23 @@ export const DIALOG_CONTENT = {
     primaryLabel: "확인",
   },
   applicationInProgress: {
-    header: "다른 공고에 작성 중인 지원서가 있어요",
+    header: "다른 공고에 지원한 내역이 있어요",
     body: (
       <>
-        이미 다른 공고에서 지원서를 작성하고 있어 이 공고로는 진행할 수 없어요.
+        다른 모집 공고에 작성 중이거나 제출한 지원서가 있어 이 공고에는 지원할 수 없어요.
         <br />
-        작성 중이던 공고에서 이어서 작성해주세요.
+        지원 관련 도움이 필요하시다면 {JECT_EMAIL} 로 문의해주세요.
+      </>
+    ),
+    primaryLabel: "확인",
+  },
+  activeMember: {
+    header: "활동 중인 구성원은 지원할 수 없어요",
+    body: (
+      <>
+        현재 활동 중인 구성원은 이 공고에 지원할 수 없어요.
+        <br />
+        지원 관련 도움이 필요하시다면 {JECT_EMAIL} 로 문의해주세요.
       </>
     ),
     primaryLabel: "확인",
