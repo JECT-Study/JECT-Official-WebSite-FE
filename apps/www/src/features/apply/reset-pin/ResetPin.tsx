@@ -11,16 +11,14 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 
 import { applicantApi } from "@/apis/applicant/api";
 import { authApi } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
 import { routeTo } from "@/constants/routes";
 import { ApplyFunnelHeader } from "@/features/apply/ApplyFunnelHeader";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { AuthCodeField } from "@/features/apply/AuthCodeField";
 import { EmailField } from "@/features/apply/EmailField";
 import { PinField } from "@/features/apply/PinField";
-import {
-  AUTH_CODE_VALID_SECONDS,
-  useAuthCodeVerification,
-} from "@/hooks/auth/useAuthCodeVerification";
+import { useAuthCodeVerification } from "@/hooks/auth/useAuthCodeVerification";
 
 import { resetPinFormSchema, type ResetPinFormValues } from "./schemas";
 

@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { authApi } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
@@ -18,10 +19,7 @@ import { EmailField } from "@/features/apply/EmailField";
 import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
-import {
-  AUTH_CODE_VALID_SECONDS,
-  useAuthCodeVerification,
-} from "@/hooks/auth/useAuthCodeVerification";
+import { useAuthCodeVerification } from "@/hooks/auth/useAuthCodeVerification";
 import { showDialog } from "@/stores/dialogStore";
 
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
