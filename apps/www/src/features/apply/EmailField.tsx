@@ -10,22 +10,29 @@ interface EmailFieldProps {
   isVerified: boolean;
   coolingDownEmail: string | null;
   isPending: boolean;
+  errorMessage?: string;
   onSend: () => void;
 }
 
-export function EmailField({ isVerified, coolingDownEmail, isPending, onSend }: EmailFieldProps) {
+export function EmailField({
+  isVerified,
+  coolingDownEmail,
+  isPending,
+  errorMessage,
+  onSend,
+}: EmailFieldProps) {
   const { control, register } = useFormContext<EmailAuthFormValues>();
   const email = useWatch({ control, name: "email" });
   const { errors } = useFormState({ control, name: "email" });
 
-  const error = email ? errors.email : undefined;
+  const helper = errorMessage ?? (email ? errors.email?.message : undefined);
   const isSendDisabled =
     !emailSchema.safeParse(email).success || isVerified || email === coolingDownEmail || isPending;
 
   return (
     <TextFieldWithButton
       label="이메일"
-      status={error ? "error" : "default"}
+      status={helper ? "error" : "default"}
       readonly={isVerified}
       button={
         <BlockButton
@@ -38,7 +45,7 @@ export function EmailField({ isVerified, coolingDownEmail, isPending, onSend }: 
           인증번호 받기
         </BlockButton>
       }
-      footer={error && <TextField.Helper>{error.message}</TextField.Helper>}
+      footer={helper && <TextField.Helper>{helper}</TextField.Helper>}
     >
       <TextField.Input
         type="email"
