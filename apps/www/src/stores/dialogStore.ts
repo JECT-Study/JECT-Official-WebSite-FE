@@ -1,3 +1,4 @@
+import type { DialogProps } from "@jects/jds";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -7,9 +8,12 @@ const DIALOG_CLOSE_DELAY_MS = 200;
 
 export type DialogAction = "primary" | "secondary";
 
+export type DialogOptions = Pick<DialogProps, "closeOnInteractOutside">;
+
 interface DialogState {
   open: boolean;
   content: DialogContent | null;
+  options: DialogOptions;
   resolve: ((action: DialogAction | null) => void) | null;
   clearTimer: ReturnType<typeof setTimeout> | null;
 }
@@ -17,6 +21,7 @@ interface DialogState {
 const initialState: DialogState = {
   open: false,
   content: null,
+  options: {},
   resolve: null,
   clearTimer: null,
 };
@@ -30,7 +35,7 @@ export const useDialogStore = create(
 
       const timer = setTimeout(() => {
         if (!get().open) {
-          set({ content: null, resolve: null, clearTimer: null });
+          set({ content: null, options: {}, resolve: null, clearTimer: null });
         }
       }, DIALOG_CLOSE_DELAY_MS);
 
@@ -38,12 +43,12 @@ export const useDialogStore = create(
     };
 
     return {
-      show: (content: DialogContent) =>
+      show: (content: DialogContent, options: DialogOptions = {}) =>
         new Promise<DialogAction | null>((resolve) => {
           const { clearTimer, resolve: prevResolve } = get();
           if (clearTimer) clearTimeout(clearTimer);
           prevResolve?.(null);
-          set({ open: true, content, resolve, clearTimer: null });
+          set({ open: true, content, options, resolve, clearTimer: null });
         }),
       selectAction: (action: DialogAction) => settle(action),
       dismiss: () => settle(null),
@@ -55,7 +60,8 @@ export const useDialogStore = create(
  * 다이얼로그를 열고, 닫힐 때 사용자가 누른 버튼(`"primary"`, `"secondary"`)으로 resolve되는 Promise를 반환한다.
  * 버튼을 누르지 않고 닫히면 `null`로 resolve된다. 바깥 영역 클릭, Esc 키 입력, 다른 다이얼로그 열기, `dismissDialog` 호출이 해당한다.
  */
-export const showDialog = (content: DialogContent) => useDialogStore.getState().show(content);
+export const showDialog = (content: DialogContent, options?: DialogOptions) =>
+  useDialogStore.getState().show(content, options);
 
 /**
  * 열린 다이얼로그를 닫는다. 대기 중인 `showDialog`의 Promise는 `null`로 resolve된다.
