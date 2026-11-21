@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -11,12 +10,14 @@ import { applyApi, type ApplyProfileRequest } from "@/apis/apply/api";
 import type { JobFamily } from "@/apis/recruit/schemas";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
 import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
 import { InterestedDomainsField } from "./InterestedDomainsField";
 import { NameField } from "./NameField";
@@ -82,9 +83,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
             return;
           }
 
-          toastController.destructive("프로필 저장 실패", {
-            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-          });
+          showToast(TOAST_CONTENT.saveProfileFailed);
         },
       }
     );

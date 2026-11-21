@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlockButton, toastController } from "@jects/jds";
+import { BlockButton } from "@jects/jds";
 import { useIsMutating, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -11,12 +11,14 @@ import { applyApi, type SubmitApplicationRequest } from "@/apis/apply/api";
 import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
 import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
 import { ApplicationField } from "./ApplicationField";
 import {
@@ -67,9 +69,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
       {
         onSuccess: () => {
           form.resetDefaultValues(values);
-          toastController.positive("임시 저장 완료", {
-            description: "작성 중인 지원서를 저장했어요.",
-          });
+          showToast(TOAST_CONTENT.tempSaved);
         },
         onError: (error) => {
           if (isRecruitClosedError(error)) {
@@ -93,9 +93,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
             return;
           }
 
-          toastController.destructive("임시 저장 실패", {
-            description: "일시적 오류일 수 있으니 데이터 백업 후 다시 시도해주세요.",
-          });
+          showToast(TOAST_CONTENT.saveTempFailed);
         },
       }
     );
@@ -137,9 +135,7 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
           return;
         }
 
-        toastController.destructive("지원서 제출 실패", {
-          description: `일시적 오류일 수 있으니 임시 저장 후 다시 시도해주세요.`,
-        });
+        showToast(TOAST_CONTENT.submitApplicationFailed);
       },
     });
   };
