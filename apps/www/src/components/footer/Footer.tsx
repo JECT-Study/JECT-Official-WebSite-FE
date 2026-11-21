@@ -1,7 +1,6 @@
-import Link from "next/link";
-
 import { Divider, MenuAnchor, MenuCategory, MenuContent, MenuGroup, MenuRoot } from "@jects/jds";
 
+import { LeaveConfirmLink } from "@/components/common/leave-confirm-link/LeaveConfirmLink";
 import { Logo } from "@/components/common/logo";
 import { EXTERNAL_LINKS, JECT_EMAIL } from "@/constants/links";
 import {
@@ -39,7 +38,7 @@ function FooterMenuLink({ link }: FooterMenuLinkProps) {
 
   return (
     <MenuAnchor asChild>
-      <Link href={link.href}>{link.label}</Link>
+      <LeaveConfirmLink href={link.href}>{link.label}</LeaveConfirmLink>
     </MenuAnchor>
   );
 }

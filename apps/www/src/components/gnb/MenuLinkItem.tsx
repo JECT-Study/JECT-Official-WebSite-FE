@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
-
 import { DropdownMenu } from "@jects/jds";
 
+import { LeaveConfirmLink } from "@/components/common/leave-confirm-link/LeaveConfirmLink";
 import type { NavigationLink } from "@/constants/navigation";
 
 interface MenuLinkItemProps {
@@ -27,7 +26,7 @@ export function MenuLinkItem({ link }: MenuLinkItemProps) {
 
   return (
     <DropdownMenu.Anchor asChild>
-      <Link href={link.href}>{link.label}</Link>
+      <LeaveConfirmLink href={link.href}>{link.label}</LeaveConfirmLink>
     </DropdownMenu.Anchor>
   );
 }

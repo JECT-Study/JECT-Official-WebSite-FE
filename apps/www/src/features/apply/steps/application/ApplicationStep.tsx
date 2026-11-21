@@ -14,6 +14,7 @@ import { routeTo } from "@/constants/routes";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
 import { useSaveTempApplicationMutation } from "@/hooks/apply/useSaveTempApplicationMutation";
 import { showDialog } from "@/stores/dialogStore";
 
@@ -45,7 +46,8 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
     mode: "onTouched",
     defaultValues: createDefaultValues(questions, tempApplication),
   });
-  const { isValid } = form.formState;
+  const { isValid, isDirty } = form.formState;
+  useLeaveConfirm(isDirty);
 
   const saveTempMutation = useSaveTempApplicationMutation();
   const submitMutation = useMutation({
@@ -58,10 +60,13 @@ export function ApplicationStep({ recruitId, onNext }: ApplicationStepProps) {
   const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));
 
   const handleSaveTemp = () => {
+    const values = form.getValues();
+
     saveTempMutation.mutate(
-      { recruitId, request: toApplicationRequest(form.getValues()) },
+      { recruitId, request: toApplicationRequest(values) },
       {
         onSuccess: () => {
+          form.resetDefaultValues(values);
           toastController.positive("임시 저장 완료", {
             description: "작성 중인 지원서를 저장했어요.",
           });
