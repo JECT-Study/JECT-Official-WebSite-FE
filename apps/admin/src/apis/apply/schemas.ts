@@ -34,8 +34,7 @@ export const submittedAppliesSchema = z.object({
   hasNext: z.boolean(),
   nextCursor: z.number().nullable(),
   totalCount: z.number(),
-  // content 항목의 타입은 submittedApplySchema의 satisfies에서 검사하므로 여기서는 제외한다.
-}) satisfies z.ZodType<Omit<Schemas["CursorPageResponseSubmittedApplyResponse"], "content">>;
+}) satisfies z.ZodType<Schemas["CursorPageResponseSubmittedApplyResponse"]>;
 
 type DeletedAppliesCount =
   operations["deleteSubmittedApplies"]["responses"][200]["content"]["*/*"]["data"];
