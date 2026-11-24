@@ -15,6 +15,11 @@ export function useDeleteSubmittedAppliesMutation() {
       const queryKey = applyQueries.submittedAppliesLists();
       await queryClient.cancelQueries({ queryKey });
       await queryClient.invalidateQueries({ queryKey });
+      // 서버는 이미 삭제된 지원서를 에러 없이 건너뛰므로 모두 삭제된 상태였다면 0을 반환한다.
+      if (deletedCount === 0) {
+        toast.basic("이미 삭제된 지원서예요");
+        return;
+      }
       toast.positive(`${deletedCount}개를 삭제했어요`);
     },
     onError: (error) => {
