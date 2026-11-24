@@ -1,11 +1,11 @@
 import type { components, operations } from "@ject/api-types/admin";
 import { z } from "zod";
 
-import { jobFamilySchema } from "@/apis/schemas";
+import { jobFamilySchema, recruitTypeSchema } from "@/apis/schemas";
 
 type Schemas = components["schemas"];
 
-const careerDetailsSchema = z.enum([
+export const careerDetailsSchema = z.enum([
   "STUDENT",
   "EXPECTED_GRADUATE",
   "JOB_SEEKER",
@@ -13,7 +13,7 @@ const careerDetailsSchema = z.enum([
   "EMPLOYEE",
 ]) satisfies z.ZodType<Schemas["CareerDetails"]>;
 
-const selectionResultSchema = z.enum([
+export const selectionResultSchema = z.enum([
   "UNDECIDED",
   "PASSED",
   "WAITLISTED",
@@ -39,7 +39,7 @@ export const submittedAppliesSchema = z.object({
   totalCount: z.number(),
 }) satisfies z.ZodType<Schemas["ApplyListResponseSubmittedApplyResponse"]>;
 
-const regionSchema = z.enum([
+export const regionSchema = z.enum([
   "SEOUL",
   "GYEONGGI",
   "INCHEON",
@@ -60,7 +60,7 @@ const regionSchema = z.enum([
   "OVERSEAS",
 ]) satisfies z.ZodType<Schemas["Region"]>;
 
-const experiencePeriodSchema = z.enum([
+export const experiencePeriodSchema = z.enum([
   "NONE",
   "ONE_TO_TWO",
   "THREE_TO_FOUR",
@@ -74,7 +74,7 @@ export const applyDetailSchema = z.object({
   email: z.string(),
   jobFamily: jobFamilySchema,
   careerDetails: careerDetailsSchema,
-  recruitType: z.string(),
+  recruitType: recruitTypeSchema,
   selectionResult: selectionResultSchema,
   waitlistNumber: z.number().nullable(),
   note: z.string(),
