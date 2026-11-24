@@ -1,14 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import {
-  BlockButton,
-  type BlockButtonProps,
-  Dialog as JdsDialog,
-  EmptyState,
-  Tabs,
-  useToast,
-} from "@jects/jds";
+import { BlockButton, type BlockButtonProps, Dialog, EmptyState, Tabs, useToast } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { hashKey, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
@@ -402,7 +395,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           />
         </div>
       </div>
-      <JdsDialog
+      <Dialog
         open={isConfirmDialogOpen}
         onOpenChange={setIsConfirmDialogOpen}
         header={confirmDialogText?.header ?? ""}
