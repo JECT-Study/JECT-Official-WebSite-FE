@@ -259,12 +259,19 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   // 확인하면 다이얼로그가 바로 닫히므로 응답 전에 같은 선택으로 다시 요청하지 않도록 막는다.
   const isActionPending = isUpdating || isDeleting;
 
-  const [pendingAction, setPendingAction] = useState<ConfirmAction | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  // 닫힘 애니메이션 동안 문구가 유지되도록 닫을 때 비우지 않고 다음에 열 때 덮어쓴다.
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const confirmDialogText = pendingAction && getConfirmDialogText(pendingAction);
+  const confirmDialogText = confirmAction && getConfirmDialogText(confirmAction);
+
+  const openConfirmDialog = (action: ConfirmAction) => {
+    setConfirmAction(action);
+    setIsConfirmDialogOpen(true);
+  };
 
   const handleConfirm = () => {
-    if (pendingAction === null) return;
+    if (confirmAction === null) return;
 
     const options = {
       onSuccess: () => setRowSelection({}),
@@ -274,13 +281,13 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
       },
     };
 
-    if (pendingAction.type === "delete") {
-      deleteSubmittedApplies({ applyIds: pendingAction.applyIds }, options);
+    if (confirmAction.type === "delete") {
+      deleteSubmittedApplies({ applyIds: confirmAction.applyIds }, options);
     } else {
-      const { applyIds, selectionResult } = pendingAction;
+      const { applyIds, selectionResult } = confirmAction;
       updateSelectionResults({ recruitId, applyIds, selectionResult }, options);
     }
-    setPendingAction(null);
+    setIsConfirmDialogOpen(false);
   };
 
   const handleLoadMore = async () => {
@@ -346,7 +353,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                         size="sm"
                         disabled={isActionPending || !canUpdateSelectionResults}
                         onClick={() =>
-                          setPendingAction({
+                          openConfirmDialog({
                             type: "updateSelectionResult",
                             applyIds: selectedApplyIds,
                             selectionResult,
@@ -364,7 +371,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                   prefixIcon="trash"
                   className="ml-auto"
                   disabled={isActionPending}
-                  onClick={() => setPendingAction({ type: "delete", applyIds: selectedApplyIds })}
+                  onClick={() => openConfirmDialog({ type: "delete", applyIds: selectedApplyIds })}
                 >
                   삭제
                 </BlockButton>
@@ -396,15 +403,13 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
         </div>
       </div>
       <JdsDialog
-        open={pendingAction !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingAction(null);
-        }}
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
         header={confirmDialogText?.header ?? ""}
         body={confirmDialogText?.body}
         width={500}
         primaryAction={{ children: confirmDialogText?.confirmLabel, onClick: handleConfirm }}
-        secondaryAction={{ children: "취소", onClick: () => setPendingAction(null) }}
+        secondaryAction={{ children: "취소", onClick: () => setIsConfirmDialogOpen(false) }}
       />
     </section>
   );
