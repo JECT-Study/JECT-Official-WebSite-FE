@@ -1,16 +1,21 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 
 import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
 import type { SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
-import type { FilterField, FilterValues } from "@/components/common/filter/Filter.types";
+import type {
+  FilterField,
+  FilterOptionValue,
+  FilterValues,
+} from "@/components/common/filter/Filter.types";
+import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import NotFoundPage from "@/pages/NotFoundPage";
@@ -30,6 +35,35 @@ type SubmittedAppliesFilterValues = Pick<
   SubmittedAppliesCondition,
   "careerDetails" | "selectionResults"
 >;
+
+const toParam = (value: FilterOptionValue) => String(value).toLowerCase();
+
+// 칩만 추가하고 고르지 않은 필터는 빈 값(`?careerDetails=`)으로 남겨 칩을 유지한다.
+function parseFilterValues(searchParams: URLSearchParams): FilterValues {
+  const values = Object.fromEntries(
+    [...new Set(searchParams.keys())].map((fieldId) => [
+      fieldId,
+      searchParams.getAll(fieldId).map((param) => param.toUpperCase()),
+    ])
+  );
+
+  return normalizeFilterValues(FILTER_FIELDS, values);
+}
+
+function toSearchParams(searchParams: URLSearchParams, filterValues: FilterValues) {
+  const nextParams = new URLSearchParams(searchParams);
+  FILTER_FIELDS.forEach(({ id }) => nextParams.delete(id));
+
+  Object.entries(filterValues).forEach(([fieldId, selected]) => {
+    if (selected.length === 0) {
+      nextParams.append(fieldId, "");
+      return;
+    }
+    selected.forEach((value) => nextParams.append(fieldId, toParam(value)));
+  });
+
+  return nextParams;
+}
 
 // 칩만 추가하고 고르지 않은 필터는 조건에서 빼야 같은 쿼리 키로 유지된다.
 function toFilterCondition(filterValues: FilterValues) {
@@ -118,9 +152,10 @@ interface SubmittedRecruitAppliesProps {
 
 function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
-  const [filterValues, setFilterValues] = useState<FilterValues>({});
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
 
+  const filterValues = parseFilterValues(searchParams);
   const filterCondition = toFilterCondition(filterValues);
   const isFiltered = Object.values(filterCondition).some(Boolean);
   const condition = { recruitId, size: PAGE_SIZE, ...filterCondition };
@@ -142,6 +177,10 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
   const totalCount = data?.pages.at(-1)?.totalCount;
+
+  const handleFilterChange = (values: FilterValues) => {
+    setSearchParams(toSearchParams(searchParams, values), { replace: true });
+  };
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -192,7 +231,11 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             </Tabs.Root>
           </div>
           <div className="min-h-48 px-16 py-10">
-            <Filter fields={FILTER_FIELDS} values={filterValues} onValuesChange={setFilterValues} />
+            <Filter
+              fields={FILTER_FIELDS}
+              values={filterValues}
+              onValuesChange={handleFilterChange}
+            />
           </div>
         </div>
         <div className="flex flex-col items-center gap-10">
