@@ -19,6 +19,7 @@ import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import NotFoundPage from "@/pages/NotFoundPage";
+import { parseIdParam } from "@/utils/parseIdParam";
 
 const PAGE_SIZE = 30;
 
@@ -257,9 +258,9 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 }
 
 export default function SubmittedRecruitAppliesPage() {
-  const recruitId = Number(useParams().recruitId);
+  const recruitId = parseIdParam(useParams().recruitId ?? "");
 
-  if (!Number.isInteger(recruitId) || recruitId <= 0) return <NotFoundPage />;
+  if (recruitId === null) return <NotFoundPage />;
 
   return <SubmittedRecruitApplies key={recruitId} recruitId={recruitId} />;
 }
