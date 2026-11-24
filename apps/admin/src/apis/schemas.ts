@@ -23,3 +23,9 @@ export const jobFamilySchema = z.enum([
 ]) satisfies z.ZodType<Schemas["JobFamily"]>;
 
 export type JobFamily = z.infer<typeof jobFamilySchema>;
+
+export const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies z.ZodType<
+  Schemas["RecruitType"]
+>;
+
+export type RecruitType = z.infer<typeof recruitTypeSchema>;

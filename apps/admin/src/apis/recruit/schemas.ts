@@ -1,13 +1,9 @@
 import type { components } from "@ject/api-types/admin";
 import { z } from "zod";
 
-import { jobFamilySchema, localDateTimeSchema } from "@/apis/schemas";
+import { jobFamilySchema, localDateTimeSchema, recruitTypeSchema } from "@/apis/schemas";
 
 type Schemas = components["schemas"];
-
-const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies z.ZodType<
-  Schemas["RecruitType"]
->;
 
 const applyManagementRecruitSchema = z.object({
   recruitId: z.number(),
@@ -43,5 +39,4 @@ export const applyManagementRecruitsSchema = z.object({
   >,
 });
 
-export type RecruitType = z.infer<typeof recruitTypeSchema>;
 export type ApplyManagementRecruit = z.infer<typeof applyManagementRecruitSchema>;

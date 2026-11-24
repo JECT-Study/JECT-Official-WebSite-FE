@@ -3,8 +3,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
 import { recruitQueries } from "@/apis/recruit/queries";
-import type { ApplyManagementRecruit, RecruitType } from "@/apis/recruit/schemas";
-import type { JobFamily } from "@/apis/schemas";
+import type { ApplyManagementRecruit } from "@/apis/recruit/schemas";
+import type { JobFamily, RecruitType } from "@/apis/schemas";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
 import { PAGE_TITLE } from "@/constants/pageTitle";
