@@ -359,7 +359,7 @@
           "Admin Apply"
         ],
         "summary": "지원서 상세 조회",
-        "description": "전달한 ID에 해당하는 지원서의 상세 정보를 조회합니다.",
+        "description": "지원서 상세 정보를 조회합니다. 공고의 전체 질문을 문항 순서대로 반환하며 미답변은 null로 표시합니다. 지원자 신분·거주지역·경험기간은 enum 코드로, 포트폴리오는 ID를 포함해 반환합니다.",
         "operationId": "findApply",
         "parameters": [
           {
@@ -3566,7 +3566,7 @@
           "Admin Apply"
         ],
         "summary": "임시저장 지원서 목록 조회",
-        "description": "모집 공고별 임시저장 지원서를 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.",
+        "description": "모집 공고 제목과 임시저장 지원서 목록을 커서 기반으로 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.",
         "operationId": "searchTempSavedApplies",
         "parameters": [
           {
@@ -3597,7 +3597,7 @@
                       "example": "SUCCESS"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/CursorPageResponseTempSavedApplyResponse"
+                      "$ref": "#/components/schemas/ApplyListResponseTempSavedApplyResponse"
                     },
                     "timestamp": {
                       "type": "string",
@@ -3620,7 +3620,7 @@
           "Admin Apply"
         ],
         "summary": "제출완료 지원서 목록 조회",
-        "description": "모집 공고별 제출완료 지원서를 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.",
+        "description": "모집 공고 제목과 제출완료 지원서 목록을 커서 기반으로 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.",
         "operationId": "searchSubmittedApplies",
         "parameters": [
           {
@@ -3651,7 +3651,7 @@
                       "example": "SUCCESS"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/CursorPageResponseSubmittedApplyResponse"
+                      "$ref": "#/components/schemas/ApplyListResponseSubmittedApplyResponse"
                     },
                     "timestamp": {
                       "type": "string",
@@ -6351,6 +6351,9 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
@@ -6361,9 +6364,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -6818,7 +6818,12 @@
             ]
           },
           "careerDetails": {
-            "type": "string"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CareerDetails"
+              }
+            ]
           },
           "recruitType": {
             "type": "string"
@@ -6835,10 +6840,20 @@
             "type": "string"
           },
           "region": {
-            "type": "string"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Region"
+              }
+            ]
           },
           "experiencePeriod": {
-            "type": "string"
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExperiencePeriod"
+              }
+            ]
           },
           "interestedDomains": {
             "type": "array",
@@ -6847,22 +6862,33 @@
             }
           },
           "answers": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplyAnswerResponse"
             }
           },
           "portfolios": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ApplyPortfolioDto"
+              "$ref": "#/components/schemas/AdminApplyPortfolioResponse"
             }
           }
         }
       },
-      "ApplyPortfolioDto": {
+      "AdminApplyPortfolioResponse": {
+        "required": [
+          "fileName",
+          "fileSize",
+          "fileUrl",
+          "portfolioId",
+          "sequence"
+        ],
         "type": "object",
         "properties": {
+          "portfolioId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "fileUrl": {
             "type": "string"
           },
@@ -6874,6 +6900,27 @@
           },
           "sequence": {
             "type": "string"
+          }
+        }
+      },
+      "ApplyAnswerResponse": {
+        "required": [
+          "answer",
+          "questionId",
+          "questionTitle"
+        ],
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "questionTitle": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -6966,16 +7013,22 @@
           }
         }
       },
-      "CursorPageResponseTempSavedApplyResponse": {
+      "ApplyListResponseTempSavedApplyResponse": {
         "required": [
           "content",
           "hasNext",
           "nextCursor",
+          "recruitTitle",
           "size",
           "totalCount"
         ],
         "type": "object",
         "properties": {
+          "recruitTitle": {
+            "type": "string",
+            "description": "조회 중인 모집 공고 제목",
+            "nullable": true
+          },
           "content": {
             "type": "array",
             "items": {
@@ -6996,6 +7049,7 @@
           },
           "totalCount": {
             "type": "integer",
+            "description": "검색 필터를 적용한 전체 지원서 수",
             "format": "int64"
           }
         }
@@ -7071,16 +7125,22 @@
           }
         }
       },
-      "CursorPageResponseSubmittedApplyResponse": {
+      "ApplyListResponseSubmittedApplyResponse": {
         "required": [
           "content",
           "hasNext",
           "nextCursor",
+          "recruitTitle",
           "size",
           "totalCount"
         ],
         "type": "object",
         "properties": {
+          "recruitTitle": {
+            "type": "string",
+            "description": "조회 중인 모집 공고 제목",
+            "nullable": true
+          },
           "content": {
             "type": "array",
             "items": {
@@ -7101,6 +7161,7 @@
           },
           "totalCount": {
             "type": "integer",
+            "description": "검색 필터를 적용한 전체 지원서 수",
             "format": "int64"
           }
         }
