@@ -29,12 +29,13 @@ const submittedApplySchema = z.object({
 }) satisfies z.ZodType<Schemas["SubmittedApplyResponse"]>;
 
 export const submittedAppliesSchema = z.object({
+  recruitTitle: z.string(),
   content: z.array(submittedApplySchema),
   size: z.number(),
   hasNext: z.boolean(),
   nextCursor: z.number().nullable(),
   totalCount: z.number(),
-}) satisfies z.ZodType<Schemas["CursorPageResponseSubmittedApplyResponse"]>;
+}) satisfies z.ZodType<Schemas["ApplyListResponseSubmittedApplyResponse"]>;
 
 type DeletedAppliesCount =
   operations["deleteSubmittedApplies"]["responses"][200]["content"]["*/*"]["data"];
