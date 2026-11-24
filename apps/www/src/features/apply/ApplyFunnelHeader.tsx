@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LocalNavigation } from "@jects/jds";
 
 import { routeTo } from "@/constants/routes";
+import { confirmLeave } from "@/hooks/apply/useLeaveConfirm";
 
 interface ApplyFunnelHeaderProps {
   recruitId: number;
@@ -20,12 +21,18 @@ export function ApplyFunnelHeader({
 }: ApplyFunnelHeaderProps) {
   const router = useRouter();
 
+  const handleBackClick = async () => {
+    if (await confirmLeave()) {
+      router.push(routeTo.applyGuide(recruitId));
+    }
+  };
+
   return (
     <div className="flex flex-col gap-24">
       <LocalNavigation
         title={navigationTitle}
         nested
-        onBackClick={() => router.push(routeTo.applyGuide(recruitId))}
+        onBackClick={() => void handleBackClick()}
         stretched
       />
       {children}

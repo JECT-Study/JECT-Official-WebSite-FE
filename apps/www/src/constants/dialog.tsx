@@ -95,4 +95,10 @@ export const DIALOG_CONTENT = {
     ),
     primaryLabel: "확인",
   },
+  leaveApplication: {
+    header: "다른 페이지로 이동하시겠어요?",
+    body: "입력한 내용은 저장되지 않아요.",
+    primaryLabel: "이동하기",
+    secondaryLabel: "취소",
+  },
 } satisfies Record<string, DialogContent | ((...args: never[]) => DialogContent)>;
