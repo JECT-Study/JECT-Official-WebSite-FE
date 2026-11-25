@@ -37,15 +37,16 @@ export function ViewingActions({ disabled, onEdit }: ViewingActionsProps) {
 
 interface EditingActionsProps {
   onCancel: () => void;
+  onSave: () => void;
 }
 
-export function EditingActions({ onCancel }: EditingActionsProps) {
+export function EditingActions({ onCancel, onSave }: EditingActionsProps) {
   return (
     <div className="flex items-center gap-16">
       <LabelButton hierarchy="tertiary" size="md" onClick={onCancel}>
         편집 취소
       </LabelButton>
-      <LabelButton hierarchy="accent" size="md">
+      <LabelButton hierarchy="accent" size="md" onClick={onSave}>
         저장하기
       </LabelButton>
     </div>

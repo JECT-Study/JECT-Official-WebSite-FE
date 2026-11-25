@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { EditApplyRequest } from "@/apis/apply/api";
 import {
   type ApplyDetail,
   careerDetailsSchema,
@@ -57,4 +58,27 @@ export const toFormValues = (apply: ApplyDetail): SubmittedApplyFormValues => ({
   selectionResult: apply.selectionResult,
   note: apply.note,
   answers: apply.answers.map(({ questionId, answer }) => ({ questionId, answer: answer ?? "" })),
+});
+
+export const toEditApplyRequest = ({
+  region,
+  experiencePeriod,
+  answers,
+  ...values
+}: SubmittedApplyFormValues): EditApplyRequest => ({
+  name: values.name,
+  phoneNumber: values.phoneNumber,
+  email: values.email,
+  careerDetails: values.careerDetails,
+  region: region ?? undefined,
+  experiencePeriod: experiencePeriod ?? undefined,
+  interestedDomains: values.interestedDomains,
+  selectionResult: values.selectionResult,
+  note: values.note,
+  // 답하지 않은 질문은 빈 문자열로 저장하지 않도록 요청에서 뺀다.
+  answers: Object.fromEntries(
+    answers
+      .filter(({ answer }) => answer !== "")
+      .map(({ questionId, answer }) => [questionId, answer])
+  ),
 });
