@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 
 import type { ApplyDetail } from "@/apis/apply/schemas";
 
-import type { SubmittedApplyFormValues } from "./schemas";
+import { MAX_ANSWER_LENGTH, type SubmittedApplyFormValues } from "./schemas";
 
 type QuestionInputType = "TEXT" | "URL" | "FILE";
 
@@ -28,7 +28,10 @@ function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldPro
     case "TEXT":
       return (
         <Textarea readonly={!isEditing}>
-          <Textarea.Control maxLength={500} {...register(`answers.${index}.answer`)} />
+          <Textarea.Control
+            maxLength={MAX_ANSWER_LENGTH}
+            {...register(`answers.${index}.answer`)}
+          />
           <Textarea.Footer>
             <Textarea.Counter />
           </Textarea.Footer>

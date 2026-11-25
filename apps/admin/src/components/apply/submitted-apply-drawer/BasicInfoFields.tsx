@@ -11,7 +11,7 @@ import {
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { RECRUIT_TYPE_LABELS } from "@/constants/recruitType";
 
-import type { SubmittedApplyFormValues } from "./schemas";
+import { MAX_INTERESTED_DOMAINS, MAX_NOTE_LENGTH, type SubmittedApplyFormValues } from "./schemas";
 
 const toOptions = (labels: Record<string, string>): SelectOption[] =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
@@ -32,7 +32,11 @@ interface BasicInfoFieldsProps {
 }
 
 export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsProps) {
-  const { register, control } = useFormContext<SubmittedApplyFormValues>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<SubmittedApplyFormValues>();
 
   return (
     <div className="flex flex-col gap-16 border-b border-stroke-alpha-subtler px-margin-lg pt-8 pb-20">
@@ -65,13 +69,23 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
             )}
           />
         </SelectField>
-        <TextField readonly={!isEditing} required>
+        <TextField readonly={!isEditing} required status={errors.name ? "error" : "default"}>
           <TextField.Label>이름</TextField.Label>
-          <TextField.Input {...register("name")} />
+          <TextField.Input withClearButton {...register("name")} />
+          {errors.name && (
+            <TextField.Footer>
+              <TextField.Helper>{errors.name.message}</TextField.Helper>
+            </TextField.Footer>
+          )}
         </TextField>
-        <TextField readonly={!isEditing} required>
+        <TextField readonly={!isEditing} required status={errors.phoneNumber ? "error" : "default"}>
           <TextField.Label>휴대폰 번호</TextField.Label>
-          <TextField.Input {...register("phoneNumber")} />
+          <TextField.Input inputMode="numeric" withClearButton {...register("phoneNumber")} />
+          {errors.phoneNumber && (
+            <TextField.Footer>
+              <TextField.Helper>{errors.phoneNumber.message}</TextField.Helper>
+            </TextField.Footer>
+          )}
         </TextField>
         <SelectField readonly={!isEditing} required>
           <SelectField.Label>지원자 신분</SelectField.Label>
@@ -87,9 +101,14 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
             )}
           />
         </SelectField>
-        <TextField readonly={!isEditing}>
+        <TextField readonly={!isEditing} required status={errors.email ? "error" : "default"}>
           <TextField.Label>이메일</TextField.Label>
-          <TextField.Input {...register("email")} />
+          <TextField.Input type="email" withClearButton {...register("email")} />
+          {errors.email && (
+            <TextField.Footer>
+              <TextField.Helper>{errors.email.message}</TextField.Helper>
+            </TextField.Footer>
+          )}
         </TextField>
         <SelectField readonly={!isEditing}>
           <SelectField.Label>거주 지역</SelectField.Label>
@@ -119,19 +138,30 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
             )}
           />
         </SelectField>
-        <MultiSelectField readonly={!isEditing}>
-          <MultiSelectField.Label tooltip="최대 3개까지 선택">관심 도메인</MultiSelectField.Label>
+        <MultiSelectField
+          readonly={!isEditing}
+          status={errors.interestedDomains ? "error" : "default"}
+        >
+          <MultiSelectField.Label tooltip={`최대 ${MAX_INTERESTED_DOMAINS}개까지 선택`}>
+            관심 도메인
+          </MultiSelectField.Label>
           <Controller
             control={control}
             name="interestedDomains"
             render={({ field }) => (
               <MultiSelectField.Input
                 options={INTERESTED_DOMAIN_OPTIONS}
+                maxValues={MAX_INTERESTED_DOMAINS}
                 value={field.value ?? []}
                 onChange={field.onChange}
               />
             )}
           />
+          {errors.interestedDomains && (
+            <MultiSelectField.Footer>
+              <MultiSelectField.Helper>{errors.interestedDomains.message}</MultiSelectField.Helper>
+            </MultiSelectField.Footer>
+          )}
         </MultiSelectField>
         <SelectField readonly={!isEditing}>
           <SelectField.Label>합격 여부</SelectField.Label>
@@ -149,7 +179,7 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
           />
         </SelectField>
         <TextField readonly>
-          <TextField.Label tooltip="예비 번호는 지원서 목록에서 변경">예비 번호</TextField.Label>
+          <TextField.Label tooltip="지원서 목록에서 변경">예비 번호</TextField.Label>
           <TextField.Input
             placeholder="예비 합격 상태일 때 확인할 수 있어요"
             value={waitlistNumber ?? ""}
@@ -159,7 +189,7 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
       <Textarea readonly={!isEditing}>
         <Textarea.Label>비고</Textarea.Label>
         <Textarea.Control
-          maxLength={100}
+          maxLength={MAX_NOTE_LENGTH}
           placeholder={isEditing ? "비고를 입력해주세요" : undefined}
           {...register("note")}
         />
