@@ -1,4 +1,9 @@
-import type { CareerDetails, SelectionResult } from "@/apis/apply/schemas";
+import type {
+  CareerDetails,
+  ExperiencePeriod,
+  Region,
+  SelectionResult,
+} from "@/apis/apply/schemas";
 
 export const CAREER_DETAILS_LABELS: Record<CareerDetails, string> = {
   STUDENT: "대학생(재학/휴학)",
@@ -13,4 +18,53 @@ export const SELECTION_RESULT_LABELS: Record<SelectionResult, string> = {
   PASSED: "합격",
   WAITLISTED: "예비 합격",
   FAILED: "불합격",
+};
+
+export const REGION_LABELS: Record<Region, string> = {
+  SEOUL: "서울",
+  GYEONGGI: "경기",
+  INCHEON: "인천",
+  BUSAN: "부산",
+  DAEGU: "대구",
+  DAEJEON: "대전",
+  GWANGJU: "광주",
+  ULSAN: "울산",
+  SEJONG: "세종",
+  GANGWON: "강원",
+  CHUNGBUK: "충북",
+  CHUNGNAM: "충남",
+  JEONBUK: "전북",
+  JEONNAM: "전남",
+  GYEONGBUK: "경북",
+  GYEONGNAM: "경남",
+  JEJU: "제주",
+  OVERSEAS: "해외",
+};
+
+export const EXPERIENCE_PERIOD_LABELS: Record<ExperiencePeriod, string> = {
+  NONE: "경험 없음",
+  ONE_TO_TWO: "1~2년",
+  THREE_TO_FOUR: "3~4년",
+  FIVE_PLUS: "5년 이상",
+};
+
+// 백오피스 스펙은 관심 도메인을 문자열로만 정의하므로 공식 홈페이지의 값 목록을 따른다.
+export const INTERESTED_DOMAIN_LABELS: Record<string, string> = {
+  GAME: "게임",
+  EDUCATION: "교육",
+  MARKETING: "마케팅",
+  MOBILITY: "모빌리티",
+  PRODUCTIVITY: "생산성",
+  SOCIAL_NETWORK: "소셜 네트워크",
+  UTILITY: "유틸리티",
+  E_COMMERCE: "이커머스",
+  COMMUNITY: "커뮤니티",
+  CONTENTS: "콘텐츠",
+  TRAVELTECH: "트래블테크",
+  FASHION_BEAUTY: "패션/뷰티",
+  FOODTECH: "푸드테크",
+  PROPTECH: "프롭테크",
+  FINTECH: "핀테크",
+  HEALTHCARE: "헬스케어",
+  HR: "HR",
 };

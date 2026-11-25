@@ -15,7 +15,13 @@ import { Controller, useForm } from "react-hook-form";
 
 import { applyQueries } from "@/apis/apply/queries";
 import { Drawer } from "@/components/common/drawer/Drawer";
-import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
+import {
+  CAREER_DETAILS_LABELS,
+  EXPERIENCE_PERIOD_LABELS,
+  INTERESTED_DOMAIN_LABELS,
+  REGION_LABELS,
+  SELECTION_RESULT_LABELS,
+} from "@/constants/apply";
 import { JOB_FAMILY_BADGES } from "@/constants/jobFamily";
 import { RECRUIT_TYPE_LABELS } from "@/constants/recruitType";
 
@@ -29,6 +35,9 @@ const JOB_FAMILY_OPTIONS: SelectOption[] = Object.entries(JOB_FAMILY_BADGES).map
 );
 const RECRUIT_TYPE_OPTIONS = toOptions(RECRUIT_TYPE_LABELS);
 const CAREER_DETAILS_OPTIONS = toOptions(CAREER_DETAILS_LABELS);
+const REGION_OPTIONS = toOptions(REGION_LABELS);
+const EXPERIENCE_PERIOD_OPTIONS = toOptions(EXPERIENCE_PERIOD_LABELS);
+const INTERESTED_DOMAIN_OPTIONS = toOptions(INTERESTED_DOMAIN_LABELS);
 const SELECTION_RESULT_OPTIONS = toOptions(SELECTION_RESULT_LABELS);
 
 type QuestionInputType = "TEXT" | "URL" | "FILE";
@@ -146,7 +155,6 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
               <TextField.Label>이메일</TextField.Label>
               <TextField.Input {...register("email")} />
             </TextField>
-            {/* TODO: 상세 API의 값 형식이 정해지면 거주 지역, 경험 기간, 관심 도메인 옵션을 연결한다. */}
             <SelectField readonly>
               <SelectField.Label>거주 지역</SelectField.Label>
               <Controller
@@ -154,7 +162,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
                 name="region"
                 render={({ field }) => (
                   <SelectField.Input
-                    options={[]}
+                    options={REGION_OPTIONS}
                     value={field.value ?? null}
                     onChange={field.onChange}
                   />
@@ -168,7 +176,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
                 name="experiencePeriod"
                 render={({ field }) => (
                   <SelectField.Input
-                    options={[]}
+                    options={EXPERIENCE_PERIOD_OPTIONS}
                     value={field.value ?? null}
                     onChange={field.onChange}
                   />
@@ -184,7 +192,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
                 name="interestedDomains"
                 render={({ field }) => (
                   <MultiSelectField.Input
-                    options={[]}
+                    options={INTERESTED_DOMAIN_OPTIONS}
                     value={field.value ?? []}
                     onChange={field.onChange}
                   />
