@@ -1,13 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, EmptyState, Tabs, useToast } from "@jects/jds";
-import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { BlockButton, type BlockButtonProps, Dialog, EmptyState, Tabs, useToast } from "@jects/jds";
+import { useMediaQueryFlags } from "@jects/jds/hooks";
+import { hashKey, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyQueries } from "@/apis/apply/queries";
-import type { SubmittedApply } from "@/apis/apply/schemas";
+import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
 import type {
@@ -18,10 +20,47 @@ import type {
 import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
+import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
+import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { parseIdParam } from "@/utils/parseIdParam";
 
 const PAGE_SIZE = 30;
+
+interface SelectionResultButton {
+  selectionResult: SelectionResult;
+  hierarchy: BlockButtonProps["hierarchy"];
+  variant: BlockButtonProps["variant"];
+}
+
+const SELECTION_RESULT_BUTTONS: SelectionResultButton[] = [
+  { selectionResult: "PASSED", hierarchy: "accent", variant: "outlined" },
+  { selectionResult: "WAITLISTED", hierarchy: "primary", variant: "solid" },
+  { selectionResult: "FAILED", hierarchy: "secondary", variant: "outlined" },
+];
+
+type ConfirmAction =
+  | { type: "updateSelectionResult"; applyIds: number[]; selectionResult: SelectionResult }
+  | { type: "delete"; applyIds: number[] };
+
+function getConfirmDialogText(action: ConfirmAction) {
+  const count = action.applyIds.length;
+
+  if (action.type === "delete") {
+    return {
+      header: `선택한 ${count}개 항목을 삭제합니다`,
+      body: "삭제 후에는 되돌릴 수 없으니 유의해주세요.",
+      confirmLabel: "삭제",
+    };
+  }
+
+  const label = SELECTION_RESULT_LABELS[action.selectionResult];
+  return {
+    header: `선택한 ${count}개 항목을 ${label} 상태로 변경합니다`,
+    body: `${label} 상태는 언제든 변경할 수 있어요.`,
+    confirmLabel: "변경",
+  };
+}
 
 const toOptions = (labels: Record<string, string>) =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
@@ -86,6 +125,8 @@ interface ApplyListProps {
   isFetching: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
 }
 
 function ApplyList({
@@ -98,6 +139,8 @@ function ApplyList({
   isFetching,
   isFetchingNextPage,
   onLoadMore,
+  rowSelection,
+  onRowSelectionChange,
 }: ApplyListProps) {
   if (isLoading) {
     return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
@@ -129,7 +172,11 @@ function ApplyList({
 
   return (
     <>
-      <SubmittedAppliesTable applies={applies} />
+      <SubmittedAppliesTable
+        applies={applies}
+        rowSelection={rowSelection}
+        onRowSelectionChange={onRowSelectionChange}
+      />
       {hasNextPage && (
         <BlockButton
           hierarchy="primary"
@@ -155,6 +202,8 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
+  const { isDesktop } = useMediaQueryFlags();
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const filterValues = parseFilterValues(searchParams);
   const filterCondition = toFilterCondition(filterValues);
@@ -179,8 +228,59 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const applies = useMemo(() => data?.pages.flatMap((page) => page.content) ?? [], [data]);
   const totalCount = data?.pages.at(-1)?.totalCount;
 
-  const handleFilterChange = (values: FilterValues) => {
-    setSearchParams(toSearchParams(searchParams, values), { replace: true });
+  // 결과에서 빠진 행이 선택된 채 작업 대상이 되지 않도록 조회 조건이 바뀌면 선택을 비운다.
+  const handleFilterChange = (nextValues: FilterValues) => {
+    const isConditionChanged =
+      hashKey([toFilterCondition(nextValues)]) !== hashKey([toFilterCondition(filterValues)]);
+    if (isConditionChanged) setRowSelection({});
+
+    setSearchParams(toSearchParams(searchParams, nextValues), { replace: true });
+  };
+
+  const selectedApplies = applies.filter((apply) => rowSelection[apply.applyId]);
+  const selectedApplyIds = selectedApplies.map((apply) => apply.applyId);
+  const hasSelectedApplies = selectedApplyIds.length > 0;
+  // 결과가 이미 지정된 지원서는 상세에서만 바꿀 수 있어 목록 일괄 변경은 검토 중끼리만 허용한다.
+  const canUpdateSelectionResults = selectedApplies.every(
+    (apply) => apply.selectionResult === "UNDECIDED"
+  );
+
+  const { mutate: updateSelectionResults, isPending: isUpdating } =
+    useUpdateSelectionResultsMutation();
+  const { mutate: deleteSubmittedApplies, isPending: isDeleting } =
+    useDeleteSubmittedAppliesMutation();
+  // 확인하면 다이얼로그가 바로 닫히므로 응답 전에 같은 선택으로 다시 요청하지 않도록 막는다.
+  const isActionPending = isUpdating || isDeleting;
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  // 닫힘 애니메이션 동안 문구가 유지되도록 닫을 때 비우지 않고 다음에 열 때 덮어쓴다.
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const confirmDialogText = confirmAction && getConfirmDialogText(confirmAction);
+
+  const openConfirmDialog = (action: ConfirmAction) => {
+    setConfirmAction(action);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirm = () => {
+    if (confirmAction === null) return;
+
+    const options = {
+      onSuccess: () => setRowSelection({}),
+      onSettled: () => {
+        if (document.activeElement === document.body)
+          listRef.current?.focus({ preventScroll: true });
+      },
+    };
+
+    if (confirmAction.type === "delete") {
+      deleteSubmittedApplies({ applyIds: confirmAction.applyIds }, options);
+    } else {
+      const { applyIds, selectionResult } = confirmAction;
+      updateSelectionResults({ recruitId, applyIds, selectionResult }, options);
+    }
+    setIsConfirmDialogOpen(false);
   };
 
   const handleLoadMore = async () => {
@@ -222,7 +322,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
       </div>
       <div className="flex flex-col gap-12 px-margin-lg py-16 desktop:px-margin-xl">
         <div className="rounded-10 border border-stroke-subtle">
-          <div className="flex border-b border-stroke-subtle px-16 py-12">
+          <div className="flex items-center gap-16 border-b border-stroke-subtle px-16 py-12">
             <Tabs.Root variant="content" value="all">
               <Tabs.List>
                 <Tabs.Trigger value="all" badge={totalCount}>
@@ -230,6 +330,46 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                 </Tabs.Trigger>
               </Tabs.List>
             </Tabs.Root>
+            {/* 좁은 화면에서는 선택을 유지한 채 체크박스만 숨기므로 선택 작업 버튼도 데스크톱에서만 보인다. */}
+            {isDesktop && hasSelectedApplies && (
+              <>
+                <div className="flex items-center gap-12">
+                  <p className="text-label-md font-label-normal text-accent-neutral">
+                    {selectedApplyIds.length}개 선택됨
+                  </p>
+                  <div className="flex items-center gap-10">
+                    {SELECTION_RESULT_BUTTONS.map(({ selectionResult, hierarchy, variant }) => (
+                      <BlockButton
+                        key={selectionResult}
+                        hierarchy={hierarchy}
+                        variant={variant}
+                        size="sm"
+                        disabled={isActionPending || !canUpdateSelectionResults}
+                        onClick={() =>
+                          openConfirmDialog({
+                            type: "updateSelectionResult",
+                            applyIds: selectedApplyIds,
+                            selectionResult,
+                          })
+                        }
+                      >
+                        {SELECTION_RESULT_LABELS[selectionResult]}
+                      </BlockButton>
+                    ))}
+                  </div>
+                </div>
+                <BlockButton
+                  feedback="destructive"
+                  size="sm"
+                  prefixIcon="trash"
+                  className="ml-auto"
+                  disabled={isActionPending}
+                  onClick={() => openConfirmDialog({ type: "delete", applyIds: selectedApplyIds })}
+                >
+                  삭제
+                </BlockButton>
+              </>
+            )}
           </div>
           <div className="min-h-48 px-16 py-10">
             <Filter
@@ -239,7 +379,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             />
           </div>
         </div>
-        <div className="flex flex-col items-center gap-10">
+        <div ref={listRef} tabIndex={-1} className="flex flex-col items-center gap-10 outline-none">
           <ApplyList
             applies={applies}
             isLoading={isPending || isPlaceholderData}
@@ -250,9 +390,20 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             isFetching={isFetching}
             isFetchingNextPage={isFetchingNextPage}
             onLoadMore={handleLoadMore}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
           />
         </div>
       </div>
+      <Dialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        header={confirmDialogText?.header ?? ""}
+        body={confirmDialogText?.body}
+        width={500}
+        primaryAction={{ children: confirmDialogText?.confirmLabel, onClick: handleConfirm }}
+        secondaryAction={{ children: "취소", onClick: () => setIsConfirmDialogOpen(false) }}
+      />
     </section>
   );
 }
