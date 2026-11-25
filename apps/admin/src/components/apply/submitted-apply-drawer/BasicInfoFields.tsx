@@ -27,10 +27,11 @@ const INTERESTED_DOMAIN_OPTIONS = toOptions(INTERESTED_DOMAIN_LABELS);
 const SELECTION_RESULT_OPTIONS = toOptions(SELECTION_RESULT_LABELS);
 
 interface BasicInfoFieldsProps {
+  isEditing: boolean;
   waitlistNumber?: number | null;
 }
 
-export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
+export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsProps) {
   const { register, control } = useFormContext<SubmittedApplyFormValues>();
 
   return (
@@ -64,15 +65,15 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
             )}
           />
         </SelectField>
-        <TextField readonly required>
+        <TextField readonly={!isEditing} required>
           <TextField.Label>이름</TextField.Label>
           <TextField.Input {...register("name")} />
         </TextField>
-        <TextField readonly required>
+        <TextField readonly={!isEditing} required>
           <TextField.Label>휴대폰 번호</TextField.Label>
           <TextField.Input {...register("phoneNumber")} />
         </TextField>
-        <SelectField readonly required>
+        <SelectField readonly={!isEditing} required>
           <SelectField.Label>지원자 신분</SelectField.Label>
           <Controller
             control={control}
@@ -86,11 +87,11 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
             )}
           />
         </SelectField>
-        <TextField readonly>
+        <TextField readonly={!isEditing}>
           <TextField.Label>이메일</TextField.Label>
           <TextField.Input {...register("email")} />
         </TextField>
-        <SelectField readonly>
+        <SelectField readonly={!isEditing}>
           <SelectField.Label>거주 지역</SelectField.Label>
           <Controller
             control={control}
@@ -104,7 +105,7 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
             )}
           />
         </SelectField>
-        <SelectField readonly>
+        <SelectField readonly={!isEditing}>
           <SelectField.Label>직무 관련 경험 기간</SelectField.Label>
           <Controller
             control={control}
@@ -118,7 +119,7 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
             )}
           />
         </SelectField>
-        <MultiSelectField readonly>
+        <MultiSelectField readonly={!isEditing}>
           <MultiSelectField.Label tooltip="최대 3개까지 선택">관심 도메인</MultiSelectField.Label>
           <Controller
             control={control}
@@ -132,7 +133,7 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
             )}
           />
         </MultiSelectField>
-        <SelectField readonly>
+        <SelectField readonly={!isEditing}>
           <SelectField.Label>합격 여부</SelectField.Label>
           <Controller
             control={control}
@@ -155,9 +156,13 @@ export function BasicInfoFields({ waitlistNumber }: BasicInfoFieldsProps) {
           />
         </TextField>
       </div>
-      <Textarea readonly>
+      <Textarea readonly={!isEditing}>
         <Textarea.Label>비고</Textarea.Label>
-        <Textarea.Control maxLength={100} {...register("note")} />
+        <Textarea.Control
+          maxLength={100}
+          placeholder={isEditing ? "비고를 입력해주세요" : undefined}
+          {...register("note")}
+        />
         <Textarea.Footer>
           <Textarea.Counter />
         </Textarea.Footer>

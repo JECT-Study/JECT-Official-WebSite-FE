@@ -15,18 +15,19 @@ const getQuestionInputType = (title: string): QuestionInputType => {
 };
 
 interface AnswerFieldProps {
+  isEditing: boolean;
   inputType: QuestionInputType;
   index: number;
   portfolios: ApplyDetail["portfolios"];
 }
 
-function AnswerField({ inputType, index, portfolios }: AnswerFieldProps) {
+function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldProps) {
   const { register } = useFormContext<SubmittedApplyFormValues>();
 
   switch (inputType) {
     case "TEXT":
       return (
-        <Textarea readonly>
+        <Textarea readonly={!isEditing}>
           <Textarea.Control maxLength={500} {...register(`answers.${index}.answer`)} />
           <Textarea.Footer>
             <Textarea.Counter />
@@ -35,7 +36,7 @@ function AnswerField({ inputType, index, portfolios }: AnswerFieldProps) {
       );
     case "URL":
       return (
-        <TextField readonly>
+        <TextField readonly={!isEditing}>
           <TextField.Input {...register(`answers.${index}.answer`)} />
         </TextField>
       );
@@ -47,11 +48,12 @@ function AnswerField({ inputType, index, portfolios }: AnswerFieldProps) {
 }
 
 interface AnswerFieldsProps {
+  isEditing: boolean;
   answers: ApplyDetail["answers"];
   portfolios: ApplyDetail["portfolios"];
 }
 
-export function AnswerFields({ answers, portfolios }: AnswerFieldsProps) {
+export function AnswerFields({ isEditing, answers, portfolios }: AnswerFieldsProps) {
   return (
     <div className="flex flex-col gap-32 px-margin-lg pt-24 pb-96 tablet:pt-32">
       {answers.map(({ questionId, questionTitle }, index) => (
@@ -60,6 +62,7 @@ export function AnswerFields({ answers, portfolios }: AnswerFieldsProps) {
             {index + 1}. {questionTitle}
           </h3>
           <AnswerField
+            isEditing={isEditing}
             inputType={getQuestionInputType(questionTitle)}
             index={index}
             portfolios={portfolios}

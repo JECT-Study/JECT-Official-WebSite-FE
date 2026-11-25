@@ -52,8 +52,14 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     >
       <FormProvider {...form}>
         <form>
-          <BasicInfoFields waitlistNumber={data?.waitlistNumber} />
-          {data && <AnswerFields answers={data.answers} portfolios={data.portfolios} />}
+          <BasicInfoFields isEditing={isEditing} waitlistNumber={data?.waitlistNumber} />
+          {data && (
+            <AnswerFields
+              isEditing={isEditing}
+              answers={data.answers}
+              portfolios={data.portfolios}
+            />
+          )}
         </form>
       </FormProvider>
     </Drawer>
