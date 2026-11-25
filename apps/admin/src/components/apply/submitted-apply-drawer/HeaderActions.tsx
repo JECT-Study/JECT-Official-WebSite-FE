@@ -1,9 +1,14 @@
 import { DropdownMenu, IconButton, LabelButton } from "@jects/jds";
 
-export function ViewingActions() {
+interface ViewingActionsProps {
+  disabled: boolean;
+  onEdit: () => void;
+}
+
+export function ViewingActions({ disabled, onEdit }: ViewingActionsProps) {
   return (
     <div className="flex items-center gap-16 max-tablet:hidden">
-      <LabelButton hierarchy="tertiary" size="md">
+      <LabelButton hierarchy="tertiary" size="md" disabled={disabled} onClick={onEdit}>
         편집
       </LabelButton>
       <DropdownMenu.Root>
@@ -26,6 +31,23 @@ export function ViewingActions() {
           </DropdownMenu.Group>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
+    </div>
+  );
+}
+
+interface EditingActionsProps {
+  onCancel: () => void;
+}
+
+export function EditingActions({ onCancel }: EditingActionsProps) {
+  return (
+    <div className="flex items-center gap-16">
+      <LabelButton hierarchy="tertiary" size="md" onClick={onCancel}>
+        편집 취소
+      </LabelButton>
+      <LabelButton hierarchy="accent" size="md">
+        저장하기
+      </LabelButton>
     </div>
   );
 }

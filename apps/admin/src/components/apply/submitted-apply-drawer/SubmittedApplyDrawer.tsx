@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -7,7 +9,7 @@ import { Drawer } from "@/components/common/drawer/Drawer";
 
 import { AnswerFields } from "./AnswerFields";
 import { BasicInfoFields } from "./BasicInfoFields";
-import { ViewingActions } from "./HeaderActions";
+import { EditingActions, ViewingActions } from "./HeaderActions";
 import { submittedApplyFormSchema, type SubmittedApplyFormValues, toFormValues } from "./schemas";
 
 interface SubmittedApplyDrawerProps {
@@ -16,6 +18,7 @@ interface SubmittedApplyDrawerProps {
 }
 
 export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedApplyDrawerProps) {
+  const [isEditing, setIsEditing] = useState(false);
   const { data } = useQuery(applyQueries.detail(applyId));
   const form = useForm<SubmittedApplyFormValues>({
     resolver: zodResolver(submittedApplyFormSchema),
@@ -24,14 +27,28 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     resetOptions: { keepDirtyValues: true },
   });
 
+  const cancelEditing = () => {
+    form.reset();
+    setIsEditing(false);
+  };
+
   return (
     <Drawer
       open={applyId !== null}
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (open) return;
+        cancelEditing();
+        onClose();
       }}
       title="지원서 정보"
-      headerAction={<ViewingActions />}
+      headerAction={
+        isEditing ? (
+          // TODO: 편집 취소와 저장하기는 확인 다이얼로그를 거쳐 실행한다.
+          <EditingActions onCancel={cancelEditing} />
+        ) : (
+          <ViewingActions disabled={!data} onEdit={() => setIsEditing(true)} />
+        )
+      }
     >
       <FormProvider {...form}>
         <form>
