@@ -3,7 +3,7 @@ import { Dialog } from "@jects/jds";
 import { useDialogStore } from "@/stores/dialogStore";
 
 export function GlobalDialog() {
-  const { open, content, options, selectAction, dismiss } = useDialogStore();
+  const { open, pending, content, options, selectAction, dismiss } = useDialogStore();
 
   if (content === null) {
     return null;
@@ -12,14 +12,22 @@ export function GlobalDialog() {
   return (
     <Dialog
       open={open}
-      onOpenChange={(nextOpen) => !nextOpen && dismiss()}
+      onOpenChange={(nextOpen) => !nextOpen && !pending && dismiss()}
       header={content.header}
       body={content.body}
-      closeOnInteractOutside={options.closeOnInteractOutside}
-      primaryAction={{ children: content.primaryLabel, onClick: () => selectAction("primary") }}
+      closeOnInteractOutside={pending ? false : options.closeOnInteractOutside}
+      primaryAction={{
+        children: content.primaryLabel,
+        disabled: pending,
+        onClick: () => void selectAction("primary"),
+      }}
       secondaryAction={
         content.secondaryLabel
-          ? { children: content.secondaryLabel, onClick: () => selectAction("secondary") }
+          ? {
+              children: content.secondaryLabel,
+              disabled: pending,
+              onClick: () => void selectAction("secondary"),
+            }
           : undefined
       }
     />
