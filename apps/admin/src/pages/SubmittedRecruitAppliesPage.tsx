@@ -241,6 +241,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           { recruitId, applyIds: selectedApplyIds, selectionResult },
           { onSuccess: clearSelection }
         ),
+      fallbackFocusRef: listRef,
     });
   };
 
@@ -248,6 +249,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     void showDialog(DIALOG_CONTENT.deleteSubmittedApplies(selectedApplyIds.length), {
       onPrimaryClick: () =>
         deleteSubmittedApplies({ applyIds: selectedApplyIds }, { onSuccess: clearSelection }),
+      fallbackFocusRef: listRef,
     });
   };
 

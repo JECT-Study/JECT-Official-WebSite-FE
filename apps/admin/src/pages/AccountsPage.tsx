@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   BlockButton,
@@ -114,6 +114,7 @@ export default function AccountsPage() {
     placeholderData: keepPreviousData,
   });
   const { mutateAsync: deactivateAccounts } = useDeactivateAccountsMutation();
+  const listRef = useRef<HTMLDivElement>(null);
   const selectedIds = Object.keys(rowSelection).map(Number);
   const hasSelection = selectedIds.length > 0;
   const isEmpty = data?.content.length === 0;
@@ -138,6 +139,7 @@ export default function AccountsPage() {
     void showDialog(DIALOG_CONTENT.deactivateAccounts(selectedIds.length), {
       onPrimaryClick: () =>
         deactivateAccounts(selectedIds, { onSuccess: () => setRowSelection({}) }),
+      fallbackFocusRef: listRef,
     });
   };
 
@@ -221,7 +223,7 @@ export default function AccountsPage() {
       ) : isPending ? null : isEmpty ? (
         <EmptyState body="조건에 맞는 계정이 없습니다." />
       ) : (
-        <>
+        <div ref={listRef} tabIndex={-1} className="flex flex-col gap-16 outline-none">
           <DataTable table={table} />
           <Pagination
             className="self-center"
@@ -229,7 +231,7 @@ export default function AccountsPage() {
             totalPages={data.totalPages}
             onPageChange={(next) => setPage(next - 1)}
           />
-        </>
+        </div>
       )}
     </div>
   );

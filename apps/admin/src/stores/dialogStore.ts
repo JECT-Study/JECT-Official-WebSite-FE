@@ -1,3 +1,5 @@
+import type { RefObject } from "react";
+
 import type { DialogProps } from "@jects/jds";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
@@ -13,6 +15,8 @@ type DialogHandler = () => void | PromiseLike<unknown>;
 export interface DialogOptions extends Pick<DialogProps, "closeOnInteractOutside"> {
   onPrimaryClick?: DialogHandler;
   onSecondaryClick?: DialogHandler;
+  /** 다이얼로그를 연 요소가 사라지거나 비활성화되어 포커스를 돌려줄 수 없을 때 대신 포커스한다. */
+  fallbackFocusRef?: RefObject<HTMLElement | null>;
 }
 
 interface DialogState {
@@ -21,6 +25,7 @@ interface DialogState {
   content: DialogContent | null;
   options: DialogOptions;
   resolve: ((action: DialogAction | null) => void) | null;
+  opener: HTMLElement | null;
 }
 
 const initialState: DialogState = {
@@ -29,6 +34,7 @@ const initialState: DialogState = {
   content: null,
   options: {},
   resolve: null,
+  opener: null,
 };
 
 let clearTimer: ReturnType<typeof setTimeout> | null = null;
@@ -40,6 +46,15 @@ const cancelClear = () => {
 
 const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
   typeof (value as { then?: unknown } | null | undefined)?.then === "function";
+
+// JDS Dialog는 트리거 없이 열면 닫힐 때 포커스를 돌려주지 않아 직접 복원한다.
+const restoreFocus = (
+  opener: HTMLElement | null,
+  fallbackFocusRef?: RefObject<HTMLElement | null>
+) => {
+  opener?.focus({ preventScroll: true });
+  if (document.activeElement !== opener) fallbackFocusRef?.current?.focus({ preventScroll: true });
+};
 
 export const useDialogStore = create(
   combine(initialState, (set, get) => {
@@ -53,7 +68,8 @@ export const useDialogStore = create(
       clearTimer = setTimeout(() => {
         clearTimer = null;
         if (!get().open) {
-          set({ content: null, options: {} });
+          restoreFocus(get().opener, get().options.fallbackFocusRef);
+          set({ content: null, options: {}, opener: null });
         }
       }, DIALOG_CLOSE_DELAY_MS);
     };
@@ -63,7 +79,9 @@ export const useDialogStore = create(
         new Promise<DialogAction | null>((resolve) => {
           cancelClear();
           get().resolve?.(null);
-          set({ open: true, pending: false, content, options, resolve });
+          const opener =
+            document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          set({ open: true, pending: false, content, options, resolve, opener });
         }),
       selectAction: async (action: DialogAction) => {
         const { pending, options, resolve } = get();
