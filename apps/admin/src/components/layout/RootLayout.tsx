@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { Outlet, useLocation } from "react-router-dom";
+
+import { dismissDialog } from "@/stores/dialogStore";
 
 import { Header } from "./Header";
 import { HeaderActionSlotContext } from "./Header.context";
 import { Sidebar } from "./Sidebar";
 
 export default function RootLayout() {
-  const { key: locationKey } = useLocation();
+  const { key: locationKey, pathname } = useLocation();
   const { isDesktop } = useMediaQueryFlags();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [wasDesktop, setWasDesktop] = useState(isDesktop);
@@ -25,6 +27,9 @@ export default function RootLayout() {
     setLastLocationKey(locationKey);
     setIsSidebarOpen(false);
   }
+
+  // 공용 다이얼로그는 라우터 바깥에 렌더링되어 페이지를 옮겨도 남으므로 경로가 바뀌면 닫는다.
+  useEffect(() => dismissDialog, [pathname]);
 
   return (
     <div className="flex min-h-dvh bg-surface-standard">
