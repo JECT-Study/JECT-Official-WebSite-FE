@@ -210,29 +210,31 @@ export default function AccountsPage() {
           />
         </div>
       </div>
-      {isForbidden ? (
-        <EmptyState body="계정 목록을 조회할 권한이 없습니다." />
-      ) : isError ? (
-        <EmptyState
-          body="목록을 불러오지 못했습니다."
-          primaryAction={{ children: "다시 시도", onClick: () => void refetch() }}
-          secondaryAction={
-            isFirstPage ? undefined : { children: "첫 페이지로 이동", onClick: () => setPage(0) }
-          }
-        />
-      ) : isPending ? null : isEmpty ? (
-        <EmptyState body="조건에 맞는 계정이 없습니다." />
-      ) : (
-        <div ref={listRef} tabIndex={-1} className="flex flex-col gap-16 outline-none">
-          <DataTable table={table} />
-          <Pagination
-            className="self-center"
-            page={page + 1}
-            totalPages={data.totalPages}
-            onPageChange={(next) => setPage(next - 1)}
+      <div ref={listRef} tabIndex={-1} className="flex flex-col gap-16 outline-none">
+        {isForbidden ? (
+          <EmptyState body="계정 목록을 조회할 권한이 없습니다." />
+        ) : isError ? (
+          <EmptyState
+            body="목록을 불러오지 못했습니다."
+            primaryAction={{ children: "다시 시도", onClick: () => void refetch() }}
+            secondaryAction={
+              isFirstPage ? undefined : { children: "첫 페이지로 이동", onClick: () => setPage(0) }
+            }
           />
-        </div>
-      )}
+        ) : isPending ? null : isEmpty ? (
+          <EmptyState body="조건에 맞는 계정이 없습니다." />
+        ) : (
+          <>
+            <DataTable table={table} />
+            <Pagination
+              className="self-center"
+              page={page + 1}
+              totalPages={data.totalPages}
+              onPageChange={(next) => setPage(next - 1)}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }
