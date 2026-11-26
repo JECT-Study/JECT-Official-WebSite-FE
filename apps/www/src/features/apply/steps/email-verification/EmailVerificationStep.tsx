@@ -1,63 +1,31 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, LabelButton, toastController } from "@jects/jds";
+import { LabelButton } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
-import { authApi, type VerifyAuthCodeRequest } from "@/apis/auth/api";
+import { authApi } from "@/apis/auth/api";
+import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
+import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
+import { AuthCodeField } from "@/features/apply/AuthCodeField";
+import { EmailField } from "@/features/apply/EmailField";
 import { PinField } from "@/features/apply/PinField";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
 import { useRegisterApplicantMutation } from "@/hooks/applicant/useRegisterApplicantMutation";
-import { useSendAuthCodeMutation } from "@/hooks/auth/useSendAuthCodeMutation";
-import { useIsTimeReached } from "@/hooks/useIsTimeReached";
+import { useAuthCodeVerification } from "@/hooks/auth/useAuthCodeVerification";
+import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
-import { AuthCodeField, type AuthCodeStatus } from "./AuthCodeField";
-import { EmailField } from "./EmailField";
 import { emailVerificationFormSchema, type EmailVerificationFormValues } from "./schemas";
 import { TermsField } from "./TermsField";
-
-const AUTH_CODE_VALID_SECONDS = 300;
-const RESEND_COOLDOWN_SECONDS = 180;
-
-interface AuthCodeStatusParams {
-  isVerified: boolean;
-  isExpired: boolean;
-  isPending: boolean;
-  isMismatch: boolean;
-}
-
-function getAuthCodeStatus({
-  isVerified,
-  isExpired,
-  isPending,
-  isMismatch,
-}: AuthCodeStatusParams): AuthCodeStatus {
-  if (isVerified) {
-    return "verified";
-  }
-
-  if (isExpired) {
-    return "expired";
-  }
-
-  if (isPending) {
-    return "pending";
-  }
-
-  if (isMismatch) {
-    return "mismatch";
-  }
-
-  return "idle";
-}
 
 interface EmailVerificationStepProps {
   recruitId: number;
@@ -66,118 +34,83 @@ interface EmailVerificationStepProps {
 
 export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationStepProps) {
   const router = useRouter();
-  const [sentEmail, setSentEmail] = useState<string | null>(null);
-  const [isVerified, setIsVerified] = useState(false);
-  const [isAuthCodeMismatch, setIsAuthCodeMismatch] = useState(false);
-  const [isExistingMemberDialogOpen, setIsExistingMemberDialogOpen] = useState(false);
-  const [sentAt, setSentAt] = useState<number | null>(null);
-
   const form = useForm<EmailVerificationFormValues>({
     resolver: zodResolver(emailVerificationFormSchema),
     mode: "onTouched",
     defaultValues: { email: "", authCode: "", pin: "", agreedTerms: [] },
   });
 
-  const showSendFailureToast = () => {
-    toastController.destructive("인증번호 발송 실패", {
-      description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-    });
+  const openExistingApplicantDialog = async () => {
+    if ((await showDialog(DIALOG_CONTENT.existingApplicant)) === "primary") {
+      router.push(routeTo.applyContinue(recruitId));
+    }
   };
 
-  const sendMutation = useSendAuthCodeMutation({
-    onSuccess: (_, { email }) => {
-      setSentEmail(email);
-      setSentAt(Date.now());
-      form.resetField("authCode");
-      setIsAuthCodeMismatch(false);
-      toastController.basic("인증번호 발송됨", {
-        description: `재발송 요청은 ${RESEND_COOLDOWN_SECONDS / 60}분 뒤에 가능합니다.`,
-      });
-    },
-    onError: showSendFailureToast,
+  const verification = useAuthCodeVerification({
+    recruitId,
+    template: "AUTH_CODE",
+    onSent: () => form.resetField("authCode"),
+    onVerified: (email) => form.setValue("email", email, { shouldValidate: true }),
   });
 
   const checkMemberMutation = useMutation({
     mutationFn: (email: string) => authApi.isExistMember(email, recruitId),
-    onSuccess: (isExistMember, email) => {
-      if (isExistMember) {
-        setIsExistingMemberDialogOpen(true);
-        return;
-      }
-
-      sendMutation.mutate({ email, template: "AUTH_CODE" });
-    },
-    onError: showSendFailureToast,
   });
 
-  const verifyMutation = useMutation({
-    mutationFn: (request: VerifyAuthCodeRequest) => authApi.verifyAuthCode(request, "AUTH_CODE"),
-    onError: (error) => {
-      if (hasErrorCode(error, "AUTH-1") || hasErrorCode(error, "AUTH-2")) {
-        setIsAuthCodeMismatch(true);
-        return;
-      }
-
-      toastController.destructive("인증 시도 실패", {
-        description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-      });
-    },
-  });
-
-  const registerMutation = useRegisterApplicantMutation({
-    onError: (error) => {
-      if (hasErrorCode(error, "APPLICANT-2")) {
-        setIsExistingMemberDialogOpen(true);
-        return;
-      }
-
-      toastController.destructive("PIN 설정 실패", {
-        description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-      });
-    },
-  });
+  const registerMutation = useRegisterApplicantMutation();
 
   const handleSend = async () => {
-    if (await form.trigger("email")) {
-      checkMemberMutation.mutate(form.getValues("email"));
-    }
-  };
-
-  const handleVerify = async () => {
-    if (sentEmail === null || !(await form.trigger("authCode"))) {
+    if (!(await form.trigger("email"))) {
       return;
     }
 
-    verifyMutation.mutate(
-      {
-        email: sentEmail,
-        authCode: form.getValues("authCode").trim(),
-        recruitId,
+    checkMemberMutation.mutate(form.getValues("email"), {
+      onSuccess: (isExistMember, email) => {
+        if (isExistMember) {
+          void openExistingApplicantDialog();
+          return;
+        }
+
+        verification.send(email);
       },
+      onError: () => {
+        showToast(TOAST_CONTENT.sendAuthCodeFailed);
+      },
+    });
+  };
+
+  const handleVerify = async () => {
+    if (await form.trigger("authCode")) {
+      verification.verify(form.getValues("authCode"));
+    }
+  };
+
+  const handleRegister = ({ pin }: EmailVerificationFormValues) => {
+    registerMutation.mutate(
+      { pin, recruitId },
       {
-        onSuccess: () => {
-          form.setValue("email", sentEmail, { shouldValidate: true });
-          setIsVerified(true);
+        onSuccess: onNext,
+        onError: (error) => {
+          if (hasErrorCode(error, "APPLICANT-2")) {
+            void openExistingApplicantDialog();
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-12")) {
+            void showDialog(DIALOG_CONTENT.applicationInProgress);
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-18")) {
+            void showDialog(DIALOG_CONTENT.activeMember);
+            return;
+          }
+
+          showToast(TOAST_CONTENT.setPinFailed);
         },
       }
     );
   };
-
-  const handleRegister = ({ pin }: EmailVerificationFormValues) => {
-    registerMutation.mutate({ pin, recruitId }, { onSuccess: onNext });
-  };
-
-  const deadline = sentAt === null ? null : sentAt + AUTH_CODE_VALID_SECONDS * 1000;
-  const isExpired = useIsTimeReached(deadline);
-  const authCodeStatus = getAuthCodeStatus({
-    isVerified,
-    isExpired,
-    isPending: verifyMutation.isPending,
-    isMismatch: isAuthCodeMismatch,
-  });
-  const canResend = useIsTimeReached(
-    sentAt === null ? null : sentAt + RESEND_COOLDOWN_SECONDS * 1000
-  );
 
   return (
     <ApplyStepLayout title="이메일 인증">
@@ -189,23 +122,23 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
         >
           <div className="flex flex-col gap-24">
             <EmailField
-              isVerified={isVerified}
-              coolingDownEmail={canResend ? null : sentEmail}
-              isPending={checkMemberMutation.isPending || sendMutation.isPending}
+              isVerified={verification.isVerified}
+              coolingDownEmail={verification.coolingDownEmail}
+              isPending={checkMemberMutation.isPending || verification.isSending}
               onSend={handleSend}
             />
 
-            {deadline !== null && (
+            {verification.deadline !== null && (
               <AuthCodeField
-                deadline={deadline}
+                deadline={verification.deadline}
                 validSeconds={AUTH_CODE_VALID_SECONDS}
-                status={authCodeStatus}
+                status={verification.authCodeStatus}
                 onVerify={handleVerify}
-                onChange={() => setIsAuthCodeMismatch(false)}
+                onChange={verification.clearMismatch}
               />
             )}
 
-            {sentEmail !== null && !isVerified && (
+            {verification.sentEmail !== null && !verification.isVerified && (
               <LabelButton asChild hierarchy="tertiary" size="sm" suffixIcon="chevron-right">
                 <Link href={routeTo.faq("1", "apply-5")} target="_blank" className="self-start">
                   인증번호를 받지 못하셨나요?
@@ -213,7 +146,7 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
               </LabelButton>
             )}
 
-            {isVerified && (
+            {verification.isVerified && (
               <>
                 <PinField
                   label="PIN 설정"
@@ -225,24 +158,9 @@ export function EmailVerificationStep({ recruitId, onNext }: EmailVerificationSt
             )}
           </div>
 
-          <StepSubmitButton disabled={!isVerified || registerMutation.isPending} />
+          <StepSubmitButton disabled={!verification.isVerified || registerMutation.isPending} />
         </form>
       </FormProvider>
-
-      <Dialog
-        open={isExistingMemberDialogOpen}
-        onOpenChange={setIsExistingMemberDialogOpen}
-        header="페이지를 이동해 지원서를 이어서 작성합니다"
-        body="이미 등록된 이메일은 마지막 작성 단계부터 이어서 작성할 수 있어요."
-        primaryAction={{
-          children: "페이지 이동하기",
-          onClick: () => router.push(routeTo.applyContinue(recruitId)),
-        }}
-        secondaryAction={{
-          children: "닫기",
-          onClick: () => setIsExistingMemberDialogOpen(false),
-        }}
-      />
     </ApplyStepLayout>
   );
 }

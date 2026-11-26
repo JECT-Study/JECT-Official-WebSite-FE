@@ -135,7 +135,7 @@ export interface paths {
         put?: never;
         /**
          * PIN 로그인
-         * @description 이메일, PIN 번호, 모집 ID로 로그인하고 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.
+         * @description 이메일, PIN 번호, 모집 ID로 인증하고 지원서 제출과 동일한 지원 자격을 검증합니다. 모집 대상 유형·기수 기준 활동 중인 구성원이거나 다른 OPEN 공고에 임시저장·제출한 지원서가 있으면 로그인을 제한하며, 성공 시 쿠키로 액세스 토큰과 리프레시 토큰을 발급합니다.
          */
         post: operations["loginWithPin"];
         delete?: never;
@@ -573,10 +573,10 @@ export interface components {
             contentLength?: number;
         };
         UploadFileResponse: {
-            cdnUrl?: string;
-            presignedUrl?: string;
+            cdnUrl: string;
+            presignedUrl: string;
             /** Format: date-time */
-            expiration?: string;
+            expiration: string;
         };
         PinLoginRequest: {
             email: string;
@@ -639,36 +639,36 @@ export interface components {
         };
         SemesterResponse: {
             /** Format: int64 */
-            id?: number;
-            name?: string;
+            id: number;
+            name: string;
         };
         SemesterResponses: {
-            semesterResponses?: components["schemas"]["SemesterResponse"][];
+            semesterResponses: components["schemas"]["SemesterResponse"][];
         };
         RecruitFaqResponse: {
-            title?: string;
-            content?: string;
+            title: string;
+            content: string;
         };
         RecruitResponse: {
             /** Format: int64 */
-            recruitId?: number;
-            title?: string;
+            recruitId: number;
+            title: string | null;
             /** Format: int64 */
-            semesterId?: number;
-            semesterName?: string;
-            recruitType?: components["schemas"]["RecruitType"];
-            recruitTypeDescription?: string;
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            recruitTypeDetailDescription?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            jobFamilyDescription?: string;
+            semesterId: number | null;
+            semesterName: string | null;
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDescription: string;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            recruitTypeDetailDescription: string;
+            jobFamily: components["schemas"]["JobFamily"];
+            jobFamilyDescription: string;
             /** Format: date-time */
-            startDate?: string;
+            startDate: string;
             /** Format: date-time */
-            endDate?: string;
-            recruitInformation?: string;
-            notice?: string;
-            faqs?: components["schemas"]["RecruitFaqResponse"][];
+            endDate: string;
+            recruitInformation: string | null;
+            notice: string | null;
+            faqs: components["schemas"]["RecruitFaqResponse"][];
         };
         /** @enum {string} */
         RecruitType: "SEMESTER" | "MAKERS" | "SUPPORTERS";
@@ -676,25 +676,25 @@ export interface components {
         RecruitTypeDetail: "REGULAR" | "NEW" | "REFILL";
         ActiveRecruitmentResponse: {
             /** Format: int64 */
-            recruitId?: number;
-            title?: string;
+            recruitId: number;
+            title: string | null;
             /** Format: int64 */
-            semesterId?: number;
-            semesterName?: string;
-            recruitType?: components["schemas"]["RecruitType"];
-            recruitTypeDescription?: string;
-            recruitTypeDetail?: components["schemas"]["RecruitTypeDetail"];
-            recruitTypeDetailDescription?: string;
-            jobFamily?: components["schemas"]["JobFamily"];
-            jobFamilyDescription?: string;
+            semesterId: number | null;
+            semesterName: string | null;
+            recruitType: components["schemas"]["RecruitType"];
+            recruitTypeDescription: string;
+            recruitTypeDetail: components["schemas"]["RecruitTypeDetail"];
+            recruitTypeDetailDescription: string;
+            jobFamily: components["schemas"]["JobFamily"];
+            jobFamilyDescription: string;
             /** Format: date-time */
-            startDate?: string;
+            startDate: string;
             /** Format: date-time */
-            endDate?: string;
-            summary?: string;
+            endDate: string;
+            summary: string | null;
         };
         ActiveRecruitmentResponses: {
-            recruitments?: components["schemas"]["ActiveRecruitmentResponse"][];
+            recruitments: components["schemas"]["ActiveRecruitmentResponse"][];
         };
         /** @enum {string} */
         Category: "SEMESTER_1" | "SEMESTER_2" | "SEMESTER_3" | "SEMESTER_4";
@@ -707,19 +707,19 @@ export interface components {
         };
         PageProjectResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["ProjectResponse"][];
+            size: number;
+            content: components["schemas"]["ProjectResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -736,12 +736,12 @@ export interface components {
         };
         ProjectResponse: {
             /** Format: int64 */
-            id?: number;
-            thumbnailUrl?: string;
-            name?: string;
-            summary?: string;
-            description?: string;
-            serviceType?: string;
+            id: number;
+            thumbnailUrl: string | null;
+            name: string | null;
+            summary: string;
+            description: string | null;
+            serviceType: string;
         };
         SortObject: {
             empty?: boolean;
@@ -749,64 +749,64 @@ export interface components {
             unsorted?: boolean;
         };
         ProjectDetailResponse: {
-            name?: string;
+            name: string | null;
             /** Format: date */
-            startDate?: string;
+            startDate: string | null;
             /** Format: date */
-            endDate?: string;
-            teamMemberNames?: components["schemas"]["TeamMemberNames"];
-            techStack?: string[];
-            badges?: string[];
-            description?: string;
-            serviceUrl?: string;
-            githubUrl?: string;
-            bannerImageUrl?: components["schemas"]["ProjectIntroResponse"];
-            sampleImageUrls?: components["schemas"]["ProjectIntroResponse"][];
-            descriptionImageUrls?: components["schemas"]["ProjectIntroResponse"][];
+            endDate: string | null;
+            teamMemberNames: components["schemas"]["TeamMemberNames"];
+            techStack: string[];
+            badges: string[];
+            description: string | null;
+            serviceUrl: string | null;
+            githubUrl: string | null;
+            bannerImageUrl: components["schemas"]["ProjectIntroResponse"] | null;
+            sampleImageUrls: components["schemas"]["ProjectIntroResponse"][];
+            descriptionImageUrls: components["schemas"]["ProjectIntroResponse"][];
         };
         ProjectIntroResponse: {
-            imageUrl?: string;
+            imageUrl: string;
             /** Format: int32 */
-            sequence?: number;
+            sequence: number;
         };
         TeamMemberNames: {
-            productManagers?: string[];
-            productDesigners?: string[];
-            frontendDevelopers?: string[];
-            backendDevelopers?: string[];
+            productManagers: string[];
+            productDesigners: string[];
+            frontendDevelopers: string[];
+            backendDevelopers: string[];
         };
         CategorySummary: {
-            categoryName?: string;
+            categoryName: string;
             /** Format: int64 */
-            count?: number;
+            count: number;
         };
         ProjectSummaryResponse: {
-            categorySummaries?: components["schemas"]["CategorySummary"][];
+            categorySummaries: components["schemas"]["CategorySummary"][];
         };
         MiniStudyResponse: {
             /** Format: int64 */
-            id?: number;
-            name?: string;
-            linkUrl?: string;
-            imageUrl?: string;
-            summary?: string;
-            tag?: string;
+            id: number;
+            name: string;
+            linkUrl: string | null;
+            imageUrl: string | null;
+            summary: string;
+            tag: string;
         };
         PageMiniStudyResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["MiniStudyResponse"][];
+            size: number;
+            content: components["schemas"]["MiniStudyResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
@@ -814,75 +814,75 @@ export interface components {
         ContentType: "YOUTUBE";
         JectalkResponse: {
             /** Format: int64 */
-            id?: number;
-            title?: string;
-            description?: string;
-            contentUrl?: string;
-            contentType?: components["schemas"]["ContentType"];
-            thumbnailUrl?: string;
-            summary?: string;
+            id: number;
+            title: string;
+            description: string;
+            contentUrl: string | null;
+            contentType: components["schemas"]["ContentType"];
+            thumbnailUrl: string | null;
+            summary: string;
         };
         PageJectalkResponse: {
             /** Format: int64 */
-            totalElements?: number;
+            totalElements: number;
             /** Format: int32 */
-            totalPages?: number;
+            totalPages: number;
             first?: boolean;
-            last?: boolean;
+            last: boolean;
             /** Format: int32 */
-            size?: number;
-            content?: components["schemas"]["JectalkResponse"][];
+            size: number;
+            content: components["schemas"]["JectalkResponse"][];
             /** Format: int32 */
-            number?: number;
+            number: number;
             sort?: components["schemas"]["SortObject"];
             /** Format: int32 */
-            numberOfElements?: number;
+            numberOfElements: number;
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         TempApplicationFormResponse: {
-            jobFamily?: components["schemas"]["JobFamily"];
-            answers?: {
+            jobFamily: components["schemas"]["JobFamily"];
+            answers: {
                 [key: string]: string;
             };
-            portfolios?: components["schemas"]["ApplyPortfolioDto"][];
+            portfolios: components["schemas"]["ApplyPortfolioDto"][];
         };
         /** @enum {string} */
         ApplyStatus: "JOINED" | "TEMP_SAVED" | "SUBMITTED" | "REJECTED";
         ApplyStatusResponse: {
-            status?: components["schemas"]["ApplyStatus"];
+            status: components["schemas"]["ApplyStatus"];
         };
         /** @enum {string} */
         InputType: "SELECT" | "TEXT" | "URL" | "FILE";
         QuestionResponse: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int32 */
-            sequence?: number;
-            inputType?: components["schemas"]["InputType"];
-            isRequired?: boolean;
-            title?: string;
-            subtitle?: string;
-            label?: string;
-            selectOptions?: string[];
-            inputHint?: string;
+            sequence: number;
+            inputType: components["schemas"]["InputType"];
+            isRequired: boolean;
+            title: string;
+            subtitle: string | null;
+            label: string;
+            selectOptions: string[];
+            inputHint: string | null;
             /** Format: int32 */
-            maxTextLength?: number;
+            maxTextLength: number | null;
             /** Format: int32 */
-            maxFileSize?: number;
+            maxFileSize: number | null;
         };
         QuestionResponses: {
-            questionResponses?: components["schemas"]["QuestionResponse"][];
+            questionResponses: components["schemas"]["QuestionResponse"][];
         };
         ApplicantProfileResponse: {
             /** Format: int64 */
-            id?: number;
-            name?: string;
-            phoneNumber?: string;
-            careerDetails?: components["schemas"]["CareerDetails"];
-            region?: components["schemas"]["Region"];
-            experiencePeriod?: components["schemas"]["ExperiencePeriod"];
-            interestedDomains?: string[];
+            id: number;
+            name: string | null;
+            phoneNumber: string | null;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
+            region: components["schemas"]["Region"] | null;
+            experiencePeriod: components["schemas"]["ExperiencePeriod"] | null;
+            interestedDomains: string[];
         };
     };
     responses: never;
@@ -911,7 +911,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -933,7 +944,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -956,7 +978,48 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["UploadFileResponse"][];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["UploadFileResponse"][];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -980,7 +1043,48 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["UploadFileResponse"][];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["UploadFileResponse"][];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1003,7 +1107,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -1022,7 +1137,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1046,7 +1186,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1067,6 +1232,38 @@ export interface operations {
             };
         };
         responses: {
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        status: string;
+                        data: string[];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
+            };
             /** @description default response */
             default: {
                 headers: {
@@ -1079,7 +1276,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1101,7 +1307,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["TempApplicationFormResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["TempApplicationFormResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1126,7 +1341,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -1146,7 +1372,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -1170,7 +1407,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -1194,7 +1442,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };
@@ -1217,7 +1476,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1241,7 +1509,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": string;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: string;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1261,7 +1538,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["SemesterResponses"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["SemesterResponses"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1283,7 +1569,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["RecruitResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["RecruitResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1303,7 +1598,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ActiveRecruitmentResponses"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ActiveRecruitmentResponses"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1326,7 +1630,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageProjectResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageProjectResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1348,7 +1661,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProjectDetailResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ProjectDetailResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1368,7 +1690,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ProjectSummaryResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ProjectSummaryResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1390,7 +1721,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageMiniStudyResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageMiniStudyResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1417,7 +1757,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageJectalkResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["PageJectalkResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1440,7 +1789,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1462,7 +1820,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ApplyStatusResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ApplyStatusResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1484,7 +1851,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["QuestionResponses"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["QuestionResponses"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1504,7 +1880,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": boolean;
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: boolean;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1524,7 +1909,16 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ApplicantProfileResponse"];
+                    "*/*": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: components["schemas"]["ApplicantProfileResponse"];
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
                 };
             };
         };
@@ -1543,7 +1937,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** @example SUCCESS */
+                        status: string;
+                        data: Record<string, never> | null;
+                        /**
+                         * Format: date-time
+                         * @example 2025-08-08T14:10:32.123
+                         */
+                        timestamp: string;
+                    };
+                };
             };
         };
     };

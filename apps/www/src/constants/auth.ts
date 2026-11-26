@@ -1,0 +1,3 @@
+export const AUTH_CODE_VALID_SECONDS = 300;
+
+export const RESEND_COOLDOWN_SECONDS = 180;

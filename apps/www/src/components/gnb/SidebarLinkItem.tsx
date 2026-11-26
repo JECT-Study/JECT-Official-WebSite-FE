@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
-
 import { Menu } from "@jects/jds";
 
+import { LeaveConfirmLink } from "@/components/common/leave-confirm-link/LeaveConfirmLink";
 import type { NavigationLink } from "@/constants/navigation";
 
 interface SidebarLinkItemProps {
@@ -28,7 +27,7 @@ export function SidebarLinkItem({ link, onNavigate }: SidebarLinkItemProps) {
 
   return (
     <Menu.Anchor asChild onClick={onNavigate}>
-      <Link href={link.href}>{link.label}</Link>
+      <LeaveConfirmLink href={link.href}>{link.label}</LeaveConfirmLink>
     </Menu.Anchor>
   );
 }

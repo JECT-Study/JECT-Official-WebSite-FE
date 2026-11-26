@@ -4,30 +4,35 @@ import { BlockButton, TextField } from "@jects/jds";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 
 import { TextFieldWithButton } from "@/components/common/text-field-with-button";
-import { emailSchema } from "@/features/apply/schemas";
-
-import type { EmailVerificationFormValues } from "./schemas";
+import { type EmailAuthFormValues, emailSchema } from "@/features/apply/schemas";
 
 interface EmailFieldProps {
   isVerified: boolean;
   coolingDownEmail: string | null;
   isPending: boolean;
+  errorMessage?: string;
   onSend: () => void;
 }
 
-export function EmailField({ isVerified, coolingDownEmail, isPending, onSend }: EmailFieldProps) {
-  const { control, register } = useFormContext<EmailVerificationFormValues>();
+export function EmailField({
+  isVerified,
+  coolingDownEmail,
+  isPending,
+  errorMessage,
+  onSend,
+}: EmailFieldProps) {
+  const { control, register } = useFormContext<EmailAuthFormValues>();
   const email = useWatch({ control, name: "email" });
   const { errors } = useFormState({ control, name: "email" });
 
-  const error = email ? errors.email : undefined;
+  const helper = errorMessage ?? (email ? errors.email?.message : undefined);
   const isSendDisabled =
     !emailSchema.safeParse(email).success || isVerified || email === coolingDownEmail || isPending;
 
   return (
     <TextFieldWithButton
       label="이메일"
-      status={error ? "error" : "default"}
+      status={helper ? "error" : "default"}
       readonly={isVerified}
       button={
         <BlockButton
@@ -40,7 +45,7 @@ export function EmailField({ isVerified, coolingDownEmail, isPending, onSend }: 
           인증번호 받기
         </BlockButton>
       }
-      footer={error && <TextField.Helper>{error.message}</TextField.Helper>}
+      footer={helper && <TextField.Helper>{helper}</TextField.Helper>}
     >
       <TextField.Input
         type="email"

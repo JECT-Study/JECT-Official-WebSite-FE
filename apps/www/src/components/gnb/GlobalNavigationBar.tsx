@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { BlockButton, Divider, DropdownMenu, SegmentedControls } from "@jects/jds";
 
+import { LeaveConfirmLink } from "@/components/common/leave-confirm-link/LeaveConfirmLink";
 import { Logo } from "@/components/common/logo";
 import { NAVIGATION_SECTIONS } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
@@ -72,9 +72,9 @@ export function GlobalNavigationBar() {
           aria-label="주요 메뉴"
           className="relative flex h-20 w-full max-w-content items-center tablet:h-[26px] tablet:gap-20 desktop:h-32 desktop:gap-24"
         >
-          <Link href={ROUTES.main} aria-label="젝트 홈" className="flex items-center">
+          <LeaveConfirmLink href={ROUTES.main} aria-label="젝트 홈" className="flex items-center">
             <Logo className={cn("h-[14px] desktop:h-16", heroTextClass)} />
-          </Link>
+          </LeaveConfirmLink>
 
           <div className="hidden h-[18px] tablet:block desktop:h-20">
             <Divider orientation="vertical" />
@@ -140,7 +140,7 @@ export function GlobalNavigationBar() {
               size="sm"
               className={cn("hidden tablet:inline-flex", heroButtonClass)}
             >
-              <Link href={ROUTES.applyList}>지원하기</Link>
+              <LeaveConfirmLink href={ROUTES.applyList}>지원하기</LeaveConfirmLink>
             </BlockButton>
             <BlockButton
               asChild
@@ -148,7 +148,7 @@ export function GlobalNavigationBar() {
               size="xs"
               className={cn("tablet:hidden", heroButtonClass)}
             >
-              <Link href={ROUTES.applyList}>지원하기</Link>
+              <LeaveConfirmLink href={ROUTES.applyList}>지원하기</LeaveConfirmLink>
             </BlockButton>
 
             <Sidebar triggerColor={isOnHero ? "var(--color-semantic-system-white)" : undefined} />

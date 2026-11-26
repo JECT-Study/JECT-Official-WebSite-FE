@@ -1,18 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dialog, toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { applyApi, type ApplyProfileRequest } from "@/apis/apply/api";
 import type { JobFamily } from "@/apis/recruit/schemas";
+import { DIALOG_CONTENT } from "@/constants/dialog";
+import { routeTo } from "@/constants/routes";
+import { TOAST_CONTENT } from "@/constants/toast";
+import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
-import { RecruitClosedDialog } from "@/features/apply/RecruitClosedDialog";
 import { StepSubmitButton } from "@/features/apply/StepSubmitButton";
+import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
+import { showDialog } from "@/stores/dialogStore";
+import { showToast } from "@/utils/showToast";
 
 import { InterestedDomainsField } from "./InterestedDomainsField";
 import { NameField } from "./NameField";
@@ -29,41 +34,65 @@ interface ProfileStepProps {
 }
 
 export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: ProfileStepProps) {
-  const [pendingProfile, setPendingProfile] = useState<ProfileFormValues | null>(null);
-  const [isClosedDialogOpen, setIsClosedDialogOpen] = useState(false);
+  const router = useRouter();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     mode: "onTouched",
-    defaultValues: { name: "", phoneNumber: "", interestedDomains: [] },
+    defaultValues: {
+      name: "",
+      phoneNumber: "",
+      careerDetails: undefined,
+      region: undefined,
+      experiencePeriod: undefined,
+      interestedDomains: [],
+    },
   });
+  useLeaveConfirm(form.formState.isDirty);
 
   const saveMutation = useMutation({
     mutationFn: (request: ApplyProfileRequest) => applyApi.saveProfile(recruitId, request),
   });
 
-  const handleConfirm = () => {
-    if (pendingProfile === null) {
-      return;
-    }
+  const moveToGuide = () => router.replace(routeTo.applyGuide(recruitId));
 
+  const saveProfile = (profile: ProfileFormValues) => {
     saveMutation.mutate(
-      { ...pendingProfile, jobFamily },
+      { ...profile, jobFamily },
       {
         onSuccess: onNext,
         onError: (error) => {
           if (isRecruitClosedError(error)) {
-            setIsClosedDialogOpen(true);
+            void showDialog(DIALOG_CONTENT.recruitClosed, { closeOnInteractOutside: false }).then(
+              (action) => {
+                if (action === "primary") {
+                  moveToGuide();
+                }
+              }
+            );
             return;
           }
 
-          toastController.destructive("프로필 저장 실패", {
-            description: "일시적 오류일 수 있으니 다시 시도해주세요.",
-          });
+          if (hasErrorCode(error, "APPLY-12")) {
+            void showDialog(DIALOG_CONTENT.applicationInProgress);
+            return;
+          }
+
+          if (hasErrorCode(error, "APPLY-18")) {
+            void showDialog(DIALOG_CONTENT.activeMember);
+            return;
+          }
+
+          showToast(TOAST_CONTENT.saveProfileFailed);
         },
       }
     );
-    setPendingProfile(null);
+  };
+
+  const handleSubmit = async (profile: ProfileFormValues) => {
+    if ((await showDialog(DIALOG_CONTENT.startApply(jobFamilyName))) === "primary") {
+      saveProfile(profile);
+    }
   };
 
   return (
@@ -72,7 +101,7 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
         <form
           className="flex flex-col gap-margin-3xl"
           noValidate
-          onSubmit={form.handleSubmit(setPendingProfile)}
+          onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="flex flex-col gap-24">
             <NameField />
@@ -101,27 +130,6 @@ export function ProfileStep({ recruitId, jobFamily, jobFamilyName, onNext }: Pro
           <StepSubmitButton disabled={saveMutation.isPending} />
         </form>
       </FormProvider>
-
-      <Dialog
-        open={pendingProfile !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setPendingProfile(null);
-          }
-        }}
-        header={`${jobFamilyName} 공고로 지원을 시작할까요?`}
-        body={
-          <>
-            프로필을 등록하면 이 이메일로는 다른 공고에 지원할 수 없어요.
-            <br />
-            지원하려는 공고가 맞는지 확인해주세요.
-          </>
-        }
-        primaryAction={{ children: "등록하기", onClick: handleConfirm }}
-        secondaryAction={{ children: "취소", onClick: () => setPendingProfile(null) }}
-      />
-
-      <RecruitClosedDialog open={isClosedDialogOpen} recruitId={recruitId} />
     </ApplyStepLayout>
   );
 }
