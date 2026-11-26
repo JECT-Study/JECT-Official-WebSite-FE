@@ -5,14 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BlockButton, LabelButton, toastController } from "@jects/jds";
+import { BlockButton, LabelButton, LocalNavigation, toastController } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
 import { applicantApi } from "@/apis/applicant/api";
 import { authApi } from "@/apis/auth/api";
 import { routeTo } from "@/constants/routes";
-import { ApplyFunnelHeader } from "@/features/apply/ApplyFunnelHeader";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { AuthCodeField } from "@/features/apply/AuthCodeField";
 import { EmailField } from "@/features/apply/EmailField";
@@ -103,10 +102,11 @@ export function ResetPin({ recruitId }: ResetPinProps) {
 
   return (
     <div className="flex flex-col gap-48">
-      <ApplyFunnelHeader
-        recruitId={recruitId}
-        navigationTitle="PIN 재설정"
-        onBack={() => router.push(routeTo.applyContinue(recruitId))}
+      <LocalNavigation
+        title="PIN 재설정"
+        nested
+        onBackClick={() => router.push(routeTo.applyContinue(recruitId))}
+        stretched
       />
       <ApplyStepLayout title="이메일 인증">
         <FormProvider {...form}>

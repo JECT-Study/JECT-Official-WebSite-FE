@@ -11,24 +11,17 @@ import { confirmLeave } from "@/hooks/apply/useLeaveConfirm";
 interface ApplyFunnelHeaderProps {
   recruitId: number;
   navigationTitle: string;
-  onBack?: () => void;
   children?: ReactNode;
 }
 
 export function ApplyFunnelHeader({
   recruitId,
   navigationTitle,
-  onBack,
   children,
 }: ApplyFunnelHeaderProps) {
   const router = useRouter();
 
   const handleBackClick = async () => {
-    if (onBack) {
-      onBack();
-      return;
-    }
-
     if (await confirmLeave()) {
       router.push(routeTo.applyGuide(recruitId));
     }
