@@ -5,6 +5,7 @@ import type { IconName, ThemeVariant } from "@jects/jds";
 import altLogo from "@/assets/images/sponsors/alt-logo.png";
 import bdaiLogo from "@/assets/images/sponsors/bdai-logo.png";
 import figmaLogo from "@/assets/images/sponsors/figma-logo.png";
+import hanbitnLogo from "@/assets/images/sponsors/hanbitn-logo.png";
 import my4cutLogo from "@/assets/images/sponsors/my4cut-logo.png";
 import swypLogo from "@/assets/images/sponsors/swyp-logo.png";
 
@@ -135,4 +136,5 @@ export const SPONSORS: Sponsor[] = [
   { name: "BDAI", logo: bdaiLogo, href: "https://www.bdai.co.kr" },
   { name: "Alt", logo: altLogo, href: "https://www.altalt.io/ko" },
   { name: "나만의 네컷", logo: my4cutLogo, href: "https://my4cut-official.com" },
+  { name: "한빛앤", logo: hanbitnLogo, href: "https://www.hanbit.co.kr" },
 ];
