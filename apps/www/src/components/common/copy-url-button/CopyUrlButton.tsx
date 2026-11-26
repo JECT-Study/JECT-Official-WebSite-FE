@@ -1,14 +1,17 @@
 "use client";
 
-import { IconButton, toastController, Tooltip } from "@jects/jds";
+import { IconButton, Tooltip } from "@jects/jds";
+
+import { TOAST_CONTENT } from "@/constants/toast";
+import { showToast } from "@/utils/showToast";
 
 export function CopyUrlButton() {
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      toastController.basic("URL을 클립보드에 복사했습니다.");
+      showToast(TOAST_CONTENT.urlCopied);
     } catch {
-      toastController.destructive("URL 복사에 실패했습니다.");
+      showToast(TOAST_CONTENT.copyUrlFailed);
     }
   };
 

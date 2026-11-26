@@ -1,8 +1,9 @@
-import { toastController } from "@jects/jds";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 import { authApi, type EmailTemplate } from "@/apis/auth/api";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
+import { showToast } from "@/utils/showToast";
 
 interface SendAuthCodeVariables {
   email: string;
@@ -17,9 +18,7 @@ export function useSendAuthCodeMutation(
     mutationFn: ({ email, template }) => authApi.sendAuthCode(email, template),
     onError: (error, ...rest) => {
       if (hasErrorCode(error, "EMAIL-4")) {
-        toastController.destructive("인증번호 발송 제한", {
-          description: "잠시 후 다시 시도해주세요.",
-        });
+        showToast(TOAST_CONTENT.sendAuthCodeLimited);
         return;
       }
 
