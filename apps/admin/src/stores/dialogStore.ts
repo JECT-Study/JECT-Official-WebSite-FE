@@ -73,7 +73,7 @@ export const useDialogStore = create(
         try {
           const result = handler?.();
           if (isPromiseLike(result)) {
-            set({ pending: true });
+            if (get().resolve === resolve) set({ pending: true });
             await result;
           }
         } catch {
