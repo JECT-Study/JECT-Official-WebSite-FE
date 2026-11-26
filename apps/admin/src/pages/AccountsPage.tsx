@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   BlockButton,
   ContentBadge,
-  Dialog,
   EmptyState,
   Pagination,
   Tabs,
@@ -33,8 +32,10 @@ import {
   ACCOUNT_STATUSES,
   type AccountRole,
 } from "@/constants/account";
+import { DIALOG_CONTENT } from "@/constants/dialog";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
+import { showDialog } from "@/stores/dialogStore";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const ACCOUNT_FILTER_FIELDS: FilterField[] = [
@@ -108,15 +109,11 @@ export default function AccountsPage() {
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const [page, setPage] = useState(0);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
-  // 닫히는 동안 선택이 비워져도 다이얼로그 문구가 바뀌지 않도록 열 때의 대상을 따로 보관한다.
-  const [deactivateTargetIds, setDeactivateTargetIds] = useState<number[]>([]);
   const { data, error, isPending, isError, isPlaceholderData, refetch } = useQuery({
     ...accountQueries.list({ ...toAccountListFilter(filterValues), page }),
     placeholderData: keepPreviousData,
   });
-  const { mutate: deactivateAccounts, isPending: isDeactivating } = useDeactivateAccountsMutation();
-  const isDeactivatingRef = useRef(false);
+  const { mutateAsync: deactivateAccounts } = useDeactivateAccountsMutation();
   const selectedIds = Object.keys(rowSelection).map(Number);
   const hasSelection = selectedIds.length > 0;
   const isEmpty = data?.content.length === 0;
@@ -137,24 +134,11 @@ export default function AccountsPage() {
     setRowSelection({});
   };
 
-  const handleConfirmDeactivate = () => {
-    // isPending은 다음 렌더에 반영되어 연속 클릭을 막지 못하므로 ref로 즉시 잠근다.
-    if (isDeactivatingRef.current || deactivateTargetIds.length === 0) return;
-    isDeactivatingRef.current = true;
-    deactivateAccounts(deactivateTargetIds, {
-      onSuccess: () => {
-        setRowSelection({});
-        setIsDeactivateDialogOpen(false);
-      },
-      onSettled: () => {
-        isDeactivatingRef.current = false;
-      },
-    });
-  };
-
   const handleOpenDeactivateDialog = () => {
-    setDeactivateTargetIds(selectedIds);
-    setIsDeactivateDialogOpen(true);
+    void showDialog(DIALOG_CONTENT.deactivateAccounts(selectedIds.length), {
+      onPrimaryClick: () =>
+        deactivateAccounts(selectedIds, { onSuccess: () => setRowSelection({}) }),
+    });
   };
 
   const handleAddAccount = () => {
@@ -247,18 +231,6 @@ export default function AccountsPage() {
           />
         </>
       )}
-      <Dialog
-        open={isDeactivateDialogOpen}
-        onOpenChange={setIsDeactivateDialogOpen}
-        header={`계정 ${deactivateTargetIds.length}개를 비활성화하시겠습니까?`}
-        body="비활성화한 계정은 백오피스에 로그인할 수 없습니다."
-        primaryAction={{
-          children: "비활성화",
-          onClick: handleConfirmDeactivate,
-          disabled: isDeactivating,
-        }}
-        secondaryAction={{ children: "취소", onClick: () => setIsDeactivateDialogOpen(false) }}
-      />
     </div>
   );
 }
