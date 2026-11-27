@@ -17,6 +17,7 @@ export {
   type DataTableColumnHelper,
 } from "./DataTable.features";
 export { useDataTable } from "./useDataTable";
+export { deselectRows } from "./utils";
 
 export const DataTable = Object.assign(DataTableBase, {
   Root: DataTableRoot,

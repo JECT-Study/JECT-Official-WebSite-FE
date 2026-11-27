@@ -2,7 +2,7 @@ import { useToast } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 
 import { accountApi } from "@/apis/account/api";
-import { accountQueries } from "@/apis/account/queries";
+import { accountMutationKeys, accountQueries } from "@/apis/account/queries";
 import { queryClient } from "@/apis/queryClient";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 
@@ -16,6 +16,7 @@ export function useDeactivateAccountsMutation() {
   const { toast } = useToast();
 
   return useMutation({
+    mutationKey: accountMutationKeys.deactivate(),
     mutationFn: accountApi.deactivateAccounts,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: accountQueries.lists() });
