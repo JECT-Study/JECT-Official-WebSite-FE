@@ -3,12 +3,12 @@ import { createPortal } from "react-dom";
 
 import { BlockButton, type BlockButtonProps, EmptyState, Tabs, useToast } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
-import { hashKey, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { hashKey, keepPreviousData, useInfiniteQuery, useIsMutating } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import type { SubmittedAppliesCondition } from "@/apis/apply/api";
-import { applyQueries } from "@/apis/apply/queries";
+import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import Filter from "@/components/common/filter/Filter";
@@ -226,6 +226,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const { mutateAsync: updateSelectionResults } = useUpdateSelectionResultsMutation();
   const { mutateAsync: deleteSubmittedApplies } = useDeleteSubmittedAppliesMutation();
+  const isActionPending = useIsMutating({ mutationKey: applyMutationKeys.selectionActions() }) > 0;
   const listRef = useRef<HTMLDivElement>(null);
 
   const clearSelection = () => setRowSelection({});
@@ -314,7 +315,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                         hierarchy={hierarchy}
                         variant={variant}
                         size="sm"
-                        disabled={!canUpdateSelectionResults}
+                        disabled={isActionPending || !canUpdateSelectionResults}
                         onClick={() => openUpdateSelectionResultsDialog(selectionResult)}
                       >
                         {SELECTION_RESULT_LABELS[selectionResult]}
@@ -327,6 +328,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
                   size="sm"
                   prefixIcon="trash"
                   className="ml-auto"
+                  disabled={isActionPending}
                   onClick={openDeleteDialog}
                 >
                   삭제

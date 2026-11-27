@@ -13,3 +13,11 @@ export const applyQueries = {
       getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     }),
 };
+
+export const applyMutationKeys = {
+  selectionActions: () => [...applyQueries.all(), "selectionAction"] as const,
+  updateSelectionResults: () =>
+    [...applyMutationKeys.selectionActions(), "updateSelectionResults"] as const,
+  deleteSubmittedApplies: () =>
+    [...applyMutationKeys.selectionActions(), "deleteSubmittedApplies"] as const,
+};

@@ -11,3 +11,7 @@ export const accountQueries = {
       queryFn: () => accountApi.getAccounts(params),
     }),
 };
+
+export const accountMutationKeys = {
+  deactivate: () => [...accountQueries.all(), "deactivate"] as const,
+};

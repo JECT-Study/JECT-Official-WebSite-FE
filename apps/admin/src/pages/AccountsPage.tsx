@@ -8,11 +8,11 @@ import {
   Tabs,
   type ThemeVariant,
 } from "@jects/jds";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useIsMutating, useQuery } from "@tanstack/react-query";
 import type { RowSelectionState } from "@tanstack/react-table";
 
 import type { AccountListParams } from "@/apis/account/api";
-import { accountQueries } from "@/apis/account/queries";
+import { accountMutationKeys, accountQueries } from "@/apis/account/queries";
 import type { Account } from "@/apis/account/schemas";
 import {
   createDataTableColumnHelper,
@@ -114,6 +114,7 @@ export default function AccountsPage() {
     placeholderData: keepPreviousData,
   });
   const { mutateAsync: deactivateAccounts } = useDeactivateAccountsMutation();
+  const isDeactivating = useIsMutating({ mutationKey: accountMutationKeys.deactivate() }) > 0;
   const listRef = useRef<HTMLDivElement>(null);
   const selectedIds = Object.keys(rowSelection).map(Number);
   const hasSelection = selectedIds.length > 0;
@@ -196,6 +197,7 @@ export default function AccountsPage() {
               variant="outlined"
               size="sm"
               className="ml-auto"
+              disabled={isDeactivating}
               onClick={handleOpenDeactivateDialog}
             >
               비활성화

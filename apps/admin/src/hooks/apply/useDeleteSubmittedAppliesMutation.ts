@@ -2,7 +2,7 @@ import { useToast } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 
 import { applyApi } from "@/apis/apply/api";
-import { applyQueries } from "@/apis/apply/queries";
+import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { queryClient } from "@/apis/queryClient";
 import { recruitQueries } from "@/apis/recruit/queries";
 import { hasErrorCode } from "@/errors/hasErrorCode";
@@ -11,6 +11,7 @@ export function useDeleteSubmittedAppliesMutation() {
   const { toast } = useToast();
 
   return useMutation({
+    mutationKey: applyMutationKeys.deleteSubmittedApplies(),
     mutationFn: applyApi.deleteSubmittedApplies,
     onSuccess: async (deletedCount) => {
       const queryKey = applyQueries.submittedAppliesLists();
