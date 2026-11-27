@@ -37,9 +37,56 @@ return recruitSchema.parse(data);
 `ApiError`의 `status`는 서버의 에러 코드, `httpStatus`는 HTTP 상태 코드입니다. `detail`에는
 실패 응답의 `data`가 담기며 화면에 그대로 노출하지 않습니다.
 
-에러 코드별 처리는 이 패키지에 두지 않고 각 앱 `src/errors/`에 작성합니다. 코드는
-`@ject/api-types/errors`의 `ErrorCode` 타입으로 좁혀 비교합니다. 두 앱이 공유하는 백엔드
-인증 계약인 토큰 재발급만 `@ject/api-client/auth`가 처리합니다.
+에러 코드 판별에는 `hasErrorCode`를 사용합니다. 코드는 `@ject/api-types/errors`의
+`ErrorCode` 타입으로 검사합니다.
+
+```ts
+import { hasErrorCode } from "@ject/api-client";
+
+if (hasErrorCode(error, "APPLY-3")) return null;
+```
+
+에러 코드별 처리는 이 패키지에 두지 않고 각 앱 `src/errors/`에 작성합니다. 두 앱이 공유하는
+백엔드 인증 계약인 토큰 재발급만 `@ject/api-client/auth`가 처리합니다.
+
+## 쿼리 직렬화
+
+서버 스펙은 페이지 정보와 검색 조건을 `pageable`, `condition`이라는 객체 하나로 정의하지만,
+서버는 객체 안의 값을 각각 별도의 쿼리 파라미터로 받습니다. openapi-fetch의 기본 직렬화로는
+이 형식을 만들 수 없으므로 두 파라미터를 보낼 때는 `querySerializer`를 지정합니다.
+
+- `pageableQuerySerializer`: `pageable` 객체의 `page`와 `size`를 각각 별도의 쿼리 파라미터로
+  보냅니다.
+- `conditionQuerySerializer`: `condition` 객체의 값을 각각 별도의 쿼리 파라미터로 보냅니다.
+  값이 배열이면 항목마다 같은 이름의 파라미터를 반복합니다.
+
+두 함수로 직렬화한 결과는 다음과 같습니다.
+
+```ts
+{ pageable: { page: 0, size: 10 } }
+// page=0&size=10
+
+{ condition: { recruitId: 1, selectionResults: ["PASSED", "FAILED"] } }
+// recruitId=1&selectionResults=PASSED&selectionResults=FAILED
+```
+
+```ts
+import { pageableQuerySerializer } from "@ject/api-client";
+
+await httpClient.GET("/projects", {
+  params: { query: { pageable: { page, size } } },
+  querySerializer: pageableQuerySerializer,
+});
+```
+
+서버에 `@ParameterObject`가 적용되면 두 함수를 제거하고 파라미터를 직접 전달합니다.
+
+## 공용 스키마
+
+서버 응답 형식에 공통으로 쓰는 zod 스키마는 `@ject/api-client/schemas`에서 가져옵니다.
+zod는 peerDependency이므로 앱이 설치한 zod를 사용합니다.
+
+- `localDateTimeSchema`: 시간대 표기가 없는 서버의 LocalDateTime 문자열을 검증합니다.
 
 ## 토큰 재발급
 
