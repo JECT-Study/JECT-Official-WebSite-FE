@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, type BlockButtonProps, EmptyState, Tabs, useToast } from "@jects/jds";
+import { BlockButton, type BlockButtonProps, EmptyState, Tabs } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { hashKey, keepPreviousData, useInfiniteQuery, useIsMutating } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
@@ -22,11 +22,13 @@ import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
 import { useHeaderActionSlot } from "@/components/layout/Header.context";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { DIALOG_CONTENT } from "@/constants/dialog";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
 import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { showDialog } from "@/stores/dialogStore";
 import { parseIdParam } from "@/utils/parseIdParam";
+import { showToast } from "@/utils/showToast";
 
 const PAGE_SIZE = 30;
 
@@ -181,7 +183,6 @@ interface SubmittedRecruitAppliesProps {
 function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { toast } = useToast();
   const { isDesktop } = useMediaQueryFlags();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -262,9 +263,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
     if (result.isFetchNextPageError) {
-      toast.destructive("지원서 목록을 불러오지 못했습니다", {
-        description: "잠시 후 다시 시도해 주세요.",
-      });
+      showToast(TOAST_CONTENT.loadSubmittedAppliesFailed);
     }
   };
 
