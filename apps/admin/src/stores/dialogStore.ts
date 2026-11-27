@@ -85,9 +85,10 @@ export const useDialogStore = create(
         }),
       selectAction: async (action: DialogAction) => {
         const { pending, options, resolve } = get();
-        if (pending || !resolve) return;
-
         const handler = action === "primary" ? options.onPrimaryClick : options.onSecondaryClick;
+        // 핸들러가 없는 버튼은 다른 버튼의 요청 중에도 눌러서 닫을 수 있다.
+        if (!resolve || (pending && handler)) return;
+
         try {
           const result = handler?.();
           if (isPromiseLike(result)) {
@@ -100,7 +101,7 @@ export const useDialogStore = create(
           return;
         }
 
-        // 기다리는 동안 교체되거나 강제로 닫혔으면 새 다이얼로그를 건드리지 않는다.
+        // 기다리는 동안 교체되거나 닫혔으면 새 다이얼로그를 건드리지 않는다.
         if (get().resolve === resolve) settle(action);
       },
       dismiss: () => settle(null),
@@ -110,8 +111,9 @@ export const useDialogStore = create(
 
 /**
  * 다이얼로그를 열고, 닫힐 때 사용자가 누른 버튼(`"primary"`, `"secondary"`)으로 resolve되는 Promise를 반환한다.
- * 버튼 핸들러가 Promise를 반환하면 끝날 때까지 사용자가 닫지 못하게 하고, 성공하면 닫는다.
+ * 버튼 핸들러가 Promise를 반환하면 끝날 때까지 그 버튼을 비활성화하고, 성공하면 닫는다.
  * 핸들러가 실패하면 열린 채로 두므로 실패한 버튼으로는 resolve되지 않는다.
+ * 기다리는 동안 닫혀도 핸들러는 계속 진행된다.
  * 버튼을 누르지 않고 닫히면 `null`로 resolve된다. 바깥 영역 클릭, Esc 키 입력, 다른 다이얼로그 열기, `dismissDialog` 호출이 해당한다.
  */
 export const showDialog = (content: DialogContent, options?: DialogOptions) =>

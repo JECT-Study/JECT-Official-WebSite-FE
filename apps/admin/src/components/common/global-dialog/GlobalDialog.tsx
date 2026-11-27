@@ -14,21 +14,21 @@ export function GlobalDialog() {
   return (
     <Dialog
       open={open}
-      onOpenChange={(nextOpen) => !nextOpen && !pending && dismiss()}
+      onOpenChange={(nextOpen) => !nextOpen && dismiss()}
       header={content.header}
       body={content.body}
       width={content.width ?? DEFAULT_DIALOG_WIDTH}
-      closeOnInteractOutside={pending ? false : options.closeOnInteractOutside}
+      closeOnInteractOutside={options.closeOnInteractOutside}
       primaryAction={{
         children: content.primaryLabel,
-        disabled: pending,
+        disabled: pending && options.onPrimaryClick !== undefined,
         onClick: () => void selectAction("primary"),
       }}
       secondaryAction={
         content.secondaryLabel
           ? {
               children: content.secondaryLabel,
-              disabled: pending,
+              disabled: pending && options.onSecondaryClick !== undefined,
               onClick: () => void selectAction("secondary"),
             }
           : undefined
