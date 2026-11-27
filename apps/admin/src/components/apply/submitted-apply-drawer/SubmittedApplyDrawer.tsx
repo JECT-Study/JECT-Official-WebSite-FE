@@ -57,6 +57,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
             onSuccess: () => {
               form.reset(values, { keepDirtyValues: false });
               setIsEditing(false);
+              onClose();
             },
           }
         ),
