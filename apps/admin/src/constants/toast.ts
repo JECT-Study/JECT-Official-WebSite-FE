@@ -34,23 +34,23 @@ export const TOAST_CONTENT = {
   },
   accountsDeactivated: {
     variant: "positive",
-    title: "계정을 비활성화했습니다.",
+    title: "계정을 비활성화했어요",
   },
   deactivateForbidden: {
     variant: "destructive",
-    title: "해당 기능을 수행할 권한이 없습니다.",
+    title: "해당 기능을 수행할 권한이 없어요",
   },
   deactivateSelfNotAllowed: {
     variant: "destructive",
-    title: "본인 계정은 비활성화할 수 없습니다.",
+    title: "본인 계정은 비활성화할 수 없어요",
   },
   deactivateFailed: {
     variant: "destructive",
-    title: "비활성화에 실패했습니다.",
+    title: "비활성화에 실패했어요",
   },
   loadSubmittedAppliesFailed: {
     variant: "destructive",
-    title: "지원서 목록을 불러오지 못했습니다",
+    title: "지원서 목록을 불러오지 못했어요",
     description: RETRY_DESCRIPTION,
   },
   appliesDeleted: (count: number) => ({
@@ -67,7 +67,7 @@ export const TOAST_CONTENT = {
   },
   deleteAppliesFailed: {
     variant: "destructive",
-    title: "지원서를 삭제하지 못했습니다",
+    title: "지원서를 삭제하지 못했어요",
     description: RETRY_DESCRIPTION,
   },
   selectionResultsUpdated: (count: number, label: string) => ({
@@ -85,7 +85,7 @@ export const TOAST_CONTENT = {
   },
   updateSelectionResultsFailed: (label: string) => ({
     variant: "destructive",
-    title: `${label} 상태로 변경하지 못했습니다`,
+    title: `${label} 상태로 변경하지 못했어요`,
     description: RETRY_DESCRIPTION,
   }),
 } satisfies Record<string, ToastContent | ((...args: never[]) => ToastContent)>;
