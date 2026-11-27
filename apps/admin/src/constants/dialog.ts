@@ -30,4 +30,10 @@ export const DIALOG_CONTENT = {
     primaryLabel: "저장",
     secondaryLabel: "취소",
   },
+  discardApplyChanges: {
+    header: "변경사항이 저장되지 않습니다",
+    body: "저장하지 않은 수정 내용은 반영되지 않아요.",
+    primaryLabel: "계속 편집",
+    secondaryLabel: "편집 취소",
+  },
 } satisfies Record<string, DialogContent | ((...args: never[]) => DialogContent)>;

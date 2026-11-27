@@ -36,6 +36,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     resetOptions: { keepDirtyValues: true },
   });
   const { mutateAsync: editApply } = useEditApplyMutation();
+  const { isDirty } = form.formState;
 
   const cancelEditing = () => {
     form.reset(undefined, { keepDirtyValues: false });
@@ -58,19 +59,28 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     });
   };
 
+  const confirmCancel = (onDiscard: () => void) => {
+    if (!isDirty) return onDiscard();
+    void showDialog(DIALOG_CONTENT.discardApplyChanges, { onSecondaryClick: onDiscard });
+  };
+
   return (
     <Drawer
       open={applyId !== null}
       onOpenChange={(open) => {
         if (open) return;
-        cancelEditing();
-        onClose();
+        confirmCancel(() => {
+          cancelEditing();
+          onClose();
+        });
       }}
       title="지원서 정보"
       headerAction={
         isEditing ? (
-          // TODO: 편집 취소는 확인 다이얼로그를 거쳐 실행한다.
-          <EditingActions onCancel={cancelEditing} onSave={form.handleSubmit(openSaveDialog)} />
+          <EditingActions
+            onCancel={() => confirmCancel(cancelEditing)}
+            onSave={form.handleSubmit(openSaveDialog)}
+          />
         ) : (
           <ViewingActions disabled={!data} onEdit={() => setIsEditing(true)} />
         )
