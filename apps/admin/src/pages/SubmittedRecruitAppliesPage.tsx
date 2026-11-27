@@ -125,12 +125,12 @@ function ApplyList({
   onRowSelectionChange,
 }: ApplyListProps) {
   if (isLoading) {
-    return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+    return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려주세요." />;
   }
 
   if (isError) {
     return (
-      <EmptyState header="지원서 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+      <EmptyState header="지원서 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해주세요." />
     );
   }
 

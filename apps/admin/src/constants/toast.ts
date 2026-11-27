@@ -4,18 +4,18 @@ export interface ToastContent extends Pick<ToastBaseProps, "title" | "descriptio
   variant: keyof ToastHandler;
 }
 
-const RETRY_DESCRIPTION = "잠시 후 다시 시도해 주세요.";
+const RETRY_DESCRIPTION = "잠시 후 다시 시도해주세요.";
 
 export const TOAST_CONTENT = {
   loginInvalidCredentials: {
     variant: "destructive",
     title: "로그인할 수 없어요",
-    description: "이메일 또는 비밀번호를 확인해 주세요.",
+    description: "이메일 또는 비밀번호를 확인해주세요.",
   },
   loginAccountDeactivated: {
     variant: "destructive",
     title: "계정이 비활성화됐어요",
-    description: "관리자에게 문의해 주세요.",
+    description: "관리자에게 문의해주세요.",
   },
   loginAttemptsExceeded: {
     variant: "destructive",
@@ -77,7 +77,7 @@ export const TOAST_CONTENT = {
   updateIncludesDeletedApplies: {
     variant: "destructive",
     title: "이미 삭제된 지원서가 포함되어 있어요",
-    description: "새로고침 후 다시 시도해 주세요.",
+    description: "새로고침 후 다시 시도해주세요.",
   },
   updateConfirmedAppliesNotAllowed: {
     variant: "destructive",
