@@ -1,7 +1,7 @@
 import { Checkbox } from "@jects/jds";
 import type { RowData } from "@tanstack/react-table";
 
-import type { DataTableColumnHelper } from "./DataTable.features";
+import type { DataTableColumnHelper } from "./createDataTableFeatures";
 
 export function createSelectColumn<TData extends RowData>(
   columnHelper: DataTableColumnHelper<TData>

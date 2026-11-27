@@ -13,13 +13,13 @@ import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import { deselectRows } from "@/components/common/data-table";
 import Filter from "@/components/common/filter/Filter";
+import { normalizeFilterValues } from "@/components/common/filter/normalizeFilterValues";
 import type {
   FilterField,
   FilterOptionValue,
   FilterValues,
-} from "@/components/common/filter/Filter.types";
-import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
-import { useHeaderActionSlot } from "@/components/layout/Header.context";
+} from "@/components/common/filter/types";
+import { useHeaderActionSlot } from "@/components/layout/HeaderActionSlotContext";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { TOAST_CONTENT } from "@/constants/toast";

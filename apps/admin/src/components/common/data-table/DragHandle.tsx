@@ -2,7 +2,7 @@ import { useContext } from "react";
 
 import { IconButton } from "@jects/jds";
 
-import { DragHandleContext } from "./DraggableRow.context";
+import { DragHandleContext } from "./DragHandleContext";
 
 // IconButton의 hierarchy에는 assistive 색이 없어 accent의 색 지정 기능으로 적용한다.
 const HANDLE_COLOR = { normal: "var(--color-semantic-object-assistive)" };

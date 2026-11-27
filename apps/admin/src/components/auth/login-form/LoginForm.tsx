@@ -12,7 +12,7 @@ import { TOAST_CONTENT, type ToastContent } from "@/constants/toast";
 import { useAuthStore } from "@/stores/authStore";
 import { showToast } from "@/utils/showToast";
 
-import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
+import { loginFormSchema, type LoginFormValues } from "./schemas";
 
 const LOGIN_ERROR_TOASTS: Partial<Record<ErrorCode, ToastContent>> = {
   "ADMIN-1": TOAST_CONTENT.loginInvalidCredentials,

@@ -25,7 +25,7 @@ import type {
   FilterField,
   FilterOptionValue,
   FilterValues,
-} from "@/components/common/filter/Filter.types";
+} from "@/components/common/filter/types";
 import {
   ACCOUNT_ROLE_LABELS,
   ACCOUNT_ROLES,

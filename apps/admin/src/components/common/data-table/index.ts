@@ -15,7 +15,7 @@ export {
   createDataTableColumnHelper,
   type DataTableColumnDef,
   type DataTableColumnHelper,
-} from "./DataTable.features";
+} from "./createDataTableFeatures";
 export { useDataTable } from "./useDataTable";
 export { deselectRows } from "./utils";
 

@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { DataTableRow, type DataTableRowProps } from "./DataTablePrimitives";
-import { DragHandleContext } from "./DraggableRow.context";
+import { DragHandleContext } from "./DragHandleContext";
 
 interface DraggableRowProps extends DataTableRowProps {
   id: string;

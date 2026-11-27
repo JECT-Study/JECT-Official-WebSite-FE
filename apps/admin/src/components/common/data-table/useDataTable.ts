@@ -7,14 +7,14 @@ import {
   useTable,
 } from "@tanstack/react-table";
 
-import { createDragColumn } from "./createDragColumn";
-import { createSelectColumn } from "./createSelectColumn";
 import {
   createDataTableColumnHelper,
   createDataTableFeatures,
   type DataTableColumnDef,
-} from "./DataTable.features";
-import type { DataTableReorderOptions, DataTableRowClickOptions } from "./DataTable.types";
+} from "./createDataTableFeatures";
+import { createDragColumn } from "./createDragColumn";
+import { createSelectColumn } from "./createSelectColumn";
+import type { DataTableReorderOptions, DataTableRowClickOptions } from "./types";
 
 interface DataTableSelectionOptions<TData> {
   rowSelection: RowSelectionState;

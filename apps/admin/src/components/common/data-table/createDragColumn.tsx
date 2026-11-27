@@ -1,6 +1,6 @@
 import type { RowData } from "@tanstack/react-table";
 
-import type { DataTableColumnHelper } from "./DataTable.features";
+import type { DataTableColumnHelper } from "./createDataTableFeatures";
 import { DragHandle } from "./DragHandle";
 
 export function createDragColumn<TData extends RowData>(

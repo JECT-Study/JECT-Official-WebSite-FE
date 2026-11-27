@@ -6,7 +6,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { dismissDialog } from "@/stores/dialogStore";
 
 import { Header } from "./Header";
-import { HeaderActionSlotContext } from "./Header.context";
+import { HeaderActionSlotContext } from "./HeaderActionSlotContext";
 import { Sidebar } from "./Sidebar";
 
 export default function RootLayout() {
