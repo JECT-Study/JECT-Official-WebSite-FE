@@ -1,11 +1,11 @@
 import { useState } from "react";
 
+import { hasErrorCode } from "@ject/api-client";
 import { useMutation } from "@tanstack/react-query";
 
 import { authApi, type EmailTemplate, type VerifyAuthCodeRequest } from "@/apis/auth/api";
 import { AUTH_CODE_VALID_SECONDS, RESEND_COOLDOWN_SECONDS } from "@/constants/auth";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useIsTimeReached } from "@/hooks/useIsTimeReached";
 import { showToast } from "@/utils/showToast";
 

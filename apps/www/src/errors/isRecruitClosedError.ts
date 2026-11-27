@@ -1,4 +1,4 @@
-import { hasErrorCode } from "./hasErrorCode";
+import { hasErrorCode } from "@ject/api-client";
 
 export function isRecruitClosedError(error: unknown) {
   // 모집 기간은 Redis 플래그로 먼저 검사해 GLOBAL-9를 반환한다.

@@ -1,3 +1,4 @@
+import { hasErrorCode } from "@ject/api-client";
 import { useMutation } from "@tanstack/react-query";
 
 import { applyApi } from "@/apis/apply/api";
@@ -5,7 +6,6 @@ import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { queryClient } from "@/apis/queryClient";
 import { recruitQueries } from "@/apis/recruit/queries";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { showToast } from "@/utils/showToast";
 
 export function useDeleteSubmittedAppliesMutation() {

@@ -1,8 +1,8 @@
+import { hasErrorCode } from "@ject/api-client";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 import { authApi, type EmailTemplate } from "@/apis/auth/api";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { showToast } from "@/utils/showToast";
 
 interface SendAuthCodeVariables {

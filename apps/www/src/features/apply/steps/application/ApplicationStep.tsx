@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { hasErrorCode } from "@ject/api-client";
 import { BlockButton } from "@jects/jds";
 import { useIsMutating, useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -12,7 +13,6 @@ import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { isRecruitClosedError } from "@/errors/isRecruitClosedError";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { useLeaveConfirm } from "@/hooks/apply/useLeaveConfirm";
