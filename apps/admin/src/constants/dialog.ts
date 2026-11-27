@@ -24,4 +24,10 @@ export const DIALOG_CONTENT = {
     primaryLabel: "삭제",
     secondaryLabel: "취소",
   }),
+  saveApply: {
+    header: "변경사항을 저장합니다",
+    body: "저장하면 수정한 내용이 반영돼요.",
+    primaryLabel: "저장",
+    secondaryLabel: "취소",
+  },
 } satisfies Record<string, DialogContent | ((...args: never[]) => DialogContent)>;
