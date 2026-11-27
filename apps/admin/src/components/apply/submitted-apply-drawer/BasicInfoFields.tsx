@@ -40,7 +40,7 @@ export function BasicInfoFields({ isEditing, waitlistNumber }: BasicInfoFieldsPr
 
   return (
     <div className="flex flex-col gap-16 border-b border-stroke-alpha-subtler px-margin-lg pt-8 pb-20">
-      <div className="grid grid-cols-1 gap-12 tablet:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-12 tablet:grid-cols-2">
         <SelectField readonly required>
           <SelectField.Label>포지션</SelectField.Label>
           <Controller
