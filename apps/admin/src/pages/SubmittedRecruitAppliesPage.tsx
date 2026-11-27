@@ -24,7 +24,7 @@ import { useHeaderActionSlot } from "@/components/layout/HeaderActionSlotContext
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
+import { useDeleteAppliesMutation } from "@/hooks/apply/useDeleteAppliesMutation";
 import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { showDialog } from "@/stores/dialogStore";
@@ -231,7 +231,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   );
 
   const { mutateAsync: updateSelectionResults } = useUpdateSelectionResultsMutation();
-  const { mutateAsync: deleteSubmittedApplies } = useDeleteSubmittedAppliesMutation();
+  const { mutateAsync: deleteApplies } = useDeleteAppliesMutation();
   const isActionPending = useIsMutating({ mutationKey: applyMutationKeys.selectionActions() }) > 0;
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -257,9 +257,9 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const openDeleteDialog = () => {
     const applyIds = selectedApplyIds;
-    void showDialog(DIALOG_CONTENT.deleteSubmittedApplies(applyIds.length), {
+    void showDialog(DIALOG_CONTENT.deleteApplies(applyIds.length), {
       onPrimaryClick: () =>
-        deleteSubmittedApplies({ applyIds }, { onSuccess: () => deselectApplies(applyIds) }),
+        deleteApplies({ applyIds }, { onSuccess: () => deselectApplies(applyIds) }),
       fallbackFocusRef: listRef,
     });
   };

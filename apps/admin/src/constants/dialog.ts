@@ -18,7 +18,7 @@ export const DIALOG_CONTENT = {
     primaryLabel: "변경",
     secondaryLabel: "취소",
   }),
-  deleteSubmittedApplies: (count: number) => ({
+  deleteApplies: (count: number) => ({
     header: `선택한 ${count}개 항목을 삭제합니다`,
     body: "삭제 후에는 되돌릴 수 없으니 유의해주세요.",
     primaryLabel: "삭제",

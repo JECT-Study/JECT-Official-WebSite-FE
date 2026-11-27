@@ -8,10 +8,10 @@ import { TOAST_CONTENT } from "@/constants/toast";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { showToast } from "@/utils/showToast";
 
-export function useDeleteSubmittedAppliesMutation() {
+export function useDeleteAppliesMutation() {
   return useMutation({
-    mutationKey: applyMutationKeys.deleteSubmittedApplies(),
-    mutationFn: applyApi.deleteSubmittedApplies,
+    mutationKey: applyMutationKeys.deleteApplies(),
+    mutationFn: applyApi.deleteApplies,
     onSuccess: async (deletedCount) => {
       const queryKey = applyQueries.submittedAppliesLists();
       await queryClient.cancelQueries({ queryKey });

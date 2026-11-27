@@ -13,7 +13,7 @@ export type SubmittedAppliesCondition = Omit<
 
 type UpdateSelectionResultsRequest = components["schemas"]["UpdateSelectionResultsRequest"];
 export type EditApplyRequest = components["schemas"]["EditApplyRequest"];
-type DeleteSubmittedAppliesRequest = components["schemas"]["SubmittedApplyBulkDeleteRequest"];
+type DeleteAppliesRequest = components["schemas"]["SubmittedApplyBulkDeleteRequest"];
 
 export const applyApi = {
   getSubmittedApplies: async (condition: SubmittedAppliesCondition) => {
@@ -45,7 +45,7 @@ export const applyApi = {
     await httpClient.PATCH("/admin/applies/selection-results", { body });
   },
 
-  deleteSubmittedApplies: async (body: DeleteSubmittedAppliesRequest) => {
+  deleteApplies: async (body: DeleteAppliesRequest) => {
     const { data } = await httpClient.DELETE("/admin/applies", { body });
 
     return deletedAppliesCountSchema.parse(data);

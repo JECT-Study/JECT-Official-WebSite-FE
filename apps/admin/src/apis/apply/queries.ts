@@ -23,6 +23,5 @@ export const applyMutationKeys = {
   selectionActions: () => [...applyQueries.all(), "selectionAction"] as const,
   updateSelectionResults: () =>
     [...applyMutationKeys.selectionActions(), "updateSelectionResults"] as const,
-  deleteSubmittedApplies: () =>
-    [...applyMutationKeys.selectionActions(), "deleteSubmittedApplies"] as const,
+  deleteApplies: () => [...applyMutationKeys.selectionActions(), "deleteApplies"] as const,
 };
