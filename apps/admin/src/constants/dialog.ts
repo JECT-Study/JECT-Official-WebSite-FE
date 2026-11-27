@@ -36,4 +36,10 @@ export const DIALOG_CONTENT = {
     primaryLabel: "계속 편집",
     secondaryLabel: "편집 취소",
   },
+  deleteApply: {
+    header: "지원서를 삭제합니다",
+    body: "삭제 후에는 되돌릴 수 없으니 유의해주세요.",
+    primaryLabel: "삭제",
+    secondaryLabel: "취소",
+  },
 } satisfies Record<string, DialogContent | ((...args: never[]) => DialogContent)>;

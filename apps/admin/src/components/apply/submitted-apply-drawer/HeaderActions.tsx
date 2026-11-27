@@ -6,9 +6,10 @@ interface ViewingActionsProps {
   disabled: boolean;
   editButtonRef?: Ref<HTMLButtonElement>;
   onEdit: () => void;
+  onDelete: () => void;
 }
 
-export function ViewingActions({ disabled, editButtonRef, onEdit }: ViewingActionsProps) {
+export function ViewingActions({ disabled, editButtonRef, onEdit, onDelete }: ViewingActionsProps) {
   return (
     <div className="flex items-center gap-16 max-tablet:hidden">
       <LabelButton
@@ -34,6 +35,7 @@ export function ViewingActions({ disabled, editButtonRef, onEdit }: ViewingActio
               prefixIcon="trash"
               prefixIconVisible
               className="*:text-feedback-destructive-neutral"
+              onSelect={onDelete}
             >
               삭제
             </DropdownMenu.Button>

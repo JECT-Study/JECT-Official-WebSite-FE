@@ -7,6 +7,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { applyQueries } from "@/apis/apply/queries";
 import { Drawer } from "@/components/common/drawer/Drawer";
 import { DIALOG_CONTENT } from "@/constants/dialog";
+import { useDeleteApplyMutation } from "@/hooks/apply/useDeleteApplyMutation";
 import { useEditApplyMutation } from "@/hooks/apply/useEditApplyMutation";
 import { showDialog } from "@/stores/dialogStore";
 
@@ -36,6 +37,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     resetOptions: { keepDirtyValues: true },
   });
   const { mutateAsync: editApply } = useEditApplyMutation();
+  const { mutateAsync: deleteApply } = useDeleteApplyMutation();
   const { isDirty } = form.formState;
   // 확인 후 편집 모드가 끝나면 다이얼로그를 연 버튼이 사라지므로 편집 버튼으로 포커스를 돌려준다.
   const editButtonRef = useRef<HTMLButtonElement>(null);
@@ -58,6 +60,14 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
             },
           }
         ),
+      fallbackFocusRef: editButtonRef,
+    });
+  };
+
+  const openDeleteDialog = () => {
+    if (applyId === null) return;
+    void showDialog(DIALOG_CONTENT.deleteApply, {
+      onPrimaryClick: () => deleteApply(applyId, { onSuccess: onClose }),
       fallbackFocusRef: editButtonRef,
     });
   };
@@ -92,6 +102,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
             disabled={!data}
             editButtonRef={editButtonRef}
             onEdit={() => setIsEditing(true)}
+            onDelete={openDeleteDialog}
           />
         )
       }
