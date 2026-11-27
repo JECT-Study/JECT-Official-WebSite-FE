@@ -1,5 +1,6 @@
+import { pageableQuerySerializer } from "@ject/api-client";
+
 import { httpClient } from "@/apis/httpClient";
-import { pageableQuerySerializer } from "@/apis/pageable";
 import { ACCOUNT_PAGE_SIZE, type AccountRole, type AccountStatus } from "@/constants/account";
 
 import { accountPageSchema } from "./schemas";

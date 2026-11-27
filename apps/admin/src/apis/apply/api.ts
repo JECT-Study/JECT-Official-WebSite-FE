@@ -1,6 +1,6 @@
+import { conditionQuerySerializer } from "@ject/api-client";
 import type { components } from "@ject/api-types/admin";
 
-import { conditionQuerySerializer } from "@/apis/condition";
 import { httpClient } from "@/apis/httpClient";
 
 import { deletedAppliesCountSchema, submittedAppliesSchema } from "./schemas";

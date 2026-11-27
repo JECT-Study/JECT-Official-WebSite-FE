@@ -1,5 +1,6 @@
+import { pageableQuerySerializer } from "@ject/api-client";
+
 import { httpClient } from "@/apis/httpClient/server";
-import { pageableQuerySerializer } from "@/apis/pageable";
 
 import { miniStudyPageSchema } from "./schemas";
 
