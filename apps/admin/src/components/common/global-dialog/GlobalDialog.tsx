@@ -21,14 +21,14 @@ export function GlobalDialog() {
       closeOnInteractOutside={options.closeOnInteractOutside}
       primaryAction={{
         children: content.primaryLabel,
-        disabled: pending && options.onPrimaryClick !== undefined,
+        disabled: pending,
         onClick: () => void selectAction("primary"),
       }}
       secondaryAction={
         content.secondaryLabel
           ? {
               children: content.secondaryLabel,
-              disabled: pending && options.onSecondaryClick !== undefined,
+              disabled: pending,
               onClick: () => void selectAction("secondary"),
             }
           : undefined
