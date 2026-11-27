@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 import { ROUTES, routeTo } from "@/constants/routes";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 
 interface GuestRouteProps {
   children: ReactNode;

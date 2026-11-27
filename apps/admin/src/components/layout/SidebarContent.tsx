@@ -8,7 +8,7 @@ import { authApi } from "@/apis/auth/api";
 import { findActiveLink, NAVIGATION_SECTIONS } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 import { showToast } from "@/utils/showToast";
 
 import { SidebarLinkItem } from "./SidebarLinkItem";

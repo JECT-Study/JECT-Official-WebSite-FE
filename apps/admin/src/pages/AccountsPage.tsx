@@ -36,8 +36,8 @@ import {
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
+import { useAuthStore } from "@/stores/authStore";
 import { showDialog } from "@/stores/dialogStore";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 const ACCOUNT_FILTER_FIELDS: FilterField[] = [
   {

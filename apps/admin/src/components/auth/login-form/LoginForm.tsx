@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { authApi } from "@/apis/auth/api";
 import { TOAST_CONTENT, type ToastContent } from "@/constants/toast";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 import { showToast } from "@/utils/showToast";
 
 import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
