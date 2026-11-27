@@ -25,7 +25,7 @@ export function ViewingActions({ disabled, editButtonRef, onEdit, onDelete }: Vi
         <DropdownMenu.Trigger asChild>
           <IconButton hierarchy="tertiary" size="lg" icon="ellipsis" />
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content align="end" sideOffset={12} className="w-[160px]">
+        <DropdownMenu.Content align="end" sideOffset={12} className="z-floated w-[160px]">
           <DropdownMenu.Group>
             <DropdownMenu.Button prefixIcon="clock-3" prefixIconVisible>
               변경 이력
