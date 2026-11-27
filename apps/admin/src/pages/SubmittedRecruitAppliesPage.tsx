@@ -11,6 +11,7 @@ import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
+import { deselectRows } from "@/components/common/data-table";
 import Filter from "@/components/common/filter/Filter";
 import type {
   FilterField,
@@ -229,27 +230,31 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const isActionPending = useIsMutating({ mutationKey: applyMutationKeys.selectionActions() }) > 0;
   const listRef = useRef<HTMLDivElement>(null);
 
-  const clearSelection = () => setRowSelection({});
+  // 요청 중에 새로 선택한 행은 남기도록 요청한 행만 선택에서 뺀다.
+  const deselectApplies = (applyIds: number[]) =>
+    setRowSelection((prev) => deselectRows(prev, applyIds));
 
   const openUpdateSelectionResultsDialog = (selectionResult: SelectionResult) => {
+    const applyIds = selectedApplyIds;
     const content = DIALOG_CONTENT.updateSelectionResults(
-      selectedApplyIds.length,
+      applyIds.length,
       SELECTION_RESULT_LABELS[selectionResult]
     );
     void showDialog(content, {
       onPrimaryClick: () =>
         updateSelectionResults(
-          { recruitId, applyIds: selectedApplyIds, selectionResult },
-          { onSuccess: clearSelection }
+          { recruitId, applyIds, selectionResult },
+          { onSuccess: () => deselectApplies(applyIds) }
         ),
       fallbackFocusRef: listRef,
     });
   };
 
   const openDeleteDialog = () => {
-    void showDialog(DIALOG_CONTENT.deleteSubmittedApplies(selectedApplyIds.length), {
+    const applyIds = selectedApplyIds;
+    void showDialog(DIALOG_CONTENT.deleteSubmittedApplies(applyIds.length), {
       onPrimaryClick: () =>
-        deleteSubmittedApplies({ applyIds: selectedApplyIds }, { onSuccess: clearSelection }),
+        deleteSubmittedApplies({ applyIds }, { onSuccess: () => deselectApplies(applyIds) }),
       fallbackFocusRef: listRef,
     });
   };

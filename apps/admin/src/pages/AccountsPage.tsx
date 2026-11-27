@@ -17,6 +17,7 @@ import type { Account } from "@/apis/account/schemas";
 import {
   createDataTableColumnHelper,
   DataTable,
+  deselectRows,
   useDataTable,
 } from "@/components/common/data-table";
 import Filter from "@/components/common/filter/Filter";
@@ -137,9 +138,13 @@ export default function AccountsPage() {
   };
 
   const handleOpenDeactivateDialog = () => {
-    void showDialog(DIALOG_CONTENT.deactivateAccounts(selectedIds.length), {
+    const ids = selectedIds;
+    void showDialog(DIALOG_CONTENT.deactivateAccounts(ids.length), {
       onPrimaryClick: () =>
-        deactivateAccounts(selectedIds, { onSuccess: () => setRowSelection({}) }),
+        deactivateAccounts(ids, {
+          // 요청 중에 새로 선택한 계정은 남기도록 요청한 계정만 선택에서 뺀다.
+          onSuccess: () => setRowSelection((prev) => deselectRows(prev, ids)),
+        }),
       fallbackFocusRef: listRef,
     });
   };
