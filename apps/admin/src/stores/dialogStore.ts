@@ -62,14 +62,15 @@ export const useDialogStore = create(
       if (!get().open) return;
 
       get().resolve?.(action);
-      set({ open: false, pending: false, resolve: null });
+      // 닫힘 애니메이션 동안 버튼이 다시 활성화되어 보이지 않도록 pending은 내용과 함께 비운다.
+      set({ open: false, resolve: null });
 
       cancelClear();
       clearTimer = setTimeout(() => {
         clearTimer = null;
         if (!get().open) {
           restoreFocus(get().opener, get().options.fallbackFocusRef);
-          set({ content: null, options: {}, opener: null });
+          set({ content: null, options: {}, opener: null, pending: false });
         }
       }, DIALOG_CLOSE_DELAY_MS);
     };
