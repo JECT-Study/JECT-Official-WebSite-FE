@@ -96,8 +96,8 @@ export const useDialogStore = create(
             await result;
           }
         } catch {
-          // 실패 안내는 핸들러가 담당하고, 다시 시도할 수 있도록 열어 둔다.
-          if (get().resolve === resolve) set({ pending: false });
+          // 실패 안내는 핸들러가 담당한다.
+          if (get().resolve === resolve) settle(null);
           return;
         }
 
@@ -111,8 +111,7 @@ export const useDialogStore = create(
 
 /**
  * 다이얼로그를 열고, 닫힐 때 사용자가 누른 버튼(`"primary"`, `"secondary"`)으로 resolve되는 Promise를 반환한다.
- * 버튼 핸들러가 Promise를 반환하면 끝날 때까지 그 버튼을 비활성화하고, 성공하면 닫는다.
- * 핸들러가 실패하면 열린 채로 두므로 실패한 버튼으로는 resolve되지 않는다.
+ * 버튼 핸들러가 Promise를 반환하면 끝날 때까지 그 버튼을 비활성화하고, 성공하면 그 버튼으로, 실패하면 `null`로 resolve하며 닫는다.
  * 기다리는 동안 닫혀도 핸들러는 계속 진행된다.
  * 버튼을 누르지 않고 닫히면 `null`로 resolve된다. 바깥 영역 클릭, Esc 키 입력, 다른 다이얼로그 열기, `dismissDialog` 호출이 해당한다.
  */
