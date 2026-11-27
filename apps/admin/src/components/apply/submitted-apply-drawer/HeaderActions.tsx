@@ -1,14 +1,23 @@
+import type { Ref } from "react";
+
 import { DropdownMenu, IconButton, LabelButton } from "@jects/jds";
 
 interface ViewingActionsProps {
   disabled: boolean;
+  editButtonRef?: Ref<HTMLButtonElement>;
   onEdit: () => void;
 }
 
-export function ViewingActions({ disabled, onEdit }: ViewingActionsProps) {
+export function ViewingActions({ disabled, editButtonRef, onEdit }: ViewingActionsProps) {
   return (
     <div className="flex items-center gap-16 max-tablet:hidden">
-      <LabelButton hierarchy="tertiary" size="md" disabled={disabled} onClick={onEdit}>
+      <LabelButton
+        ref={editButtonRef}
+        hierarchy="tertiary"
+        size="md"
+        disabled={disabled}
+        onClick={onEdit}
+      >
         편집
       </LabelButton>
       <DropdownMenu.Root>

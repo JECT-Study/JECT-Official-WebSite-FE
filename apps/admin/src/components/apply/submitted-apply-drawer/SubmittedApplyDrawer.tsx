@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
@@ -37,6 +37,8 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
   });
   const { mutateAsync: editApply } = useEditApplyMutation();
   const { isDirty } = form.formState;
+  // 확인 후 편집 모드가 끝나면 다이얼로그를 연 버튼이 사라지므로 편집 버튼으로 포커스를 돌려준다.
+  const editButtonRef = useRef<HTMLButtonElement>(null);
 
   const cancelEditing = () => {
     form.reset(undefined, { keepDirtyValues: false });
@@ -56,12 +58,16 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
             },
           }
         ),
+      fallbackFocusRef: editButtonRef,
     });
   };
 
   const confirmCancel = (onDiscard: () => void) => {
     if (!isDirty) return onDiscard();
-    void showDialog(DIALOG_CONTENT.discardApplyChanges, { onSecondaryClick: onDiscard });
+    void showDialog(DIALOG_CONTENT.discardApplyChanges, {
+      onSecondaryClick: onDiscard,
+      fallbackFocusRef: editButtonRef,
+    });
   };
 
   return (
@@ -79,10 +85,14 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
         isEditing ? (
           <EditingActions
             onCancel={() => confirmCancel(cancelEditing)}
-            onSave={form.handleSubmit(openSaveDialog)}
+            onSave={() => void form.handleSubmit(openSaveDialog)()}
           />
         ) : (
-          <ViewingActions disabled={!data} onEdit={() => setIsEditing(true)} />
+          <ViewingActions
+            disabled={!data}
+            editButtonRef={editButtonRef}
+            onEdit={() => setIsEditing(true)}
+          />
         )
       }
     >
