@@ -32,12 +32,13 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
     resolver: zodResolver(submittedApplyFormSchema),
     values: data && toFormValues(data),
     // 편집 중 재조회되어도 사용자가 수정한 값은 덮어쓰지 않는다.
+    // form.reset()에도 적용되므로 편집을 끝낼 때는 끄고 호출한다.
     resetOptions: { keepDirtyValues: true },
   });
   const { mutateAsync: editApply } = useEditApplyMutation();
 
   const cancelEditing = () => {
-    form.reset();
+    form.reset(undefined, { keepDirtyValues: false });
     setIsEditing(false);
   };
 
@@ -49,7 +50,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
           { applyId, body: toEditApplyRequest(values) },
           {
             onSuccess: () => {
-              form.reset(values);
+              form.reset(values, { keepDirtyValues: false });
               setIsEditing(false);
             },
           }
