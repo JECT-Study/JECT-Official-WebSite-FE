@@ -23,12 +23,17 @@ import {
 
 interface SubmittedApplyDrawerProps {
   applyId: number | null;
+  open: boolean;
   onClose: () => void;
 }
 
-export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedApplyDrawerProps) {
+export default function SubmittedApplyDrawer({
+  applyId,
+  open,
+  onClose,
+}: SubmittedApplyDrawerProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const { data } = useQuery(applyQueries.detail(applyId));
+  const { data } = useQuery({ ...applyQueries.detail(applyId), enabled: open });
   const form = useForm<SubmittedApplyFormValues>({
     resolver: zodResolver(submittedApplyFormSchema),
     values: data && toFormValues(data),
@@ -83,7 +88,7 @@ export default function SubmittedApplyDrawer({ applyId, onClose }: SubmittedAppl
 
   return (
     <Drawer
-      open={applyId !== null}
+      open={open}
       onOpenChange={(open) => {
         if (open) return;
         confirmCancel(() => {

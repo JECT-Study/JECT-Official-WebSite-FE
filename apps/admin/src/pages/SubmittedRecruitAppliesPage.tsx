@@ -264,7 +264,9 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
     });
   };
 
+  // 닫힘 애니메이션 동안 내용을 유지하도록 닫아도 id는 남긴다.
   const [openedApplyId, setOpenedApplyId] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -370,11 +372,19 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             onLoadMore={handleLoadMore}
             rowSelection={rowSelection}
             onRowSelectionChange={setRowSelection}
-            onRowClick={(apply) => setOpenedApplyId(apply.applyId)}
+            onRowClick={(apply) => {
+              setOpenedApplyId(apply.applyId);
+              setIsDrawerOpen(true);
+            }}
           />
         </div>
       </div>
-      <SubmittedApplyDrawer applyId={openedApplyId} onClose={() => setOpenedApplyId(null)} />
+      <SubmittedApplyDrawer
+        key={openedApplyId}
+        applyId={openedApplyId}
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      />
     </section>
   );
 }
