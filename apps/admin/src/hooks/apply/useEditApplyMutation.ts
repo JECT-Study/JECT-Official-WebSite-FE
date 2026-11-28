@@ -17,8 +17,10 @@ export function useEditApplyMutation() {
   return useMutation({
     mutationFn: ({ applyId, body }: EditApplyVariables) => applyApi.editApply(applyId, body),
     onSuccess: async () => {
+      const queryKey = applyQueries.all();
+      await queryClient.cancelQueries({ queryKey });
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: applyQueries.all() }),
+        queryClient.invalidateQueries({ queryKey }),
         queryClient.invalidateQueries({ queryKey: recruitQueries.all() }),
       ]);
       showToast(TOAST_CONTENT.applyEdited);
