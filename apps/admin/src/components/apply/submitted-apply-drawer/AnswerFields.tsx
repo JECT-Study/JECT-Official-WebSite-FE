@@ -45,6 +45,14 @@ const downloadFile = async (fileUrl: string, fileName: string) => {
   }
 };
 
+interface EmptyAnswerProps {
+  children: string;
+}
+
+function EmptyAnswer({ children }: EmptyAnswerProps) {
+  return <p className="text-body-md font-body-normal text-object-alternative">{children}</p>;
+}
+
 interface PortfolioFilesProps {
   isEditing: boolean;
   portfolios: ApplyDetail["portfolios"];
@@ -68,6 +76,7 @@ function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
 
   return (
     <div ref={listRef} tabIndex={-1} className="flex flex-col outline-none">
+      {visiblePortfolios.length === 0 && <EmptyAnswer>제출한 포트폴리오가 없어요</EmptyAnswer>}
       {visiblePortfolios.map(({ portfolioId, fileUrl, fileName, fileSize }) => {
         const fileProps = {
           fileName,
@@ -106,23 +115,29 @@ function AnswerField({ isEditing, inputType, index, answer, portfolios }: Answer
         </Textarea>
       );
     case "URL":
-      if (!isEditing && answer) {
+      if (isEditing) {
         return (
-          <Link
-            href={toExternalUrl(answer)}
-            target="_blank"
-            rel="noopener noreferrer"
-            external
-            className="self-start break-all"
-          >
-            {answer}
-          </Link>
+          <TextField>
+            <TextField.Input {...register(`answers.${index}.answer`)} />
+          </TextField>
         );
       }
       return (
-        <TextField readonly={!isEditing}>
-          <TextField.Input {...register(`answers.${index}.answer`)} />
-        </TextField>
+        <div className="flex py-6 text-body-md">
+          {answer ? (
+            <Link
+              href={toExternalUrl(answer)}
+              target="_blank"
+              rel="noopener noreferrer"
+              external
+              className="break-all"
+            >
+              {answer}
+            </Link>
+          ) : (
+            <EmptyAnswer>입력한 URL이 없어요</EmptyAnswer>
+          )}
+        </div>
       );
     case "FILE":
       return <PortfolioFiles isEditing={isEditing} portfolios={portfolios} />;
