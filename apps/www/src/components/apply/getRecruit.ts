@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 
+import { hasErrorCode } from "@ject/api-client";
+
 import { recruitApi } from "@/apis/recruit/api";
 import type { Recruit } from "@/apis/recruit/schemas";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { parseIdParam } from "@/utils/parseIdParam";
 
 function parseKstDateTime(dateTime: string) {

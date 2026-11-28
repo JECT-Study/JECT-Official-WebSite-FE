@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { hasErrorCode } from "@ject/api-client";
 import { LabelButton } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -13,7 +14,6 @@ import { AUTH_CODE_VALID_SECONDS } from "@/constants/auth";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { routeTo } from "@/constants/routes";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { ApplyStepLayout } from "@/features/apply/ApplyStepLayout";
 import { AuthCodeField } from "@/features/apply/AuthCodeField";
 import { EmailField } from "@/features/apply/EmailField";

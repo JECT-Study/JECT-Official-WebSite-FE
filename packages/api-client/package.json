@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./auth": "./src/auth.ts"
+    "./auth": "./src/auth.ts",
+    "./schemas": "./src/schemas.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
@@ -16,6 +17,10 @@
   },
   "devDependencies": {
     "@ject/config": "workspace:*",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "zod": "^4.4.3"
   }
 }

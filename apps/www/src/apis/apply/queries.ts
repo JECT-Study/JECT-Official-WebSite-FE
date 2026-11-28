@@ -1,6 +1,5 @@
+import { hasErrorCode } from "@ject/api-client";
 import { queryOptions } from "@tanstack/react-query";
-
-import { hasErrorCode } from "@/errors/hasErrorCode";
 
 import { applyApi } from "./api";
 

@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 
+import { hasErrorCode } from "@ject/api-client";
+
 import { projectServerApi } from "@/apis/project/api.server";
 import type { ProjectDetail, ProjectImage } from "@/apis/project/schemas";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { getRemoteImageSize } from "@/utils/getRemoteImageSize";
 import { parseIdParam } from "@/utils/parseIdParam";
 

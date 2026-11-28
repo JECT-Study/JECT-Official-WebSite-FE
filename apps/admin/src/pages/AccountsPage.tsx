@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 
+import { hasErrorCode } from "@ject/api-client";
 import {
   BlockButton,
   ContentBadge,
@@ -35,7 +36,6 @@ import {
 } from "@/constants/account";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { PAGE_TITLE } from "@/constants/pageTitle";
-import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
 import { useAuthStore } from "@/stores/authStore";
 import { showDialog } from "@/stores/dialogStore";

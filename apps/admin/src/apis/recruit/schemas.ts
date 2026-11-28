@@ -1,7 +1,6 @@
+import { localDateTimeSchema } from "@ject/api-client/schemas";
 import type { components } from "@ject/api-types/admin";
 import { z } from "zod";
-
-import { localDateTimeSchema } from "@/apis/schemas";
 
 type Schemas = components["schemas"];
 
