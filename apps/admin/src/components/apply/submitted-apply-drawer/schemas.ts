@@ -41,6 +41,7 @@ export const submittedApplyFormSchema = z.object({
   note: z.string().max(MAX_NOTE_LENGTH),
   // 질문 ID를 키로 쓰면 react-hook-form이 숫자 경로를 배열 인덱스로 해석하므로 배열로 둔다.
   answers: z.array(z.object({ questionId: z.number(), answer: z.string().max(MAX_ANSWER_LENGTH) })),
+  deletePortfolioIds: z.array(z.number()),
 });
 
 export type SubmittedApplyFormValues = z.infer<typeof submittedApplyFormSchema>;
@@ -58,6 +59,7 @@ export const toFormValues = (apply: ApplyDetail): SubmittedApplyFormValues => ({
   selectionResult: apply.selectionResult,
   note: apply.note,
   answers: apply.answers.map(({ questionId, answer }) => ({ questionId, answer: answer ?? "" })),
+  deletePortfolioIds: [],
 });
 
 export const toEditApplyRequest = ({
@@ -75,6 +77,7 @@ export const toEditApplyRequest = ({
   interestedDomains: values.interestedDomains,
   selectionResult: values.selectionResult,
   note: values.note,
+  deletePortfolioIds: values.deletePortfolioIds,
   // 답하지 않은 질문은 빈 문자열로 저장하지 않도록 요청에서 뺀다.
   answers: Object.fromEntries(
     answers

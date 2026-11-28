@@ -1,5 +1,7 @@
+import { useRef } from "react";
+
 import { File, Textarea, TextField } from "@jects/jds";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import type { ApplyDetail } from "@/apis/apply/schemas";
 
@@ -19,6 +21,49 @@ interface AnswerFieldProps {
   inputType: QuestionInputType;
   index: number;
   portfolios: ApplyDetail["portfolios"];
+}
+
+interface PortfolioFilesProps {
+  isEditing: boolean;
+  portfolios: ApplyDetail["portfolios"];
+}
+
+function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
+  const { setValue } = useFormContext<SubmittedApplyFormValues>();
+  const deletePortfolioIds = useWatch<SubmittedApplyFormValues, "deletePortfolioIds">({
+    name: "deletePortfolioIds",
+    defaultValue: [],
+  });
+  const listRef = useRef<HTMLDivElement>(null);
+  const visiblePortfolios = portfolios.filter(
+    ({ portfolioId }) => !deletePortfolioIds.includes(portfolioId)
+  );
+
+  const removePortfolio = (portfolioId: number) => {
+    setValue("deletePortfolioIds", [...deletePortfolioIds, portfolioId], { shouldDirty: true });
+    listRef.current?.focus();
+  };
+
+  return (
+    <div ref={listRef} tabIndex={-1} className="flex flex-col outline-none">
+      {visiblePortfolios.map(({ portfolioId, fileName, fileSize }) => {
+        const fileProps = {
+          fileName,
+          fileSize: Number(fileSize),
+        };
+        return isEditing ? (
+          <File
+            key={portfolioId}
+            {...fileProps}
+            removable
+            onRemove={() => removePortfolio(portfolioId)}
+          />
+        ) : (
+          <File key={portfolioId} {...fileProps} readonly />
+        );
+      })}
+    </div>
+  );
 }
 
 function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldProps) {
@@ -44,9 +89,7 @@ function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldPro
         </TextField>
       );
     case "FILE":
-      return portfolios.map(({ portfolioId, fileName, fileSize }) => (
-        <File key={portfolioId} fileName={fileName} fileSize={Number(fileSize)} readonly />
-      ));
+      return <PortfolioFiles isEditing={isEditing} portfolios={portfolios} />;
   }
 }
 
