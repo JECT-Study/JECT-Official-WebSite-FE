@@ -23,12 +23,15 @@ import {
   toFormValues,
 } from "./schemas";
 
-interface ErrorStateProps {
-  error: Error;
+interface FallbackStateProps {
+  error: Error | null;
   onRetry: () => void;
 }
 
-function ErrorState({ error, onRetry }: ErrorStateProps) {
+function FallbackState({ error, onRetry }: FallbackStateProps) {
+  if (!error) {
+    return <EmptyState header="지원서 정보를 불러오는 중입니다" body="잠시만 기다려주세요." />;
+  }
   if (hasErrorCode(error, "APPLY-1")) {
     return (
       <EmptyState header="이미 삭제된 지원서입니다" body="목록에서 다른 지원서를 선택해주세요." />
@@ -136,23 +139,21 @@ export default function SubmittedApplyDrawer({
       }
     >
       {/* 재조회만 실패했다면 이전 데이터를 계속 보여 준다. */}
-      {error && !data ? (
-        <div className="px-margin-lg pt-24 tablet:pt-32">
-          <ErrorState error={error} onRetry={() => void refetch()} />
-        </div>
-      ) : (
+      {data ? (
         <FormProvider {...form}>
           <form>
-            <BasicInfoFields isEditing={isEditing} waitlistNumber={data?.waitlistNumber} />
-            {data && (
-              <AnswerFields
-                isEditing={isEditing}
-                answers={data.answers}
-                portfolios={data.portfolios}
-              />
-            )}
+            <BasicInfoFields isEditing={isEditing} waitlistNumber={data.waitlistNumber} />
+            <AnswerFields
+              isEditing={isEditing}
+              answers={data.answers}
+              portfolios={data.portfolios}
+            />
           </form>
         </FormProvider>
+      ) : (
+        <div className="px-margin-lg pt-24 tablet:pt-32">
+          <FallbackState error={error} onRetry={() => void refetch()} />
+        </div>
       )}
     </Drawer>
   );
