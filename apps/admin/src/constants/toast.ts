@@ -105,4 +105,9 @@ export const TOAST_CONTENT = {
     variant: "destructive",
     title: "이미 삭제된 지원서예요",
   },
+  downloadFileFailed: {
+    variant: "destructive",
+    title: "파일을 다운로드하지 못했어요",
+    description: RETRY_DESCRIPTION,
+  },
 } satisfies Record<string, ToastContent | ((...args: never[]) => ToastContent)>;

@@ -4,6 +4,8 @@ import { File, Textarea, TextField } from "@jects/jds";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import type { ApplyDetail } from "@/apis/apply/schemas";
+import { TOAST_CONTENT } from "@/constants/toast";
+import { showToast } from "@/utils/showToast";
 
 import { MAX_ANSWER_LENGTH, type SubmittedApplyFormValues } from "./schemas";
 
@@ -22,6 +24,22 @@ interface AnswerFieldProps {
   index: number;
   portfolios: ApplyDetail["portfolios"];
 }
+
+// 다른 출처의 URL에는 download 속성이 무시되므로 blob으로 받아 원래 파일명으로 저장한다.
+const downloadFile = async (fileUrl: string, fileName: string) => {
+  try {
+    const response = await fetch(fileUrl);
+    if (!response.ok) throw new Error(`파일 다운로드 실패: ${response.status}`);
+    const objectUrl = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(objectUrl);
+  } catch {
+    showToast(TOAST_CONTENT.downloadFileFailed);
+  }
+};
 
 interface PortfolioFilesProps {
   isEditing: boolean;
@@ -46,10 +64,11 @@ function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
 
   return (
     <div ref={listRef} tabIndex={-1} className="flex flex-col outline-none">
-      {visiblePortfolios.map(({ portfolioId, fileName, fileSize }) => {
+      {visiblePortfolios.map(({ portfolioId, fileUrl, fileName, fileSize }) => {
         const fileProps = {
           fileName,
           fileSize: Number(fileSize),
+          onClick: () => void downloadFile(fileUrl, fileName),
         };
         return isEditing ? (
           <File
@@ -59,7 +78,7 @@ function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
             onRemove={() => removePortfolio(portfolioId)}
           />
         ) : (
-          <File key={portfolioId} {...fileProps} readonly />
+          <File key={portfolioId} {...fileProps} />
         );
       })}
     </div>
