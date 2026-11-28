@@ -23,7 +23,7 @@ export function ViewingActions({ disabled, editButtonRef, onEdit, onDelete }: Vi
       </LabelButton>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <IconButton hierarchy="tertiary" size="lg" icon="ellipsis" />
+          <IconButton hierarchy="tertiary" size="lg" icon="ellipsis" disabled={disabled} />
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end" sideOffset={12} className="z-floated w-[160px]">
           <DropdownMenu.Group>
