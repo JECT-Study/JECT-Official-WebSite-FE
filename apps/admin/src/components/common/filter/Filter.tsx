@@ -1,9 +1,9 @@
 import { useLayoutEffect, useRef } from "react";
 
-import type { FilterField, FilterOptionValue, FilterValues } from "./Filter.types";
-import { normalizeFilterValues } from "./Filter.utils";
 import FilterAddButton from "./FilterAddButton";
 import FilterChip from "./FilterChip";
+import { normalizeFilterValues } from "./normalizeFilterValues";
+import type { FilterField, FilterOptionValue, FilterValues } from "./types";
 
 interface FilterProps {
   fields: FilterField[];

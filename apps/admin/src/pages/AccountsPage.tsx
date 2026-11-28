@@ -25,7 +25,7 @@ import type {
   FilterField,
   FilterOptionValue,
   FilterValues,
-} from "@/components/common/filter/Filter.types";
+} from "@/components/common/filter/types";
 import {
   ACCOUNT_ROLE_LABELS,
   ACCOUNT_ROLES,
@@ -34,10 +34,11 @@ import {
   type AccountRole,
 } from "@/constants/account";
 import { DIALOG_CONTENT } from "@/constants/dialog";
+import { PAGE_TITLE } from "@/constants/pageTitle";
 import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeactivateAccountsMutation } from "@/hooks/account/useDeactivateAccountsMutation";
+import { useAuthStore } from "@/stores/authStore";
 import { showDialog } from "@/stores/dialogStore";
-import { useAuthStore } from "@/stores/useAuthStore";
 
 const ACCOUNT_FILTER_FIELDS: FilterField[] = [
   {
@@ -167,6 +168,7 @@ export default function AccountsPage() {
 
   return (
     <div className="flex flex-col gap-16 px-margin-lg pb-margin-xl desktop:px-margin-xl">
+      <title>{PAGE_TITLE.accounts}</title>
       <h2 className="py-12 text-title-2 font-title-subtle text-object-boldest">관리자 계정 목록</h2>
       <div className="rounded-10 border border-stroke-subtle bg-surface-standard">
         <div className="flex items-center gap-16 px-16 py-12">

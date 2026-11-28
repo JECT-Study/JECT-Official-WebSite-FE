@@ -9,8 +9,7 @@ import {
   type RowData,
 } from "@tanstack/react-table";
 
-import type { DataTableFeatures } from "./DataTable.features";
-import type { DataTableRowClickOptions } from "./DataTable.types";
+import type { DataTableFeatures } from "./createDataTableFeatures";
 import {
   DataTableBody,
   DataTableCell,
@@ -24,6 +23,7 @@ import {
 } from "./DataTablePrimitives";
 import { DataTableReorderProvider } from "./DataTableReorderProvider";
 import { DraggableRow } from "./DraggableRow";
+import type { DataTableRowClickOptions } from "./types";
 
 interface HeaderCellProps<TData extends RowData> {
   header: Header<DataTableFeatures<TData>, TData>;

@@ -3,35 +3,22 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ApiError } from "@ject/api-client";
 import { type ErrorCode, isErrorCode } from "@ject/api-types/errors";
-import { BlockButton, IconButton, TextField, useToast } from "@jects/jds";
+import { BlockButton, IconButton, TextField } from "@jects/jds";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
 import { authApi } from "@/apis/auth/api";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { TOAST_CONTENT, type ToastContent } from "@/constants/toast";
+import { useAuthStore } from "@/stores/authStore";
+import { showToast } from "@/utils/showToast";
 
-import { loginFormSchema, type LoginFormValues } from "./LoginForm.schema";
+import { loginFormSchema, type LoginFormValues } from "./schemas";
 
-interface LoginErrorMessage {
-  title: string;
-  description: string;
-}
-
-const INVALID_CREDENTIALS_MESSAGE: LoginErrorMessage = {
-  title: "로그인할 수 없어요",
-  description: "이메일 또는 비밀번호를 확인해주세요.",
-};
-
-const DEFAULT_LOGIN_ERROR_MESSAGE: LoginErrorMessage = {
-  title: "로그인에 실패했어요",
-  description: "잠시 후 다시 시도해주세요.",
-};
-
-const LOGIN_ERROR_MESSAGES: Partial<Record<ErrorCode, LoginErrorMessage>> = {
-  "ADMIN-1": INVALID_CREDENTIALS_MESSAGE,
-  "ADMIN-6": INVALID_CREDENTIALS_MESSAGE,
-  "ADMIN-5": { title: "계정이 비활성화됐어요", description: "관리자에게 문의해주세요." },
-  "ADMIN-7": { title: "로그인 시도를 초과했어요", description: "잠시 후 다시 시도해주세요." },
+const LOGIN_ERROR_TOASTS: Partial<Record<ErrorCode, ToastContent>> = {
+  "ADMIN-1": TOAST_CONTENT.loginInvalidCredentials,
+  "ADMIN-6": TOAST_CONTENT.loginInvalidCredentials,
+  "ADMIN-5": TOAST_CONTENT.loginAccountDeactivated,
+  "ADMIN-7": TOAST_CONTENT.loginAttemptsExceeded,
 };
 
 export function LoginForm() {
@@ -44,15 +31,12 @@ export function LoginForm() {
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
   });
-  const { toast } = useToast();
   const { mutate, isPending } = useMutation({
     mutationFn: authApi.login,
     onSuccess: ({ isAdmin }) => useAuthStore.getState().login({ isAdmin }),
     onError: (error) => {
       const code = error instanceof ApiError && isErrorCode(error.status) ? error.status : null;
-      const { title, description } =
-        (code && LOGIN_ERROR_MESSAGES[code]) ?? DEFAULT_LOGIN_ERROR_MESSAGE;
-      toast.destructive(title, { description });
+      showToast((code && LOGIN_ERROR_TOASTS[code]) ?? TOAST_CONTENT.loginFailed);
     },
   });
 

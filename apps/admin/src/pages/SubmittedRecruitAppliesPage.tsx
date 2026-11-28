@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { BlockButton, type BlockButtonProps, EmptyState, Tabs, useToast } from "@jects/jds";
+import { BlockButton, type BlockButtonProps, EmptyState, Tabs } from "@jects/jds";
 import { useMediaQueryFlags } from "@jects/jds/hooks";
 import { hashKey, keepPreviousData, useInfiniteQuery, useIsMutating } from "@tanstack/react-query";
 import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
@@ -13,20 +13,22 @@ import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
 import { deselectRows } from "@/components/common/data-table";
 import Filter from "@/components/common/filter/Filter";
+import { normalizeFilterValues } from "@/components/common/filter/normalizeFilterValues";
 import type {
   FilterField,
   FilterOptionValue,
   FilterValues,
-} from "@/components/common/filter/Filter.types";
-import { normalizeFilterValues } from "@/components/common/filter/Filter.utils";
-import { useHeaderActionSlot } from "@/components/layout/Header.context";
+} from "@/components/common/filter/types";
+import { useHeaderActionSlot } from "@/components/layout/HeaderActionSlotContext";
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { DIALOG_CONTENT } from "@/constants/dialog";
+import { TOAST_CONTENT } from "@/constants/toast";
 import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
 import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { showDialog } from "@/stores/dialogStore";
 import { parseIdParam } from "@/utils/parseIdParam";
+import { showToast } from "@/utils/showToast";
 
 const PAGE_SIZE = 30;
 
@@ -123,12 +125,12 @@ function ApplyList({
   onRowSelectionChange,
 }: ApplyListProps) {
   if (isLoading) {
-    return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+    return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려주세요." />;
   }
 
   if (isError) {
     return (
-      <EmptyState header="지원서 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+      <EmptyState header="지원서 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해주세요." />
     );
   }
 
@@ -181,7 +183,6 @@ interface SubmittedRecruitAppliesProps {
 function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const headerActionSlot = useHeaderActionSlot();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { toast } = useToast();
   const { isDesktop } = useMediaQueryFlags();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -262,14 +263,16 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
     if (result.isFetchNextPageError) {
-      toast.destructive("지원서 목록을 불러오지 못했습니다", {
-        description: "잠시 후 다시 시도해 주세요.",
-      });
+      showToast(TOAST_CONTENT.loadSubmittedAppliesFailed);
     }
   };
 
+  // TODO: 공고 정보를 받을 API가 정해지면 제목을 연결한다.
+  const recruitTitle = "젝트 메이커스 팀 프론트엔드 개발자(FE) 모집";
+
   return (
     <section className="flex flex-col">
+      <title>{recruitTitle}</title>
       {headerActionSlot &&
         createPortal(
           <BlockButton feedback="positive" prefixIcon="save" className="max-desktop:hidden">
@@ -278,9 +281,8 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
           headerActionSlot
         )}
       <div className="flex items-center gap-28 px-margin-lg py-12 desktop:px-margin-xl">
-        {/* TODO: 공고 정보를 받을 API가 정해지면 제목을 연결한다. */}
         <h2 className="min-w-0 flex-1 text-title-2 font-title-subtle break-keep text-object-boldest">
-          젝트 메이커스 팀 프론트엔드 개발자(FE) 모집
+          {recruitTitle}
         </h2>
         <div className="flex shrink-0 items-center gap-16 max-desktop:hidden">
           <BlockButton hierarchy="primary" variant="outlined" size="sm" prefixIcon="clock-3">

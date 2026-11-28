@@ -5,6 +5,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route/ProtectedRoute
 import RootLayout from "@/components/layout/RootLayout";
 import { ROUTES } from "@/constants/routes";
 import AccountsPage from "@/pages/AccountsPage";
+import ErrorPage from "@/pages/ErrorPage";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";
@@ -13,25 +14,30 @@ import SubmittedRecruitAppliesPage from "@/pages/SubmittedRecruitAppliesPage";
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.login,
-    element: (
-      <GuestRoute>
-        <LoginPage />
-      </GuestRoute>
-    ),
-  },
-  {
-    element: (
-      <ProtectedRoute>
-        <RootLayout />
-      </ProtectedRoute>
-    ),
+    errorElement: <ErrorPage />,
     children: [
-      { path: ROUTES.home, element: <HomePage /> },
-      { path: ROUTES.submittedApplies, element: <SubmittedAppliesPage /> },
-      { path: ROUTES.accounts, element: <AccountsPage /> },
-      { path: ROUTES.submittedRecruitApplies, element: <SubmittedRecruitAppliesPage /> },
-      { path: "*", element: <NotFoundPage /> },
+      {
+        path: ROUTES.login,
+        element: (
+          <GuestRoute>
+            <LoginPage />
+          </GuestRoute>
+        ),
+      },
+      {
+        element: (
+          <ProtectedRoute>
+            <RootLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: ROUTES.home, element: <HomePage /> },
+          { path: ROUTES.submittedApplies, element: <SubmittedAppliesPage /> },
+          { path: ROUTES.accounts, element: <AccountsPage /> },
+          { path: ROUTES.submittedRecruitApplies, element: <SubmittedRecruitAppliesPage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
     ],
   },
 ]);

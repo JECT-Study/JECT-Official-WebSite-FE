@@ -1,4 +1,4 @@
-import type { FilterField, FilterValues } from "./Filter.types";
+import type { FilterField, FilterValues } from "./types";
 
 /**
  * `fields`에 없는 필드와 옵션 값을 버린다. 옵션은 문자열로 비교해 정의된 원래 값을 반환한다.

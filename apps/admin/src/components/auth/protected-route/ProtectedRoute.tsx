@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import { routeTo } from "@/constants/routes";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 
 interface ProtectedRouteProps {
   children: ReactNode;

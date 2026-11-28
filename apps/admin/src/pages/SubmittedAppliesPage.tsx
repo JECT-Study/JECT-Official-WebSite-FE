@@ -6,6 +6,7 @@ import { recruitQueries } from "@/apis/recruit/queries";
 import type { ApplyManagementRecruit, JobFamily, RecruitType } from "@/apis/recruit/schemas";
 import JobFamilyFilterButton from "@/components/apply/job-family-filter/JobFamilyFilterButton";
 import RecruitCard from "@/components/apply/recruit-card/RecruitCard";
+import { PAGE_TITLE } from "@/constants/pageTitle";
 
 interface RecruitTab {
   type: RecruitType;
@@ -49,12 +50,12 @@ interface RecruitListProps {
 
 function RecruitList({ recruits, isLoading, isError }: RecruitListProps) {
   if (isLoading) {
-    return <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려 주세요." />;
+    return <EmptyState header="공고 목록을 불러오는 중입니다" body="잠시만 기다려주세요." />;
   }
 
   if (isError) {
     return (
-      <EmptyState header="공고 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해 주세요." />
+      <EmptyState header="공고 목록을 불러오지 못했습니다" body="잠시 후 다시 시도해주세요." />
     );
   }
 
@@ -111,6 +112,7 @@ export default function SubmittedAppliesPage() {
 
   return (
     <section className="flex flex-col">
+      <title>{PAGE_TITLE.submittedApplies}</title>
       <div className="flex items-center gap-16 px-margin-xl py-12 tablet:px-margin-lg desktop:px-margin-xl">
         <h2 className="text-title-2 font-title-subtle text-object-boldest">공고 목록</h2>
         <p className="text-label-md font-label-normal text-object-bold">{totalCount}개의 항목</p>

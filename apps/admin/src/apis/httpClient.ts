@@ -3,7 +3,7 @@ import { createRefreshMiddleware } from "@ject/api-client/auth";
 import type { paths } from "@ject/api-types/admin";
 
 import { ROUTES, routeTo } from "@/constants/routes";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuthStore } from "@/stores/authStore";
 
 function handleRefreshFailure() {
   useAuthStore.getState().logout();

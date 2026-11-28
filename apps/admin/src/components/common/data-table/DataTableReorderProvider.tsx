@@ -21,7 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import type { ReactTable, RowData } from "@tanstack/react-table";
 
-import type { DataTableFeatures } from "./DataTable.features";
+import type { DataTableFeatures } from "./createDataTableFeatures";
 
 const MODIFIERS = [restrictToVerticalAxis, restrictToParentElement];
 // 스크린 리더용 div가 tbody 안에 렌더링되면 마지막 행이 :last-child가 아니게 되므로 body로 옮긴다.
