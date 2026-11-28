@@ -66,7 +66,7 @@ export default function SubmittedApplyDrawer({
     // form.reset()에도 적용되므로 편집을 끝낼 때는 끄고 호출한다.
     resetOptions: { keepDirtyValues: true },
   });
-  const { mutateAsync: editApply } = useEditApplyMutation();
+  const { mutateAsync: editApply, isPending: isSaving } = useEditApplyMutation();
   const { mutateAsync: deleteApply } = useDeleteApplyMutation();
   const { isDirty } = form.formState;
   // 확인 후 편집 모드가 끝나면 다이얼로그를 연 버튼이 사라지므로 편집 버튼으로 포커스를 돌려준다.
@@ -116,6 +116,7 @@ export default function SubmittedApplyDrawer({
       open={open}
       onOpenChange={(open) => {
         if (open) return;
+        if (isSaving) return onClose();
         confirmCancel(() => {
           cancelEditing();
           onClose();
@@ -125,6 +126,7 @@ export default function SubmittedApplyDrawer({
       headerAction={
         isEditing ? (
           <EditingActions
+            disabled={isSaving}
             onCancel={() => confirmCancel(cancelEditing)}
             onSave={() => void form.handleSubmit(openSaveDialog)()}
           />
@@ -142,12 +144,14 @@ export default function SubmittedApplyDrawer({
       {data ? (
         <FormProvider {...form}>
           <form>
-            <BasicInfoFields isEditing={isEditing} waitlistNumber={data.waitlistNumber} />
-            <AnswerFields
-              isEditing={isEditing}
-              answers={data.answers}
-              portfolios={data.portfolios}
-            />
+            <fieldset disabled={isSaving} className="min-w-0">
+              <BasicInfoFields isEditing={isEditing} waitlistNumber={data.waitlistNumber} />
+              <AnswerFields
+                isEditing={isEditing}
+                answers={data.answers}
+                portfolios={data.portfolios}
+              />
+            </fieldset>
           </form>
         </FormProvider>
       ) : (

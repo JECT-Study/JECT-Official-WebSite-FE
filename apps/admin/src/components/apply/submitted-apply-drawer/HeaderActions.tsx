@@ -47,17 +47,18 @@ export function ViewingActions({ disabled, editButtonRef, onEdit, onDelete }: Vi
 }
 
 interface EditingActionsProps {
+  disabled: boolean;
   onCancel: () => void;
   onSave: () => void;
 }
 
-export function EditingActions({ onCancel, onSave }: EditingActionsProps) {
+export function EditingActions({ disabled, onCancel, onSave }: EditingActionsProps) {
   return (
     <div className="flex items-center gap-16">
-      <LabelButton hierarchy="tertiary" size="md" onClick={onCancel}>
+      <LabelButton hierarchy="tertiary" size="md" disabled={disabled} onClick={onCancel}>
         편집 취소
       </LabelButton>
-      <LabelButton hierarchy="accent" size="md" onClick={onSave}>
+      <LabelButton hierarchy="accent" size="md" disabled={disabled} onClick={onSave}>
         저장하기
       </LabelButton>
     </div>
