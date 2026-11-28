@@ -21,14 +21,6 @@ const getQuestionInputType = (title: string): QuestionInputType => {
 // 스킴 없이 입력한 주소가 상대 경로로 열리지 않도록 https를 붙인다.
 const toExternalUrl = (url: string) => (/^https?:\/\//i.test(url) ? url : `https://${url}`);
 
-interface AnswerFieldProps {
-  isEditing: boolean;
-  inputType: QuestionInputType;
-  index: number;
-  answer: string | null;
-  portfolios: ApplyDetail["portfolios"];
-}
-
 // 다른 출처의 URL에는 download 속성이 무시되므로 blob으로 받아 원래 파일명으로 저장한다.
 const downloadFile = async (fileUrl: string, fileName: string) => {
   try {
@@ -96,6 +88,14 @@ function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
       })}
     </div>
   );
+}
+
+interface AnswerFieldProps {
+  isEditing: boolean;
+  inputType: QuestionInputType;
+  index: number;
+  answer: string | null;
+  portfolios: ApplyDetail["portfolios"];
 }
 
 function AnswerField({ isEditing, inputType, index, answer, portfolios }: AnswerFieldProps) {
