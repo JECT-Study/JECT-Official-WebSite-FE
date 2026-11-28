@@ -3,7 +3,7 @@ import type { components } from "@ject/api-types/admin";
 import { conditionQuerySerializer } from "@/apis/condition";
 import { httpClient } from "@/apis/httpClient";
 
-import { deletedAppliesCountSchema, submittedAppliesSchema } from "./schemas";
+import { applyDetailSchema, deletedAppliesCountSchema, submittedAppliesSchema } from "./schemas";
 
 // TODO: sizeOrDefault는 요청 파라미터가 아닌데 스펙에 포함돼 있다. 스펙에서 제거되면 Omit을 지운다.
 export type SubmittedAppliesCondition = Omit<
@@ -12,7 +12,8 @@ export type SubmittedAppliesCondition = Omit<
 >;
 
 type UpdateSelectionResultsRequest = components["schemas"]["UpdateSelectionResultsRequest"];
-type DeleteSubmittedAppliesRequest = components["schemas"]["SubmittedApplyBulkDeleteRequest"];
+export type EditApplyRequest = components["schemas"]["EditApplyRequest"];
+type DeleteAppliesRequest = components["schemas"]["SubmittedApplyBulkDeleteRequest"];
 
 export const applyApi = {
   getSubmittedApplies: async (condition: SubmittedAppliesCondition) => {
@@ -24,11 +25,27 @@ export const applyApi = {
     return submittedAppliesSchema.parse(data);
   },
 
+  getApply: async (applyId: number) => {
+    const { data } = await httpClient.GET("/admin/applies/{applyId}", {
+      params: { path: { applyId } },
+    });
+
+    return applyDetailSchema.parse(data);
+  },
+
+  editApply: async (applyId: number, body: EditApplyRequest) => {
+    await httpClient.PUT("/admin/applies/{applyId}", { params: { path: { applyId } }, body });
+  },
+
+  deleteApply: async (applyId: number) => {
+    await httpClient.DELETE("/admin/applies/{applyId}", { params: { path: { applyId } } });
+  },
+
   updateSelectionResults: async (body: UpdateSelectionResultsRequest) => {
     await httpClient.PATCH("/admin/applies/selection-results", { body });
   },
 
-  deleteSubmittedApplies: async (body: DeleteSubmittedAppliesRequest) => {
+  deleteApplies: async (body: DeleteAppliesRequest) => {
     const { data } = await httpClient.DELETE("/admin/applies", { body });
 
     return deletedAppliesCountSchema.parse(data);

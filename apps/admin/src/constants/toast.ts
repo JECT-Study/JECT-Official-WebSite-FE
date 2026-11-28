@@ -88,4 +88,26 @@ export const TOAST_CONTENT = {
     title: `${label} 상태로 변경하지 못했어요`,
     description: RETRY_DESCRIPTION,
   }),
+  applyEdited: {
+    variant: "positive",
+    title: "변경사항을 저장했어요",
+  },
+  editApplyFailed: {
+    variant: "destructive",
+    title: "지원서를 저장하지 못했어요",
+    description: RETRY_DESCRIPTION,
+  },
+  applyDeleted: {
+    variant: "positive",
+    title: "지원서를 삭제했어요",
+  },
+  applyAlreadyDeleted: {
+    variant: "destructive",
+    title: "이미 삭제된 지원서예요",
+  },
+  downloadFileFailed: {
+    variant: "destructive",
+    title: "파일을 다운로드하지 못했어요",
+    description: RETRY_DESCRIPTION,
+  },
 } satisfies Record<string, ToastContent | ((...args: never[]) => ToastContent)>;

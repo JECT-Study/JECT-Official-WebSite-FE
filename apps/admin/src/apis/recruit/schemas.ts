@@ -1,26 +1,9 @@
 import type { components } from "@ject/api-types/admin";
 import { z } from "zod";
 
-import { localDateTimeSchema } from "@/apis/schemas";
+import { jobFamilySchema, localDateTimeSchema, recruitTypeSchema } from "@/apis/schemas";
 
 type Schemas = components["schemas"];
-
-// 서버에서 사용하지 않는 SUPPORTER는 제외한다.
-const jobFamilySchema = z.enum([
-  "PM",
-  "PD",
-  "FE",
-  "BE",
-  "APP",
-  "OPS",
-  "INFRA",
-  "BX",
-  "ER",
-]) satisfies z.ZodType<Schemas["JobFamily"]>;
-
-const recruitTypeSchema = z.enum(["SEMESTER", "MAKERS", "SUPPORTERS"]) satisfies z.ZodType<
-  Schemas["RecruitType"]
->;
 
 const applyManagementRecruitSchema = z.object({
   recruitId: z.number(),
@@ -56,6 +39,4 @@ export const applyManagementRecruitsSchema = z.object({
   >,
 });
 
-export type JobFamily = z.infer<typeof jobFamilySchema>;
-export type RecruitType = z.infer<typeof recruitTypeSchema>;
 export type ApplyManagementRecruit = z.infer<typeof applyManagementRecruitSchema>;

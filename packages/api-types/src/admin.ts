@@ -81,7 +81,7 @@ export interface paths {
         };
         /**
          * 지원서 상세 조회
-         * @description 전달한 ID에 해당하는 지원서의 상세 정보를 조회합니다.
+         * @description 지원서 상세 정보를 조회합니다. 공고의 전체 질문을 문항 순서대로 반환하며 미답변은 null로 표시합니다. 지원자 신분·거주지역·경험기간은 enum 코드로, 포트폴리오는 ID를 포함해 반환합니다.
          */
         get: operations["findApply"];
         /**
@@ -844,7 +844,7 @@ export interface paths {
         };
         /**
          * 임시저장 지원서 목록 조회
-         * @description 모집 공고별 임시저장 지원서를 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.
+         * @description 모집 공고 제목과 임시저장 지원서 목록을 커서 기반으로 조회합니다. 지원자 신분을 다중 필터링할 수 있습니다.
          */
         get: operations["searchTempSavedApplies"];
         put?: never;
@@ -864,7 +864,7 @@ export interface paths {
         };
         /**
          * 제출완료 지원서 목록 조회
-         * @description 모집 공고별 제출완료 지원서를 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.
+         * @description 모집 공고 제목과 제출완료 지원서 목록을 커서 기반으로 조회합니다. 지원자 신분과 선정 결과를 다중 필터링할 수 있습니다.
          */
         get: operations["searchSubmittedApplies"];
         put?: never;
@@ -1699,12 +1699,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -1873,25 +1873,31 @@ export interface components {
             phoneNumber: string | null;
             email: string;
             jobFamily: components["schemas"]["JobFamily"] | null;
-            careerDetails: string;
+            careerDetails: components["schemas"]["CareerDetails"] | null;
             recruitType: string;
             selectionResult: components["schemas"]["SelectionResult"];
             /** Format: int32 */
             waitlistNumber: number | null;
             note: string;
-            region: string;
-            experiencePeriod: string;
+            region: components["schemas"]["Region"] | null;
+            experiencePeriod: components["schemas"]["ExperiencePeriod"] | null;
             interestedDomains: string[];
-            answers: {
-                [key: string]: string;
-            };
-            portfolios: components["schemas"]["ApplyPortfolioDto"][];
+            answers: components["schemas"]["ApplyAnswerResponse"][];
+            portfolios: components["schemas"]["AdminApplyPortfolioResponse"][];
         };
-        ApplyPortfolioDto: {
-            fileUrl?: string;
-            fileName?: string;
-            fileSize?: string;
-            sequence?: string;
+        AdminApplyPortfolioResponse: {
+            /** Format: int64 */
+            portfolioId: number;
+            fileUrl: string;
+            fileName: string;
+            fileSize: string;
+            sequence: string;
+        };
+        ApplyAnswerResponse: {
+            /** Format: int64 */
+            questionId: number;
+            questionTitle: string;
+            answer: string | null;
         };
         WaitlistOrderResponse: {
             /** Format: int64 */
@@ -1918,14 +1924,19 @@ export interface components {
             /** Format: int32 */
             sizeOrDefault?: number;
         };
-        CursorPageResponseTempSavedApplyResponse: {
+        ApplyListResponseTempSavedApplyResponse: {
+            /** @description 조회 중인 모집 공고 제목 */
+            recruitTitle: string | null;
             content: components["schemas"]["TempSavedApplyResponse"][];
             /** Format: int32 */
             size: number;
             hasNext: boolean;
             /** Format: int64 */
             nextCursor: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description 검색 필터를 적용한 전체 지원서 수
+             */
             totalCount: number;
         };
         TempSavedApplyResponse: {
@@ -1947,14 +1958,19 @@ export interface components {
             /** Format: int32 */
             sizeOrDefault?: number;
         };
-        CursorPageResponseSubmittedApplyResponse: {
+        ApplyListResponseSubmittedApplyResponse: {
+            /** @description 조회 중인 모집 공고 제목 */
+            recruitTitle: string | null;
             content: components["schemas"]["SubmittedApplyResponse"][];
             /** Format: int32 */
             size: number;
             hasNext: boolean;
             /** Format: int64 */
             nextCursor: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description 검색 필터를 적용한 전체 지원서 수
+             */
             totalCount: number;
         };
         SubmittedApplyResponse: {
@@ -3958,7 +3974,7 @@ export interface operations {
                     "*/*": {
                         /** @example SUCCESS */
                         status: string;
-                        data: components["schemas"]["CursorPageResponseTempSavedApplyResponse"];
+                        data: components["schemas"]["ApplyListResponseTempSavedApplyResponse"];
                         /**
                          * Format: date-time
                          * @example 2025-08-08T14:10:32.123
@@ -3989,7 +4005,7 @@ export interface operations {
                     "*/*": {
                         /** @example SUCCESS */
                         status: string;
-                        data: components["schemas"]["CursorPageResponseSubmittedApplyResponse"];
+                        data: components["schemas"]["ApplyListResponseSubmittedApplyResponse"];
                         /**
                          * Format: date-time
                          * @example 2025-08-08T14:10:32.123

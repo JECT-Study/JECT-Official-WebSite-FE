@@ -1,6 +1,6 @@
 import type { ThemeVariant } from "@jects/jds";
 
-import type { JobFamily } from "@/apis/recruit/schemas";
+import type { JobFamily } from "@/apis/schemas";
 
 interface JobFamilyBadge {
   label: string;

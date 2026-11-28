@@ -11,6 +11,7 @@ import type { SubmittedAppliesCondition } from "@/apis/apply/api";
 import { applyMutationKeys, applyQueries } from "@/apis/apply/queries";
 import type { SelectionResult, SubmittedApply } from "@/apis/apply/schemas";
 import SubmittedAppliesTable from "@/components/apply/submitted-applies-table/SubmittedAppliesTable";
+import SubmittedApplyDrawer from "@/components/apply/submitted-apply-drawer/SubmittedApplyDrawer";
 import { deselectRows } from "@/components/common/data-table";
 import Filter from "@/components/common/filter/Filter";
 import { normalizeFilterValues } from "@/components/common/filter/normalizeFilterValues";
@@ -23,7 +24,7 @@ import { useHeaderActionSlot } from "@/components/layout/HeaderActionSlotContext
 import { CAREER_DETAILS_LABELS, SELECTION_RESULT_LABELS } from "@/constants/apply";
 import { DIALOG_CONTENT } from "@/constants/dialog";
 import { TOAST_CONTENT } from "@/constants/toast";
-import { useDeleteSubmittedAppliesMutation } from "@/hooks/apply/useDeleteSubmittedAppliesMutation";
+import { useDeleteAppliesMutation } from "@/hooks/apply/useDeleteAppliesMutation";
 import { useUpdateSelectionResultsMutation } from "@/hooks/apply/useUpdateSelectionResultsMutation";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { showDialog } from "@/stores/dialogStore";
@@ -109,6 +110,7 @@ interface ApplyListProps {
   onLoadMore: () => void;
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  onRowClick: (apply: SubmittedApply) => void;
 }
 
 function ApplyList({
@@ -123,6 +125,7 @@ function ApplyList({
   onLoadMore,
   rowSelection,
   onRowSelectionChange,
+  onRowClick,
 }: ApplyListProps) {
   if (isLoading) {
     return <EmptyState header="지원서 목록을 불러오는 중입니다" body="잠시만 기다려주세요." />;
@@ -158,6 +161,7 @@ function ApplyList({
         applies={applies}
         rowSelection={rowSelection}
         onRowSelectionChange={onRowSelectionChange}
+        onRowClick={onRowClick}
       />
       {hasNextPage && (
         <BlockButton
@@ -227,7 +231,7 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
   );
 
   const { mutateAsync: updateSelectionResults } = useUpdateSelectionResultsMutation();
-  const { mutateAsync: deleteSubmittedApplies } = useDeleteSubmittedAppliesMutation();
+  const { mutateAsync: deleteApplies } = useDeleteAppliesMutation();
   const isActionPending = useIsMutating({ mutationKey: applyMutationKeys.selectionActions() }) > 0;
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -253,12 +257,16 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
 
   const openDeleteDialog = () => {
     const applyIds = selectedApplyIds;
-    void showDialog(DIALOG_CONTENT.deleteSubmittedApplies(applyIds.length), {
+    void showDialog(DIALOG_CONTENT.deleteApplies(applyIds.length), {
       onPrimaryClick: () =>
-        deleteSubmittedApplies({ applyIds }, { onSuccess: () => deselectApplies(applyIds) }),
+        deleteApplies({ applyIds }, { onSuccess: () => deselectApplies(applyIds) }),
       fallbackFocusRef: listRef,
     });
   };
+
+  // 닫힘 애니메이션 동안 내용을 유지하도록 닫아도 id는 남긴다.
+  const [openedApplyId, setOpenedApplyId] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleLoadMore = async () => {
     const result = await fetchNextPage({ cancelRefetch: false });
@@ -364,9 +372,19 @@ function SubmittedRecruitApplies({ recruitId }: SubmittedRecruitAppliesProps) {
             onLoadMore={handleLoadMore}
             rowSelection={rowSelection}
             onRowSelectionChange={setRowSelection}
+            onRowClick={(apply) => {
+              setOpenedApplyId(apply.applyId);
+              setIsDrawerOpen(true);
+            }}
           />
         </div>
       </div>
+      <SubmittedApplyDrawer
+        key={openedApplyId}
+        applyId={openedApplyId}
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      />
     </section>
   );
 }
