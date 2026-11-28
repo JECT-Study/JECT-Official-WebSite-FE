@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EmptyState } from "@jects/jds";
 import { useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 
 import { applyQueries } from "@/apis/apply/queries";
 import { Drawer } from "@/components/common/drawer/Drawer";
 import { DIALOG_CONTENT } from "@/constants/dialog";
+import { hasErrorCode } from "@/errors/hasErrorCode";
 import { useDeleteApplyMutation } from "@/hooks/apply/useDeleteApplyMutation";
 import { useEditApplyMutation } from "@/hooks/apply/useEditApplyMutation";
 import { showDialog } from "@/stores/dialogStore";
@@ -21,6 +23,26 @@ import {
   toFormValues,
 } from "./schemas";
 
+interface ErrorStateProps {
+  error: Error;
+  onRetry: () => void;
+}
+
+function ErrorState({ error, onRetry }: ErrorStateProps) {
+  if (hasErrorCode(error, "APPLY-1")) {
+    return (
+      <EmptyState header="이미 삭제된 지원서입니다" body="목록에서 다른 지원서를 선택해주세요." />
+    );
+  }
+  return (
+    <EmptyState
+      header="지원서를 불러오지 못했습니다"
+      body="잠시 후 다시 시도해주세요."
+      primaryAction={{ children: "다시 시도", onClick: onRetry }}
+    />
+  );
+}
+
 interface SubmittedApplyDrawerProps {
   applyId: number | null;
   open: boolean;
@@ -33,7 +55,7 @@ export default function SubmittedApplyDrawer({
   onClose,
 }: SubmittedApplyDrawerProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const { data } = useQuery({ ...applyQueries.detail(applyId), enabled: open });
+  const { data, error, refetch } = useQuery({ ...applyQueries.detail(applyId), enabled: open });
   const form = useForm<SubmittedApplyFormValues>({
     resolver: zodResolver(submittedApplyFormSchema),
     values: data && toFormValues(data),
@@ -113,18 +135,25 @@ export default function SubmittedApplyDrawer({
         )
       }
     >
-      <FormProvider {...form}>
-        <form>
-          <BasicInfoFields isEditing={isEditing} waitlistNumber={data?.waitlistNumber} />
-          {data && (
-            <AnswerFields
-              isEditing={isEditing}
-              answers={data.answers}
-              portfolios={data.portfolios}
-            />
-          )}
-        </form>
-      </FormProvider>
+      {/* 재조회만 실패했다면 이전 데이터를 계속 보여 준다. */}
+      {error && !data ? (
+        <div className="px-margin-lg pt-24 tablet:pt-32">
+          <ErrorState error={error} onRetry={() => void refetch()} />
+        </div>
+      ) : (
+        <FormProvider {...form}>
+          <form>
+            <BasicInfoFields isEditing={isEditing} waitlistNumber={data?.waitlistNumber} />
+            {data && (
+              <AnswerFields
+                isEditing={isEditing}
+                answers={data.answers}
+                portfolios={data.portfolios}
+              />
+            )}
+          </form>
+        </FormProvider>
+      )}
     </Drawer>
   );
 }
