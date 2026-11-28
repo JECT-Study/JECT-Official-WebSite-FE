@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import { File, Textarea, TextField } from "@jects/jds";
+import { File, Link, Textarea, TextField } from "@jects/jds";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import type { ApplyDetail } from "@/apis/apply/schemas";
@@ -18,10 +18,14 @@ const getQuestionInputType = (title: string): QuestionInputType => {
   return "TEXT";
 };
 
+// 스킴 없이 입력한 주소가 상대 경로로 열리지 않도록 https를 붙인다.
+const toExternalUrl = (url: string) => (/^https?:\/\//i.test(url) ? url : `https://${url}`);
+
 interface AnswerFieldProps {
   isEditing: boolean;
   inputType: QuestionInputType;
   index: number;
+  answer: string | null;
   portfolios: ApplyDetail["portfolios"];
 }
 
@@ -85,7 +89,7 @@ function PortfolioFiles({ isEditing, portfolios }: PortfolioFilesProps) {
   );
 }
 
-function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldProps) {
+function AnswerField({ isEditing, inputType, index, answer, portfolios }: AnswerFieldProps) {
   const { register } = useFormContext<SubmittedApplyFormValues>();
 
   switch (inputType) {
@@ -102,6 +106,19 @@ function AnswerField({ isEditing, inputType, index, portfolios }: AnswerFieldPro
         </Textarea>
       );
     case "URL":
+      if (!isEditing && answer) {
+        return (
+          <Link
+            href={toExternalUrl(answer)}
+            target="_blank"
+            rel="noopener noreferrer"
+            external
+            className="self-start break-all"
+          >
+            {answer}
+          </Link>
+        );
+      }
       return (
         <TextField readonly={!isEditing}>
           <TextField.Input {...register(`answers.${index}.answer`)} />
@@ -121,7 +138,7 @@ interface AnswerFieldsProps {
 export function AnswerFields({ isEditing, answers, portfolios }: AnswerFieldsProps) {
   return (
     <div className="flex flex-col gap-32 px-margin-lg pt-24 pb-96 tablet:pt-32">
-      {answers.map(({ questionId, questionTitle }, index) => (
+      {answers.map(({ questionId, questionTitle, answer }, index) => (
         <section key={questionId} className="flex flex-col gap-16">
           <h3 className="text-title-1 font-title-subtle text-object-boldest">
             {index + 1}. {questionTitle}
@@ -130,6 +147,7 @@ export function AnswerFields({ isEditing, answers, portfolios }: AnswerFieldsPro
             isEditing={isEditing}
             inputType={getQuestionInputType(questionTitle)}
             index={index}
+            answer={answer}
             portfolios={portfolios}
           />
         </section>
